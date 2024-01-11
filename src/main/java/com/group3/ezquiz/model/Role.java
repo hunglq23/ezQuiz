@@ -1,4 +1,4 @@
-package com.group3.model;
+package com.group3.ezquiz.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
