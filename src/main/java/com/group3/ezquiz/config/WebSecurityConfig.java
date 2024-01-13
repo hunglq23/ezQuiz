@@ -19,7 +19,8 @@ public class WebSecurityConfig {
                     "/vendor/**",
                     "/css/**",
                     "/images/**",
-                    "/fonts/**",
+                    "/js/**",
+                    "/",
                     "/login/**",
                     "/register/**")
                 .permitAll())
