@@ -1,4 +1,4 @@
-package com.group3.ezquiz.config;
+package com.group3.ezquiz.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +37,7 @@ public class WebSecurityConfig {
             form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                // .successForwardUrl("/home")
+                .successForwardUrl("/home")
                 .permitAll())
         .logout(
             logout -> logout
