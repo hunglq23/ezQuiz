@@ -74,3 +74,22 @@
 
   // Add your javascript here
 })();
+
+/**
+ * Function to toggle password visibility
+ * @param {string} passwordFieldId - The ID of the password input field
+ */
+function togglePasswordVisibility(passwordFieldId) {
+  const passwordField = document.getElementById(passwordFieldId);
+  const passwordToggleIcon = document.getElementById(`${passwordFieldId}-toggle-icon`);
+
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+    passwordToggleIcon.classList.remove("fa-eye");
+    passwordToggleIcon.classList.add("fa-eye-slash");
+  } else {
+    passwordField.type = "password";
+    passwordToggleIcon.classList.remove("fa-eye-slash");
+    passwordToggleIcon.classList.add("fa-eye");
+  }
+}
