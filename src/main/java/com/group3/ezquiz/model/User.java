@@ -5,6 +5,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,10 +33,10 @@ import java.sql.Timestamp;
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "role_id", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role", nullable = false)
   private Role role;
 
   @Column(name = "email", nullable = false, unique = true, length = 100)
@@ -48,7 +50,7 @@ public class User {
   private Boolean isEnable;
   @Column(name = "is_verified", nullable = false, columnDefinition = "boolean default false")
   private Boolean isVerified;
-  @Column(name = "phone", nullable = false, length = 10)
+  @Column(name = "phone", length = 10)
   private String phone;
   @Column(name = "avatar", length = 500)
   private String avatar;
