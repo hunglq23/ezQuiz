@@ -19,6 +19,13 @@ html {
   }
 }
 
+.p-viewer {
+  z-index: 9999;
+  position: absolute;
+  right: 10px;
+  margin-top: 8px;
+}
+
 /**
  * Add .section to every anchored element for scroll margin
  */
@@ -66,6 +73,7 @@ html {
   0% {
     transform: scale(1, 0);
   }
+
   100% {
     transform: scale(1, 1);
   }
@@ -75,6 +83,7 @@ html {
   0% {
     transform: scale(1, 0);
   }
+
   100% {
     transform: scale(1, 1);
   }
@@ -115,10 +124,12 @@ img.avatar {
 }
 
 @media (min-width: 48em) {
+
   .grid-sizer,
   .grid-item {
     width: 25%;
   }
+
   .grid-item {
     float: left;
     padding: 6px;
@@ -260,6 +271,7 @@ footer a:not(.nav-link) {
   .marker {
     padding-right: 0;
   }
+
   .marker:after {
     bottom: -30px;
     left: 50%;
