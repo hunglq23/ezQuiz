@@ -88,59 +88,10 @@
                 <a class="nav-link" href="#contact">Contact</a>
               </li>
             </ul>
-            <a class="btn btn-primary" th:href="@{/register}">Register</a>
+            <a class="btn btn-primary" th:href="@{/logout}">SIGN OUT</a>
           </div>
         </div>
       </nav>
     </header>
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6 offset-md-3 my-5">
-          <form th:action="@{/login}" method="post" role="form">
-            <div class="form-group my-2">
-              <label for="username" class="form-label fw-bolder">Email</label>
-              <input
-                class="form-control"
-                type="text"
-                id="username"
-                name="username"
-                required
-              />
-              <label for="password" class="form-label fw-bolder"
-                >Password</label
-              >
-              <input
-                class="form-control"
-                type="password"
-                id="password"
-                name="password"
-                required
-              />
-              <span
-                class="btn-show-pass p-viewer"
-                onclick="togglePasswordVisibility('password')"
-              >
-                <i
-                  id="password-toggle-icon"
-                  class="fas fa-eye"
-                  aria-hidden="true"
-                ></i>
-              </span>
-            </div>
-
-            <div class="text-center">
-              <button
-                class="btn btn-primary"
-                type="submit"
-                style="margin-top: 5px"
-              >
-                SIGN IN
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   </body>
 </html>
