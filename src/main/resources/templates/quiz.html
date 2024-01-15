@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz List</title>
+    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{css/main.css}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
+    <h2 class="text-center" style="padding-top: 50px">Quiz List</h2>
+
+    <div class="container-fluid text-center col-md-8">
+        <div class="row">
+            <div class="input-group input-group-sm col-mb-3 offset-mb-6 text-md-start" style="padding-bottom:15px">
+                <div class="input-group-prepend">
+                </div>
+                <input type="text" class="form-control" placeholder="search" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
+                <a class="btn btn-primary" th:href="@{/add}">Add A New Quiz</a>
+            </div>
+        </div>
+    <table class="table" >
+        <thead>
+        <tr>
+            <th scope="col">Quiz ID</th>
+            <th scope="col">Code</th>
+            <th scope="col">Title</th>
+            <th scope="col">Status</th>
+            <th scope="col">Quiz Type</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="quiz: ${listQuiz}">
+            <tr>
+                <td th:text="${quiz.quiz_id}"></td>
+                <td th:text="${quiz.code}"></td>
+                <td th:text="${quiz.title}"></td>
+                <td><button type="button"
+                            th:text="${quiz.is_active}? 'Active' : 'Inactive'"
+                            th:class="${quiz.is_active} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
+                <td th:text="${quiz.is_exam_only}? 'Exam Only' : 'Practice'"></td>
+                <td>
+                    <i class="fa-solid fa-trash" style="color: #FFD43B;"></i>
+                </td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+    </div>
+</body>
+</html>

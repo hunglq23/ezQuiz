@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Quiz</title>
+    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{css/main.css}" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+</head>
+<body>
+<header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
+    <div class="container-fluid">
+        <h2>ADD NEW QUIZ</h2>
+        <form>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Quiz Code</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Quiz Code">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Quiz Title</label>
+                <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="Quiz Title">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Exam Only
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                <label class="form-check-label" for="flexRadioDefault2">
+                    Practice
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Enable
+                </label>
+            </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</body>
+</html>
