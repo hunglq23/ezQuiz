@@ -22,9 +22,7 @@ public class WebSecurityConfig {
                     "/js/**",
                     "/",
                     "/login/**",
-                    "/register/**",
-                        "/quiz/**",
-                        "/add/**")
+                    "/register/**")
                 .permitAll())
 
         .formLogin(form -> form.loginPage("/login").permitAll());
