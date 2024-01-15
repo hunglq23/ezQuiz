@@ -294,3 +294,7 @@ footer a:not(.nav-link) {
   border-radius: 20px;
   margin-top: 10px;
 }
+
+.input-group {
+  border-radius: 10%;
+}
