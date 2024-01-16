@@ -38,6 +38,8 @@
     <!-- Customize CSS -->
     <link th:href="@{css/main.css}" rel="stylesheet" />
 
+    <link th:href="@{css/user-profile.css}" rel="stylesheet" />
+
     <!-- Include Font Awesome -->
     <script
       src="https://kit.fontawesome.com/b16b259998.js"
@@ -71,7 +73,9 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto me-2">
-              <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
+              <li class="nav-item">
+                <a class="nav-link" th:href="@{/home}">Home</a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" href="#about">About</a>
               </li>
@@ -87,8 +91,10 @@
               <li class="nav-item">
                 <a class="nav-link" href="#contact">Contact</a>
               </li>
+              <div
+                th:replace="fragments/profile-menu.html :: profile-menu"
+              ></div>
             </ul>
-            <a class="btn btn-primary" th:href="@{/logout}">SIGN OUT</a>
           </div>
         </div>
       </nav>
