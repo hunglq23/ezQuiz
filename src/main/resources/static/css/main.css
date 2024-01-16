@@ -1,8 +1,3 @@
-html,
-body {
-  overflow-x: hidden;
-}
-
 /**
  * Enable smooth scrolling on the whole document
  */
@@ -124,7 +119,6 @@ img.avatar {
 }
 
 @media (min-width: 48em) {
-
   .grid-sizer,
   .grid-item {
     width: 25%;
