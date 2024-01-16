@@ -30,9 +30,9 @@ public class QuizController {
         return "add_quiz";
     }
 
-    @PostMapping("/quiz/save")
-    public String createQuiz(QuizRequest reqQuiz){
-        quizService.createQuiz(reqQuiz);
-        return "redirect:/quiz";
-    }
+//    @PostMapping("/quiz/save")
+//    public String createQuiz(QuizRequest reqQuiz){
+//        quizService.createQuiz(reqQuiz);
+//        return "redirect:/quiz";
+//    }
 }
