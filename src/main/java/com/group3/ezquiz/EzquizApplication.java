@@ -10,7 +10,6 @@ public class EzquizApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EzquizApplication.class, args);
-		System.out.println(new BCryptPasswordEncoder().encode("1234"));
 	}
 
 }

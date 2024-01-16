@@ -29,10 +29,4 @@ public class QuizController {
         model.addAttribute("quiz", new QuizRequest());
         return "add_quiz";
     }
-
-//    @PostMapping("/quiz/save")
-//    public String createQuiz(QuizRequest reqQuiz){
-//        quizService.createQuiz(reqQuiz);
-//        return "redirect:/quiz";
-//    }
 }
