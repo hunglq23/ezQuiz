@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+
+    <!-- Bootstrap CSS -->
+    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+
+    <!-- Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+
+<body>
+    <header th:insert="~{index :: header-navbar}" class="bg-light">
+    </header>
+
+    <h2 class="text-center" style="padding-top: 50px">Question List</h2>
+
+    <div class="row">
+        <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
+            <a class="btn btn-primary" th:href="@{/questions/create}">Add A New Question</a>
+        </div>
+    </div>
+
+    <table class="table" border="1">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Code</th>
+                <th scope="col">Content</th>
+                <th scope="col">Status</th>
+                <th scope="col">function1</th>
+                <th scope="col">function2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="question: ${questions}">
+                <td th:text="${question.questionId}" />
+                <td th:text="${question.questionCode}" />
+                <td th:text="${question.content}" />
+                <td>
+                    <button type="button" th:text="${question.isActive} ? 'Active' : 'Inactive'"
+                        class="${question.isActive} ? 'btn btn-success' : 'btn btn-danger'"></button>
+                </td>
+                <td>
+                    <!-- Button to trigger the edit modal -->
+                    <button type="button" class="btn btn-info btn-lg" data-bs-toggle="modal"
+                        th:data-bs-target="'#editModal' + ${question.questionId}">
+                        Edit
+                    </button>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" th:id="'editModal' + ${question.questionId}" tabindex="-1" role="dialog"
+                        aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Edit Question</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Your edit form goes here -->
+                                    <form th:action="@{/questions/edit/{id}(id=${question.questionId})}" method="post">
+                                        <input type="hidden" name="id" th:value="${question.questionId}" />
+                                        <!-- Add your form fields for editing the question -->
+                                        <div class="form-group">
+                                            <label for="editContent">Content:</label>
+                                            <input type="text" class="form-control" id="editContent" name="content"
+                                                th:value="${question.content}" />
+                                        </div>
+                                        <!-- Add more fields as needed -->
+                                        <button type="submit" class="btn btn-primary">Save
+                                            Changes</button>
+
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+                <td>
+                    <!-- Button to trigger the modal -->
+                    <a th:href="@{/questions/delete/{id}(id=${question.questionId})}" class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete this item?');">
+                        Delete
+                    </a>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</body>
+
+</html>

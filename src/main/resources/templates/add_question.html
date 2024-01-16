@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Add Question</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center">Add Question</h2>
+
+                        <form th:action="@{/questions/create}" th:object="${question}" method="post">
+                            <div style=" flex-wrap: wrap;">
+                                <div class="form-group mr-3">
+                                    <label for="questionCode">Question Code:</label>
+                                    <input type="text" class="form-control" id="questionCode" th:field="*{questionCode}"
+                                        required />
+                                </div>
+
+                                <div class="form-group flex-grow-1">
+                                    <label for="content">Question Content:</label>
+                                    <textarea class="form-control" id="content" th:field="*{content}" rows="4"
+                                        required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Options -->
+                            <div id="options-container">
+                                <div th:each="option, optionStat : *{options}" class="option-container">
+                                    <label th:text="'Option ' + ${optionStat.index + 1}"></label>
+                                    <input type="text" th:field="*{options[__${optionStat.index}__].content}"
+                                        required />
+                                    <label>Is Answer:</label>
+                                    <input type="checkbox" th:field="*{options[__${optionStat.index}__].isAnswer}" />
+                                    <br />
+                                </div>
+                            </div>
+
+                            <!-- Add Option Button -->
+                            <button type="button" class="btn btn-primary" onclick="addOption()">Add Option</button>
+
+                            <button type="submit" class="btn btn-success mt-2">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addOption() {
+            var optionsContainer = $("#options-container");
+            var newIndex = optionsContainer.children().length + 1;
+
+            var newOption = '<div class="option-container">' +
+                '<label th:text="\'Option \' + ' + newIndex + '"></label>' +
+                '<input type="text" th:field="*{options[__' + (newIndex - 1) + '__].content}" required />' +
+                '<label>Is Answer:</label>' +
+                '<input type="checkbox" th:field="*{options[__' + (newIndex - 1) + '__].isAnswer}" />' +
+                '<br />' +
+                '</div>';
+
+            optionsContainer.append(newOption);
+        }
+    </script>
+</body>
+
+</html>

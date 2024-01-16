@@ -38,7 +38,7 @@ public class QuestionService implements IQuestionService {
             Question existingQuestion = existingQuestionOptional.get();
             // Update fields of existingQuestion with values from updatedQuestion
             existingQuestion.setContent(updatedQuestion.getContent());
-            existingQuestion.set_active(updatedQuestion.is_active());
+            existingQuestion.setActive(updatedQuestion.isActive());
             existingQuestion.setOptions(updatedQuestion.getOptions());
             // Save the updated question
             return questionRepository.save(existingQuestion);

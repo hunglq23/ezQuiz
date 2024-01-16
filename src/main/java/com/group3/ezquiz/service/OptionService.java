@@ -37,7 +37,7 @@ public class OptionService implements IOptionService {
 
         // Update fields of existingOption with values from updatedOption
         existingOption.setContent(updatedOption.getContent());
-        existingOption.set_answer(updatedOption.is_answer());
+        existingOption.setAnswer(updatedOption.isAnswer());
 
         // Save the updated option
         return optionRepository.save(existingOption);

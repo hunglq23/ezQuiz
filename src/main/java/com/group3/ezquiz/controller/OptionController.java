@@ -20,11 +20,11 @@ public class OptionController {
         this.optionService = optionService;
     }
 
-    @GetMapping("/list")
+    @GetMapping("")
     public String listOptions(Model model) {
         List<Option> options = optionService.getAllOptions();
         model.addAttribute("options", options);
-        return "option/list";
+        return "option";
     }
 
     @GetMapping("/create")
@@ -36,7 +36,7 @@ public class OptionController {
     @PostMapping("/create")
     public String createOption(@ModelAttribute("option") Option option) {
         optionService.createOption(option);
-        return "redirect:/options/list";
+        return "redirect:/options";
     }
 
     @GetMapping("/edit/{id}")
@@ -50,12 +50,12 @@ public class OptionController {
     @PostMapping("/edit/{id}")
     public String updateOption(@PathVariable Integer id, @ModelAttribute("option") Option updatedOption) {
         optionService.updateOption(id, updatedOption);
-        return "redirect:/options/list";
+        return "redirect:/options";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteOption(@PathVariable Integer id) {
         optionService.deleteOption(id);
-        return "redirect:/options/list";
+        return "redirect:/options";
     }
 }
