@@ -1,18 +1,21 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.QuizRequest;
 import com.group3.ezquiz.service.QuizService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class QuizController {
-    @Autowired
-    private QuizService quizService;
+
+    private final QuizService quizService;
 
     @GetMapping("/quiz")
     public String showQuizList(Model model){
@@ -21,8 +24,15 @@ public class QuizController {
         return "quiz";
     }
 
-    @GetMapping("/add")
-    public String showAddQuizForm(){
+    @GetMapping("/quiz/add")
+    public String showAddQuizForm(Model model){
+        model.addAttribute("quiz", new QuizRequest());
         return "add_quiz";
+    }
+
+    @PostMapping("/quiz/save")
+    public String createQuiz(QuizRequest reqQuiz){
+        quizService.createQuiz(reqQuiz);
+        return "redirect:/quiz";
     }
 }

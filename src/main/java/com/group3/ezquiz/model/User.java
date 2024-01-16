@@ -1,15 +1,6 @@
 package com.group3.ezquiz.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -43,31 +34,45 @@ public class User {
 
   @Column(name = "password", nullable = false)
   private String password;
+
   @Column(name = "full_name", nullable = false)
   private String fullName;
+
   @Column(name = "is_enable", nullable = false, columnDefinition = "boolean default false")
   private Boolean isEnable;
+
   @Column(name = "is_verified", nullable = false, columnDefinition = "boolean default false")
   private Boolean isVerified;
+
   @Column(name = "phone", length = 10)
   private String phone;
+
   @Column(name = "avatar", length = 500)
   private String avatar;
+
   @Column(name = "note")
   private String note;
+
   @Column(name = "token")
   private String token;
 
   @Column(name = "created_by")
   private Integer createdBy;
+
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp
   private Timestamp createdAt;
 
   @Column(name = "updated_by")
   private Integer updatedBy;
+
   @Temporal(TemporalType.TIMESTAMP)
   @UpdateTimestamp
   private Timestamp updateAt;
 
+  @OneToMany(mappedBy = "created_by", cascade = CascadeType.ALL)
+  private Collection<Quiz> quiz_created;
+
+  @OneToMany(mappedBy = "updated_by", cascade = CascadeType.ALL)
+  private Collection<Quiz> quiz_updated;
 }

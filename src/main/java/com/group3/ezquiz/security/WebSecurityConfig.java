@@ -28,7 +28,7 @@ public class WebSecurityConfig {
                     "/js/**",
                     "/",
                     "/login/**",
-                    "/register/**")
+                    "/register/**","/quiz/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/home")
                 .hasRole(Role.LEARNER.toString()))
