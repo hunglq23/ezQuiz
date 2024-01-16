@@ -5,7 +5,9 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.service.IQuestionService;
 
@@ -16,13 +18,15 @@ import java.util.List;
 public class QuestionController {
 
     private final IQuestionService questionService;
+    private final OptionController optionController; // Inject OptionController
 
     @Autowired
-    public QuestionController(IQuestionService questionService) {
+    public QuestionController(IQuestionService questionService, OptionController optionController) {
         this.questionService = questionService;
+        this.optionController = optionController;
     }
 
-    @GetMapping("")
+    @GetMapping
     public String listQuestions(Model model) {
         List<Question> questions = questionService.getAllQuestions();
         model.addAttribute("questions", questions);
@@ -38,8 +42,28 @@ public class QuestionController {
     }
 
     @PostMapping("/create")
-    public String createQuestion(@ModelAttribute("question") Question question) {
+    public String createQuestion(Question question, RedirectAttributes redirectAttributes) {
+        // Check if options are null before iterating
+        List<Option> options = question.getOptions();
+        if (options != null) {
+            for (Option option : options) {
+                option.setQuestion(question);
+                option.setAnswer(option.isAnswer());
+                option.setContent(option.getContent());
+                optionController.createOption(option, question.getQuestionId());
+            }
+        } else {
+            // Handle the case when options are null (e.g., throw an exception, log a
+            // message, etc.)
+            // Redirect back to the "/questions" page with an error message
+            redirectAttributes.addFlashAttribute("error", "Options cannot be null");
+            return "redirect:/questions";
+        }
+
+        // Your remaining logic for creating a question
+        // ...
         questionService.createQuestion(question);
+        // Redirect to the "/questions" page after successful creation
         return "redirect:/questions";
     }
 
@@ -68,6 +92,12 @@ public class QuestionController {
     @GetMapping("/delete/{id}")
     public String deleteQuestion(@PathVariable Integer id) {
         questionService.deleteQuestion(id);
+        return "redirect:/questions";
+    }
+
+    @GetMapping("/toggle/{id}")
+    public String toggleQuestionStatus(@PathVariable Integer id) {
+        questionService.toggleQuestionStatus(id);
         return "redirect:/questions";
     }
 }

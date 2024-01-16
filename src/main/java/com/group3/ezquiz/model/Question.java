@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "_question")
@@ -23,7 +23,19 @@ public class Question {
     private Integer questionId;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private Collection<Option> options;
+    private List<Option> options;
+
+    // getter and setter for options
+
+    public void addOption(Option option) {
+        options.add(option);
+        option.setQuestion(this);
+    }
+
+    public void removeOption(Option option) {
+        options.remove(option);
+        option.setQuestion(null);
+    }
 
     @Column(name = "questionCode", nullable = false, length = 10)
     private String questionCode;
