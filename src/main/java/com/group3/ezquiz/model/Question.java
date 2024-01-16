@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Table(name="_question")
+@Table(name = "_question")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,28 +20,28 @@ import java.util.Collection;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer question_id;
+    private Integer questionId;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private Collection<Option> options;
 
-    @Column(name="question_code", nullable = false, length = 10)
-    private String question_code;
+    @Column(name = "questionCode", nullable = false, length = 10)
+    private String questionCode;
 
-    @Column(name="content", nullable = false, length = 500)
+    @Column(name = "content", nullable = false, length = 500)
     private String content;
 
-    @Column(name="is_active", nullable = false)
-    private boolean is_active;
+    @Column(name = "isActive", nullable = false)
+    private boolean isActive;
 
-    @Column(name = "created_by")
+    @Column(name = "createdBy")
     private Integer createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(name = "updated_by")
+    @Column(name = "updatedBy")
     private Integer updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)

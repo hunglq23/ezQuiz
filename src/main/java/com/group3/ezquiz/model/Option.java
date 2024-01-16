@@ -15,16 +15,17 @@ import lombok.Setter;
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer option_id;
+    @Column(name = "optionId", nullable = false, unique = true) // Add this line
+    private Integer optionId;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "questionId")
     private Question question;
 
     @Column(name = "content", nullable = false, length = 255)
     private String content;
 
-    @Column(name="is_answer")
-    private boolean is_answer;
+    @Column(name = "isAnswer")
+    private boolean isAnswer;
 
 }
