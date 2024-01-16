@@ -7,18 +7,30 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.repository.QuestionRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class QuestionService implements IQuestionService {
 
-    @Autowired
-    private QuestionRepository questionRepository;
+    private final QuestionRepository questionRepository;
+    private final EntityManager entityManager;
 
-    @Override
-    public Question createQuestion(Question question) {
-        return questionRepository.save(question);
+    public QuestionService(QuestionRepository questionRepository, EntityManager entityManager) {
+        this.questionRepository = questionRepository;
+        this.entityManager = entityManager;
+    }
+
+    @Transactional
+    public void createQuestion(Question question) {
+        // Your code to save the question
+        questionRepository.save(question);
+
+        // Flush the EntityManager
+        entityManager.flush();
     }
 
     @Override
@@ -58,5 +70,14 @@ public class QuestionService implements IQuestionService {
         // For example, you might use questionRepository.findTopN(numOfQuestions)
         // Ensure that the implementation meets your specific requirements
         return null;
+    }
+
+    @Override
+    public void toggleQuestionStatus(Integer questionId) {
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        optionalQuestion.ifPresent(question -> {
+            question.setActive(!question.isActive());
+            questionRepository.save(question);
+        });
     }
 }

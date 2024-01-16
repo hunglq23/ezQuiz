@@ -1,7 +1,10 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Option;
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.service.IOptionService;
+import com.group3.ezquiz.service.IQuestionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +17,12 @@ import java.util.List;
 public class OptionController {
 
     private final IOptionService optionService;
+    private final IQuestionService questionService;
 
     @Autowired
-    public OptionController(IOptionService optionService) {
+    public OptionController(IOptionService optionService, IQuestionService questionService) {
         this.optionService = optionService;
+        this.questionService = questionService;
     }
 
     @GetMapping("")
@@ -34,9 +39,16 @@ public class OptionController {
     }
 
     @PostMapping("/create")
-    public String createOption(@ModelAttribute("option") Option option) {
+    public String createOption(@ModelAttribute("option") Option option,
+            @RequestParam("questionId") Integer questionId) {
+        Question question = questionService.getQuestionById(questionId)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+
+        // Associate the option with the question
+        option.setQuestion(question);
+
         optionService.createOption(option);
-        return "redirect:/options";
+        return "redirect:/questions"; // or wherever you redirect after creating a question
     }
 
     @GetMapping("/edit/{id}")

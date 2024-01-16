@@ -9,7 +9,7 @@ import com.group3.ezquiz.model.Question;
 
 public interface IQuestionService {
 
-    Question createQuestion(Question question);
+    void createQuestion(Question question);
 
     List<Question> getAllQuestions();
 
@@ -20,5 +20,7 @@ public interface IQuestionService {
     void deleteQuestion(Integer id);
 
     List<Question> getQuestionsForUser(Integer numOfQuestion);
+
+    public void toggleQuestionStatus(Integer questionId);
 
 }

@@ -15,11 +15,11 @@ import lombok.Setter;
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "optionId", nullable = false, unique = true) // Add this line
-    private Integer optionId;
+    @Column(name = "option_id")
+    private Long optionId;
 
     @ManyToOne
-    @JoinColumn(name = "questionId")
+    @JoinColumn(name = "question_id")
     private Question question;
 
     @Column(name = "content", nullable = false, length = 255)

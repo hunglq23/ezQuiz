@@ -32,7 +32,7 @@
                             </div>
 
                             <!-- Options -->
-                            <div id="options-container">
+                            <div id="options-container" style="display: flex; flex-wrap: wrap;">
                                 <div th:each="option, optionStat : *{options}" class="option-container">
                                     <label th:text="'Option ' + ${optionStat.index + 1}"></label>
                                     <input type="text" th:field="*{options[__${optionStat.index}__].content}"
