@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-@PreAuthorize("hasAnyRole('LEARNER','TEACHER','ADMIN')")
+// @PreAuthorize("hasAnyRole('LEARNER','TEACHER','ADMIN')")
 public class UserController {
 
   @GetMapping("/home")

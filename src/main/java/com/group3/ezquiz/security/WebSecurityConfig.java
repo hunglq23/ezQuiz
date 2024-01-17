@@ -24,7 +24,7 @@ public class WebSecurityConfig {
                 // static resources permission
                 .requestMatchers("/vendor/**", "/css/**", "/images/**", "/js/**").permitAll()
                 // landing page, login page, registration end-point
-                .requestMatchers("/", "/login/**", "/register/**", "/questions/**", "/option/**").permitAll()
+                .requestMatchers("/", "/login/**", "/register/**", "/profile").permitAll()
                 // other requests
                 .anyRequest().authenticated())
         // login form config

@@ -44,7 +44,7 @@
             <label for="fullname" class="form-label fw-bolder">Full Name</label>
             <input class="form-control" type="text" th:field="*{fullName}" id="fullname" name="fullname" required />
             <label for="password" class="form-label fw-bolder">Password</label>
-            <div class="input-group">
+            <div>
               <input class="form-control" type="password" th:field="*{password}" id="password" name="password"
                 required />
               <span class="btn-show-pass p-viewer" onclick="togglePasswordVisibility('password')">
@@ -54,7 +54,7 @@
 
             <!-- Confirm Password input with eye icon for visibility toggle -->
             <label for="confirmPassword" class="form-label fw-bolder">Confirm Password</label>
-            <div class="input-group">
+            <div>
               <input class="form-control" type="password" th:field="*{passwordConfirm}" id="confirmPassword"
                 name="confirmPassword" required />
               <span class="btn-show-pass p-viewer" onclick="togglePasswordVisibility('confirmPassword')">

@@ -38,6 +38,8 @@
     <!-- Customize CSS -->
     <link th:href="@{css/main.css}" rel="stylesheet" />
 
+    <link th:href="@{css/profile-menu.css}" rel="stylesheet" />
+
     <link th:href="@{css/user-profile.css}" rel="stylesheet" />
 
     <!-- Include Font Awesome -->
@@ -92,12 +94,82 @@
                 <a class="nav-link" href="#contact">Contact</a>
               </li>
               <div
-                th:replace="fragments/profile-menu.html :: profile-menu"
+                th:replace="~{fragments/profile-menu.html :: profile-menu}"
               ></div>
             </ul>
           </div>
         </div>
       </nav>
     </header>
+
+    <section style="background-color: #f4f5f7">
+      <div class="container py-4">
+        <div class="row d-flex justify-content-center">
+          <div class="col col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-3" style="border-radius: 0.5rem">
+              <div class="row g-0">
+                <div
+                  class="col-md-4 gradient-custom text-center text-white"
+                  style="
+                    border-top-left-radius: 0.5rem;
+                    border-bottom-left-radius: 0.5rem;
+                  "
+                >
+                  <img
+                    class="img-fluid my-5"
+                    alt="Avatar"
+                    th:src="@{images/tiramissu.jpg}"
+                    style="width: 80px"
+                  />
+                  <h5>Tiramissu</h5>
+                  <p>VIP ADMIN</p>
+                  <i class="far fa-edit mb-5"></i>
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body p-4">
+                    <h6>Information</h6>
+                    <hr class="mt-0 mb-4" />
+                    <div class="row pt-1">
+                      <div>
+                        <h6>Email</h6>
+                        <p class="text-muted">info@example.com</p>
+                      </div>
+                      <div>
+                        <h6>Phone</h6>
+                        <p class="text-muted">123 456 789</p>
+                      </div>
+                      <div>
+                        <h6>
+                          <a th:href="@{/change-password}">Change password</a>
+                        </h6>
+                      </div>
+                    </div>
+                    <!-- <h6>Projects</h6>
+                    <hr class="mt-0 mb-4" />
+                    <div class="row pt-1">
+                      <div class="col-6 mb-3">
+                        <h6>Recent</h6>
+                        <p class="text-muted">Lorem ipsum</p>
+                      </div>
+                      <div class="col-6 mb-3">
+                        <h6>Most Viewed</h6>
+                        <p class="text-muted">Dolor sit amet</p>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-start">
+                      <a href="#!"
+                        ><i class="fab fa-facebook-f fa-lg me-3"></i
+                      ></a>
+                      <a href="#!"><i class="fab fa-twitter fa-lg me-3"></i></a>
+                      <a href="#!"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </body>
 </html>

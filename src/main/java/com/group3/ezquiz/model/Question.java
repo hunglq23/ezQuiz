@@ -9,10 +9,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Collection;
 
 @Entity
-@Table(name = "_question")
+@Table(name="_question")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,40 +20,28 @@ import java.util.List;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer questionId;
+    private Integer question_id;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<Option> options;
+    private Collection<Option> options;
 
-    // getter and setter for options
+    @Column(name="question_code", nullable = false, length = 10)
+    private String question_code;
 
-    public void addOption(Option option) {
-        options.add(option);
-        option.setQuestion(this);
-    }
-
-    public void removeOption(Option option) {
-        options.remove(option);
-        option.setQuestion(null);
-    }
-
-    @Column(name = "questionCode", nullable = false, length = 10)
-    private String questionCode;
-
-    @Column(name = "content", nullable = false, length = 500)
+    @Column(name="content", nullable = false, length = 500)
     private String content;
 
-    @Column(name = "isActive", nullable = false)
-    private boolean isActive;
+    @Column(name="is_active", nullable = false)
+    private boolean is_active;
 
-    @Column(name = "createdBy")
+    @Column(name = "created_by")
     private Integer createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(name = "updatedBy")
+    @Column(name = "updated_by")
     private Integer updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,5 +1,6 @@
 package com.group3.ezquiz.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -7,13 +8,13 @@ import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.UserRequest;
 import com.group3.ezquiz.repository.UserRepo;
-import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepo userRepo;

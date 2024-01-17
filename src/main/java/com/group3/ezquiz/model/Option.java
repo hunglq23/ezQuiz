@@ -15,8 +15,7 @@ import lombok.Setter;
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "option_id")
-    private Long optionId;
+    private Integer option_id;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
@@ -25,7 +24,7 @@ public class Option {
     @Column(name = "content", nullable = false, length = 255)
     private String content;
 
-    @Column(name = "isAnswer")
-    private boolean isAnswer;
+    @Column(name="is_answer")
+    private boolean is_answer;
 
 }
