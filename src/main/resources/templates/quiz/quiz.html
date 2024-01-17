@@ -6,6 +6,7 @@
     <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
     <link th:href="@{css/main.css}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
@@ -19,7 +20,7 @@
                 <input type="text" class="form-control" placeholder="search" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
             </div>
             <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
-                <a class="btn btn-primary" th:href="@{/add}">Add A New Quiz</a>
+                <a class="btn btn-primary" th:href="@{/quiz/add}">Add A New Quiz</a>
             </div>
         </div>
     <table class="table" >
@@ -44,7 +45,7 @@
                             th:class="${quiz.is_active} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
                 <td th:text="${quiz.is_exam_only}? 'Exam Only' : 'Practice'"></td>
                 <td>
-                    <i class="fa-solid fa-trash" style="color: #FFD43B;"></i>
+                    <i class="material-icons" style="color: #F6BB42"></i>
                 </td>
             </tr>
         </th:block>
