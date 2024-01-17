@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -24,9 +23,9 @@ public class QuizController {
         return "quiz";
     }
 
-    @GetMapping("/quiz/add")
-    public String showAddQuizForm(Model model){
+    @GetMapping("/quiz/create")
+    public String showCreateQuizForm(Model model){
         model.addAttribute("quiz", new QuizRequest());
-        return "add_quiz";
+        return "create_quiz";
     }
 }

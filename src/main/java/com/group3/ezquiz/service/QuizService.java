@@ -11,5 +11,5 @@ public interface QuizService {
 
     List<Quiz> listAll();
 
-//    void createQuiz(QuizRequest reqQuiz);
+    void createQuiz(QuizRequest reqQuiz);
 }
