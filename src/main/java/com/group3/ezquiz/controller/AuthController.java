@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.group3.ezquiz.payload.UserRequest;
-import com.group3.ezquiz.service.UserService;
+import com.group3.ezquiz.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class AuthController {
 
-  private final UserService userService;
+  private final IUserService userService;
 
   @GetMapping("/")
   public String landingPage() {
