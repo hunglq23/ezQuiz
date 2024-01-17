@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer quiz_id;
+    private Integer quizId;
 
     @Column(name="code", nullable = false)
     private String code;
@@ -29,27 +29,27 @@ public class Quiz {
     private String description;
 
     @Column(name="is_active", nullable = false, columnDefinition = "boolean default false")
-    private boolean is_active;
+    private boolean isAcitve;
 
     @Column(name="is_exam_only", nullable = false)
-    private boolean is_exam_only;
+    private boolean isExamOnly;
 
     @Column(name="is_draft", nullable = false, columnDefinition = "boolean default true")
-    private boolean is_draft;
+    private boolean isDraft;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User created_by;
+    private User createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
     @ManyToOne
     @JoinColumn(name = "updated_by")
-    private User updated_by;
+    private User updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Timestamp update_at;
+    private Timestamp updateAt;
 }
