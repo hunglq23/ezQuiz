@@ -21,7 +21,6 @@ public class WebSecurityConfig {
 
         .authorizeHttpRequests(
             authz -> authz
-
                 // static resources permission
                 .requestMatchers("/vendor/**", "/css/**", "/images/**", "/js/**").permitAll()
                 // landing page, login page, registration end-point

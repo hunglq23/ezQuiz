@@ -3,12 +3,9 @@ package com.group3.ezquiz.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import com.group3.ezquiz.payload.UserRequest;
 import com.group3.ezquiz.service.UserService;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller

@@ -288,3 +288,17 @@ footer a:not(.nav-link) {
   border-radius: 20px;
   margin-top: 10px;
 }
+
+.no-underline {
+  text-decoration: none;
+  color: #fff;
+}
+
+.text-right {
+  margin: 30px auto;
+  /* float: right; */
+}
+
+.card {
+  margin-top: 15px;
+}
