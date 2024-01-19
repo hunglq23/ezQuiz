@@ -12,12 +12,19 @@ import com.group3.ezquiz.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepo userRepo;
+
+  @Override
+  public User foundUserByPrincipal(Principal principal) {
+    return userRepo.findByEmail(principal.getName());
+  }
 
   @Override
   public void registerUser(UserRequest regUser) {
