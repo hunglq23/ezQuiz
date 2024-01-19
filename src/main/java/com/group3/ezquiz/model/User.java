@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -71,9 +73,9 @@ public class User {
   @UpdateTimestamp
   private Timestamp updateAt;
 
-  @OneToMany(mappedBy = "created_by", cascade = CascadeType.ALL)
-  private Collection<Quiz> quiz_created;
+  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+  private List<Quiz> quizCreated;
 
-  @OneToMany(mappedBy = "updated_by", cascade = CascadeType.ALL)
-  private Collection<Quiz> quiz_updated;
+  @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL)
+  private List<Quiz> quizUpdated;
 }

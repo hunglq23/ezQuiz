@@ -20,7 +20,7 @@
                 <input type="text" class="form-control" placeholder="search" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
             </div>
             <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
-                <a class="btn btn-primary" th:href="@{/quiz/add}">Add A New Quiz</a>
+                <a class="btn btn-primary" th:href="@{/quiz/create}">Add A New Quiz</a>
             </div>
         </div>
     <table class="table" >
@@ -37,20 +37,24 @@
         <tbody>
         <th:block th:each="quiz: ${listQuiz}">
             <tr>
-                <td th:text="${quiz.quiz_id}"></td>
+                <td th:text="${quiz.quizId}"></td>
                 <td th:text="${quiz.code}"></td>
                 <td th:text="${quiz.title}"></td>
                 <td><button type="button"
-                            th:text="${quiz.is_active}? 'Active' : 'Inactive'"
-                            th:class="${quiz.is_active} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
-                <td th:text="${quiz.is_exam_only}? 'Exam Only' : 'Practice'"></td>
+                            th:text="${quiz.isAcitve}? 'Active' : 'Inactive'"
+                            th:class="${quiz.isAcitve} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
+                <td th:text="${quiz.isExamOnly}? 'Exam Only' : 'Practice'"></td>
                 <td>
-                    <i class="material-icons" style="color: #F6BB42"></i>
+                    <i class="fa-solid fa-pen-to-square" style="color: #F6BB42"></i>
+                    <i class="fa-solid fa-trash" style="color: #F6BB42"></i>
                 </td>
             </tr>
         </th:block>
         </tbody>
     </table>
     </div>
+<script src="https://kit.fontawesome.com/b16b259998.js" crossOrigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/59da761ec4.js" crossorigin="anonymous"></script>
+
 </body>
 </html>
