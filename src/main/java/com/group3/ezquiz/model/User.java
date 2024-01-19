@@ -1,5 +1,7 @@
 package com.group3.ezquiz.model;
 
+import java.util.Collection;
+
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
