@@ -1,7 +1,5 @@
 package com.group3.ezquiz.model;
 
-import java.util.Collection;
-
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -73,9 +70,9 @@ public class User {
   @UpdateTimestamp
   private Timestamp updateAt;
 
-  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
-  private List<Quiz> quizCreated;
+  // @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+  // private List<Quiz> quizCreated;
 
-  @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL)
-  private List<Quiz> quizUpdated;
+  // @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL)
+  // private List<Quiz> quizUpdated;
 }
