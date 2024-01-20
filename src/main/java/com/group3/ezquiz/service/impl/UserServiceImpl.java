@@ -1,5 +1,11 @@
 package com.group3.ezquiz.service.impl;
 
+import com.group3.ezquiz.model.Option;
+import com.group3.ezquiz.model.dto.UserDTO;
+import com.group3.ezquiz.model.mapper.UserMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +19,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.security.Principal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +55,40 @@ public class UserServiceImpl implements UserService {
             .isVerified(false)
             .role(Role.LEARNER)
             .build());
+  }
+
+  @Override
+  public Page<User> getListUser(HttpServletRequest http,String email, Pageable page) {
+    return userRepo.getAllUser(email, email, page);
+  }
+
+  @Override
+  public UserDTO getUserById(Long id) {
+    Optional<User> user = userRepo.findById(id);
+    if(!user.isPresent()) {
+      throw new UsernameNotFoundException("user not found");
+    }
+    return UserMapper.toUserDTO(user.get());
+  }
+
+  @Override
+  public UserDTO update(UserDTO userDTO, Long id) {
+    Optional<User> userOptional = userRepo.findById(id);
+    if(!userOptional.isPresent()) {
+      throw new UsernameNotFoundException("user not found");
+    }
+    User user = userOptional.get();
+    user.setUpdateAt(Timestamp.valueOf(LocalDateTime.now()));
+    user.setRole(userDTO.getRole());
+    user.setEmail(userDTO.getEmail());
+    user.setFullName(userDTO.getFullName());
+    user.setIsEnable(userDTO.getIsEnable());
+    user.setIsVerified(userDTO.getIsVerified());
+    user.setPhone(userDTO.getPhone());
+    user.setAvatar(userDTO.getAvatar());
+    user.setNote(userDTO.getNote());
+    userRepo.save(user);
+    return UserMapper.toUserDTO(user);
   }
 
 }
