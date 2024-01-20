@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin1
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/ezquiz
+    password: "123"
+  output:
+    ansi:
+      enabled: always
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: "true"
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1033716011916-pbr4hsmm9uu5lqi25ts86h2l94vkrhen.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
