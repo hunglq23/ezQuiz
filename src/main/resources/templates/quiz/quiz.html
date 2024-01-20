@@ -10,7 +10,7 @@
 </head>
 <body>
 <header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
-    <h2 class="text-center" style="padding-top: 50px">Quiz List</h2>
+    <h2 class="text-center" style="padding-top: 25px">Quiz List</h2>
 
     <div class="container-fluid text-center col-md-8">
         <div class="row">
@@ -26,7 +26,6 @@
     <table class="table" >
         <thead>
         <tr>
-            <th scope="col">Quiz ID</th>
             <th scope="col">Code</th>
             <th scope="col">Title</th>
             <th scope="col">Status</th>
@@ -37,7 +36,6 @@
         <tbody>
         <th:block th:each="quiz: ${listQuiz}">
             <tr>
-                <td th:text="${quiz.quizId}"></td>
                 <td th:text="${quiz.code}"></td>
                 <td th:text="${quiz.title}"></td>
                 <td><button type="button"
@@ -45,8 +43,8 @@
                             th:class="${quiz.isAcitve} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
                 <td th:text="${quiz.isExamOnly}? 'Exam Only' : 'Practice'"></td>
                 <td>
-                    <i class="fa-solid fa-pen-to-square" style="color: #F6BB42"></i>
-                    <i class="fa-solid fa-trash" style="color: #F6BB42"></i>
+                        <a th:href="@{/quiz/edit/{id}(id=${quiz.quizId})}">Detail</a>
+                    <a th:href="@{/quiz/delete/{id}(id=${quiz.quizId})}">Delete</a>
                 </td>
             </tr>
         </th:block>

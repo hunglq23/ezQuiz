@@ -74,6 +74,4 @@ public class User {
   @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
   private List<Quiz> quizCreated;
 
-  @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL)
-  private List<Quiz> quizUpdated;
 }

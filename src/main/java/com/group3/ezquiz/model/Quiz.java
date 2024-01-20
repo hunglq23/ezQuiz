@@ -29,13 +29,13 @@ public class Quiz {
     private String description;
 
     @Column(name="is_active", nullable = false, columnDefinition = "boolean default false")
-    private boolean isAcitve;
+    private Boolean isAcitve;
 
     @Column(name="is_exam_only", nullable = false)
-    private boolean isExamOnly;
+    private Boolean isExamOnly;
 
-    @Column(name="is_draft", nullable = false, columnDefinition = "boolean default true")
-    private boolean isDraft;
+    @Column(name="is_draft", nullable = true, columnDefinition = "boolean default true")
+    private Boolean isDraft;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
@@ -44,10 +44,6 @@ public class Quiz {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "updated_by")
-    private User updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
