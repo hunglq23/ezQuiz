@@ -91,22 +91,14 @@ public class QuestionServiceImpl implements IQuestionService {
         // Step 1: Check if the question with the given ID exists
         Optional<Question> optionalQuestion = questionRepo.findById(id);
         if (optionalQuestion.isPresent()) {
-            // Step 2: Retrieve the existing question
             Question existingQuestion = optionalQuestion.get();
 
-            // Step 3: Update the existing question with the new data
             existingQuestion.setText(question.getText());
-            existingQuestion.setActive(question.isActive());
 
-            // Step 4: Check and update the questionCode only if it is not null in the
-            // request
             if (question.getQuestionCode() != null) {
                 existingQuestion.setQuestionCode(question.getQuestionCode());
             }
 
-            // Step 5: Update other fields as needed
-
-            // Step 6: Save the updated question
             Question updatedQuestion = questionRepo.save(existingQuestion);
 
             // Step 7: Log the update for debugging

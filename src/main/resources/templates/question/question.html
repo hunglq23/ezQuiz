@@ -28,12 +28,12 @@
             <div th:each="question : ${questions}" class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title" th:text="${question.questionCode}">Question Code</h5>
-                        <p class="card-text" th:text="${question.text}">Question Content</p>
-                        <p class="card-text">
-                            Status: <span th:class="${question.isActive} ? 'text-success' : 'text-danger'"
-                                th:text="${question.isActive} ? 'Active' : 'Inactive'"></span>
-                        </p>
+                        <h4 class="card-title" th:text="${question.questionCode}">Question Code</h4>
+                        <h6 class="card-text" th:text="${question.text}">Question Content</h6>
+                        <a th:class="${question.isActive} ? 'btn btn-success' : 'btn btn-danger'"
+                            th:text="${question.isActive} ? 'Active' : 'Inactive'"
+                            th:href="@{'/questions/toggle/' + ${question.questionId}}">Toggle
+                            Status</a>
 
                         <!-- Inner loop for options -->
                         <ul class="list-group">
@@ -45,7 +45,8 @@
                                             disabled>Answer</button>
                                         <button th:unless="${option.isAnswer}" class="btn btn-sm btn-danger"
                                             disabled>Not Answer</button>
-                                        <a href="#" class="btn btn-sm btn-primary" th:data-bs-toggle="'modal'"
+                                        <a href="@{'/options/edit/' + ${option?.optionId}}"
+                                            class="btn btn-sm btn-primary" th:data-bs-toggle="'modal'"
                                             th:data-bs-target="'#editOptionModal' + ${option?.optionId}">Edit</a>
                                         <a th:href="@{'/options/delete/' + ${option?.optionId}}"
                                             class="btn btn-sm btn-danger"
@@ -55,8 +56,13 @@
                             </li>
                         </ul>
 
-                        <a href="#" class="card-link btn btn-sm btn-primary" th:data-bs-toggle="'modal'"
-                            th:data-bs-target="'#editQuestionModal' + ${question.questionId}">Edit</a>
+                        <a href="#" class="card-link btn btn-sm btn-primary edit-question" th:data-bs-toggle="'modal'"
+                            th:data-bs-target="'#editQuestionModal' + ${question.questionId}"
+                            data-question-id="${question.questionId}" data-question-text="${question.text}"
+                            data-question-code="${question.questionCode}">
+                            Edit
+                        </a>
+
                         <a class="btn btn-sm btn-danger" th:href="@{'/questions/delete/' + ${question.questionId}}"
                             onclick="return confirm('Are you sure you want to delete this question?')">Delete</a>
                     </div>
@@ -81,7 +87,7 @@
                                 id="editQuestionForm">
                                 <input type="hidden" name="id" th:value="${question.questionId}" />
                                 <div class="form-group">
-                                    <label for="editContent">Content:</label>
+                                    <label for="editText">Content:</label>
                                     <input type="text" class="form-control" id="editText" name="text"
                                         th:value="${question.text}" />
                                 </div>
@@ -90,13 +96,8 @@
                                     <input type="text" class="form-control" id="editQuestionCode" name="questionCode"
                                         th:value="${question.questionCode}" />
                                 </div>
-                                <div class="form-group">
-                                    <label for="editIsActive">Is Active:</label>
-                                    <input type="checkbox" class="form-check-input" id="editIsActive" name="isActive"
-                                        th:checked="${question.isActive}" />
-                                </div>
                                 <!-- Add other fields as needed -->
-                                <button type="button" class="btn btn-primary" onclick="submitForm()">Save
+                                <button type="submit" class="btn btn-primary">Save
                                     Changes</button>
                             </form>
                         </div>
@@ -124,10 +125,11 @@
                             </div>
                             <div class="modal-body">
                                 <!-- Your edit form for options goes here -->
-                                <form th:action="@{/options/edit/{id}(id=${option?.optionId})}" method="post">
+                                <form th:action="@{/options/edit/{id}(id=${option?.optionId})}" method="post"
+                                    th:object="${option}" id="editOptionForm">
                                     <input type="hidden" name="id" th:value="${option?.optionId}" />
                                     <div class="form-group">
-                                        <label for="editContent">Content:</label>
+                                        <label for="editText">Content:</label>
                                         <input type="text" class="form-control" id="editText" name="text"
                                             th:value="${option?.text}" />
                                     </div>
@@ -148,28 +150,19 @@
     <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Custom script to handle modal visibility -->
     <script th:inline="javascript">
         $(document).ready(function () {
             /* Show corresponding modals when clicking "Edit" links */
-            $('a[th\\:data-bs-toggle]').on('click', function () {
+            $('.edit-question').on('click', function () {
                 var targetModalId = $(this).attr('th:data-bs-target');
                 $(targetModalId).modal('show');
+
+                // Uncomment the next line if you want to prevent redirection for debugging
+                // return false;
             });
         });
     </script>
 
-    <script>
-        function submitForm() {
-            var isActiveCheckbox = document.getElementById('editIsActive');
-            if (!isActiveCheckbox.checked) {
-                // If the checkbox is unchecked, set its value to false
-                isActiveCheckbox.value = false;
-            }
-            // Submit the form
-            document.getElementById('editQuestionForm').submit();
-        }
-    </script>
 </body>
 
 </html>

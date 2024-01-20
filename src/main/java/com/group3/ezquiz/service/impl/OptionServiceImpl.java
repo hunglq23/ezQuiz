@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.repository.OptionRepo;
-import com.group3.ezquiz.repository.QuestionRepo;
 import com.group3.ezquiz.service.IOptionService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 public class OptionServiceImpl implements IOptionService {
 
     private final OptionRepo optionRepository;
-    private final QuestionRepo questionRepository;
 
     @Override
     public Optional<Option> getOptionById(Long id) {
@@ -27,39 +25,23 @@ public class OptionServiceImpl implements IOptionService {
 
     @Override
     public Option updateOption(Long id, Option updatedOption) {
-        // Step 1: Check if the option with the given ID exists
-        Optional<Option> optionalOption = optionRepository.findById(id);
+        Optional<Option> optional = optionRepository.findById(id);
+        if (optional.isPresent()) {
+            Option existing = optional.get();
 
-        if (optionalOption.isPresent()) {
-            // Step 2: Retrieve the existing option
-            Option existingOption = optionalOption.get();
+            // Update the option fields with the new data
+            existing.setText(updatedOption.getText());
 
-            // Step 3: Update the existing option with the new data
-            existingOption.setText(updatedOption.getText());
-            existingOption.setAnswer(updatedOption.isAnswer());
+            // Save the updated option using the optionRepository
+            Option updated = optionRepository.save(existing);
 
-            // Step 4: Check and update the question only if it is not null in the request
-            if (updatedOption.getQuestion() != null) {
-                // Fetch the associated Question from the database
-                Question associatedQuestion = questionRepository.findById(updatedOption.getQuestion().getQuestionId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+            // Log the update for debugging
+            System.out.println("Option with ID " + id + " updated: " + updated);
 
-                // Update the Question association
-                existingOption.setQuestion(associatedQuestion);
-            }
-
-            // Step 5: Update other fields as needed
-
-            // Step 6: Save the updated option using the repository
-            Option updatedOptionEntity = optionRepository.save(existingOption);
-
-            // Step 7: Log the update for debugging
-            System.out.println("Option with ID " + id + " updated: " + updatedOptionEntity);
-
-            // Step 8: Return the updated option
-            return updatedOptionEntity;
+            // Return the updated option
+            return updated;
         } else {
-            // Step 9: Throw an exception if the option with the given ID is not found
+            // Throw an exception if the option with the given ID is not found
             throw new ResourceNotFoundException("Option with ID " + id + " not found");
         }
     }

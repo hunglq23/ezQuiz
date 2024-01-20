@@ -1,9 +1,12 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Option;
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.service.impl.OptionServiceImpl;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,19 +19,15 @@ public class OptionController {
 
     private final OptionServiceImpl optionService;
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Option option = optionService.getOptionById(id)
-                .orElseThrow(() -> new RuntimeException("Option not found"));
-        model.addAttribute("option", option);
-        return "options/edit";
-    }
-
     @PostMapping("/edit/{id}")
-    public String updateOption(@PathVariable Long id,
-            @ModelAttribute("option") Option updatedOption) {
+    public String updateOption(@PathVariable Long id, @ModelAttribute("option") Option updatedOption) {
+        // Your logic here to update the option
+        // You might want to check if the associated question is not null before
+        // updating
+
         optionService.updateOption(id, updatedOption);
-        return "redirect:/questions";
+
+        return "redirect:/questions"; // or wherever you want to redirect after the update
     }
 
     @GetMapping("/delete/{id}")

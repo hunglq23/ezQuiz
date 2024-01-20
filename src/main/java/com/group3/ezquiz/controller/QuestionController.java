@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,28 +48,23 @@ public class QuestionController {
         return "redirect:/questions";
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        try {
-            Question question = questionService.getQuestionById(id)
-                    .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
-            model.addAttribute("question", question);
-            return "questions/edit";
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return "error/404"; // Create an HTML template for the 404 error page
-        }
-    }
-
     @PostMapping("/edit/{id}")
     public String updateQuestion(@PathVariable Long id,
             @ModelAttribute("question") Question updatedQuestion) {
         questionService.updateQuestion(id, updatedQuestion);
+        System.out.println("sca");
         return "redirect:/questions";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteQuestion(@PathVariable Long id) {
         questionService.deleteQuestion(id);
+        return "redirect:/questions";
+    }
+
+    @GetMapping("/toggle/{id}")
+    public String toggleQuestionStatus(@PathVariable Long id) {
+        questionService.toggleQuestionStatus(id);
         return "redirect:/questions";
     }
 
