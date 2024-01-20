@@ -2,6 +2,7 @@ package com.group3.ezquiz.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,42 +10,46 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Table(name="_question")
+@Table(name = "_question")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer question_id;
+    private Long questionId;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private Collection<Option> options;
+    private List<Option> options;
 
-    @Column(name="question_code", nullable = false, length = 10)
-    private String question_code;
+    @Column(name = "questionCode", nullable = false, length = 10)
+    private String questionCode;
 
-    @Column(name="content", nullable = false, length = 500)
-    private String content;
+    @Column(name = "text", nullable = false, length = 500)
+    private String text;
 
-    @Column(name="is_active", nullable = false)
-    private boolean is_active;
+    @Column(name = "isActive", nullable = false)
+    private boolean isActive;
 
-    @Column(name = "created_by")
-    private Integer createdBy;
+    @Column(name = "createdBy")
+    private Long createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(name = "updated_by")
-    private Integer updatedBy;
+    @Column(name = "updatedBy")
+    private Long updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @Column(name = "value")
+    private String value;
 }
