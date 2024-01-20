@@ -2,6 +2,7 @@ package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Question;
+import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.service.impl.OptionServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class OptionController {
 
     private final OptionServiceImpl optionService;
+    private final OptionRepo optionRepo;
 
     @PostMapping("/edit/{id}")
     public String updateOption(@PathVariable Long id, @ModelAttribute("option") Option updatedOption) {
@@ -32,7 +34,7 @@ public class OptionController {
 
     @GetMapping("/delete/{id}")
     public String deleteOption(@PathVariable Long id) {
-        optionService.deleteOption(id);
-        return "redirect:/options";
+        optionRepo.deleteById(id);
+        return "redirect:/questions";
     }
 }

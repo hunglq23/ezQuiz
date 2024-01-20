@@ -54,15 +54,15 @@ public class OptionServiceImpl implements IOptionService {
 
     @Override
     public void deleteOption(Long id) {
-        Optional<Option> option = optionRepository.findById(id);
+        // Optional<Option> option = optionRepository.findById(id);
 
-        if (option.isPresent()) {
-            Option option1 = option.get();
-            optionRepository.delete(option1);
-        } else {
-            // Handle the case where the question does not exist
-            // You might throw an exception or log a message
-        }
+        // if (option.isPresent()) {
+        // Option option1 = option.get();
+        // optionRepository.delete(option1);
+        // } else {
+        // // Handle the case where the question does not exist
+        // // You might throw an exception or log a message
+        // }
     }
 
     @Override

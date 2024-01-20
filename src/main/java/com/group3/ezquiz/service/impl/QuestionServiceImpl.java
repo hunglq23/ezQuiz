@@ -16,7 +16,9 @@ import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.repository.QuestionRepo;
 import com.group3.ezquiz.service.IQuestionService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 
 @Service
 public class QuestionServiceImpl implements IQuestionService {
@@ -118,15 +120,15 @@ public class QuestionServiceImpl implements IQuestionService {
         }
     }
 
-    public void deleteQuestion(Long id) {
-        Optional<Question> questionOptional = questionRepo.findById(id);
-
-        if (questionOptional.isPresent()) {
-            Question question = questionOptional.get();
+    @Override
+    public void deleteQuestion(Long questionId) {
+        Optional<Question> optionalQuestion = questionRepo.findById(questionId);
+        System.out.println("abcsac");
+        if (optionalQuestion.isPresent()) {
+            Question question = optionalQuestion.get();
             questionRepo.delete(question);
         } else {
-            // Handle the case where the question does not exist
-            // You might throw an exception or log a message
+            throw new EntityNotFoundException("Question with id " + questionId + " not found");
         }
     }
 

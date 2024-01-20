@@ -8,5 +8,6 @@ import com.group3.ezquiz.model.Question;
 @Repository
 public interface QuestionRepo extends JpaRepository<Question, Long> {
 
-    Question findByContent(String content);
+    Question findByText(String text);
+
 }

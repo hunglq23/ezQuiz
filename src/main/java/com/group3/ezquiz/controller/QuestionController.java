@@ -1,14 +1,19 @@
 package com.group3.ezquiz.controller;
 
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.payload.QuestionDto;
+import com.group3.ezquiz.repository.OptionRepo;
+import com.group3.ezquiz.repository.QuestionRepo;
 import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -21,6 +26,8 @@ import java.util.Optional;
 public class QuestionController {
 
     private final QuestionServiceImpl questionService;
+    private final QuestionRepo questionRepo;
+    private final OptionRepo optionRepo;
 
     @GetMapping
     public String listQuestions(Model model) {
@@ -58,7 +65,16 @@ public class QuestionController {
 
     @GetMapping("/delete/{id}")
     public String deleteQuestion(@PathVariable Long id) {
-        questionService.deleteQuestion(id);
+        Question question = questionRepo.findById(id).orElse(null);
+
+        if (question != null) {
+            // Delete associated options first
+            optionRepo.deleteAllByQuestion(question.getQuestionId());
+
+            // Then delete the question
+            questionRepo.deleteById(id);
+        }
+
         return "redirect:/questions";
     }
 
