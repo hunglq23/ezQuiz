@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                 // other requests
                 .anyRequest().authenticated())
 
-        // .oauth2Login(Customizer.withDefaults())
+        // OAuth2 login config
         .oauth2Login(
             oauth2Login -> oauth2Login
                 .loginPage("/login")
