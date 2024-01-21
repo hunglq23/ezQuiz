@@ -50,23 +50,8 @@ public class WebSecurityConfig {
             oauth2Login -> oauth2Login
                 .loginPage("/login")
                 .userInfoEndpoint(
-                    userInfo -> userInfo
-                        // .userAuthoritiesMapper(grantedAuthoritiesMapper())
-                        .userService(oAuth2UserService))
-
-                .successHandler(new AuthenticationSuccessHandler() {
-
-                  @Override
-                  public void onAuthenticationSuccess(
-                      HttpServletRequest request,
-                      HttpServletResponse response,
-                      Authentication authentication) throws IOException, ServletException {
-                    // CustomOAuth2User oauthUser = (CustomOAuth2User)
-                    // authentication.getPrincipal();
-                    // userService.processOAuthPostLogin(oauthUser.getEmail());
-                    response.sendRedirect("/profile");
-                  }
-                }))
+                    userInfo -> userInfo.userService(oAuth2UserService))
+                .successHandler(getHandler()))
 
         // login form config
         .formLogin(
@@ -87,6 +72,21 @@ public class WebSecurityConfig {
   @Bean
   PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  private AuthenticationSuccessHandler getHandler() {
+    return new AuthenticationSuccessHandler() {
+      @Override
+      public void onAuthenticationSuccess(
+          HttpServletRequest request,
+          HttpServletResponse response,
+          Authentication authentication) throws IOException, ServletException {
+        // CustomOAuth2User oauthUser = (CustomOAuth2User)
+        // authentication.getPrincipal();
+        // userService.processOAuthPostLogin(oauthUser.getEmail());
+        response.sendRedirect("/profile");
+      }
+    };
   }
 
 }
