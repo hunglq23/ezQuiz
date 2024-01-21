@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Add Question</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center">Add Question</h2>
+
+                        <form th:action="@{/questions/create}" th:object="${question}" method="post">
+                            <!-- Question Code and Content -->
+                            <div style="flex-wrap: wrap;">
+                                <div class="form-group mr-3">
+                                    <label for="questionCode">Question Code:</label>
+                                    <input type="text" class="form-control" id="questionCode" th:field="*{questionCode}"
+                                        required />
+                                </div>
+
+                                <div class="form-group flex-grow-1">
+                                    <label for="text">Question Content:</label>
+                                    <textarea class="form-control" id="text" th:field="*{text}" rows="4"
+                                        required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Options -->
+                            <div id="options-container">
+                                <label for="questionCode">Option 1:</label>
+                                <div class="form-group mr-3" style="display: flex;">
+                                    <input type="text" class="form-control" id="option-1" name="option-1" required />
+                                    <input type="checkbox" name="answer-1" th:value="true" />
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Options -->
+                            <button type="button" class="btn btn-primary" onclick="addOption()">Add Option</button>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-success mt-2">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let i = 1;
+
+        function addOption() {
+            i++;
+            var optionsContainer = $("#options-container");
+            var newOption =
+                `
+                <div>
+                    <label for="questionCode">Option ${i}:</label>
+                    <div class="form-group mr-3" style="display: flex;">
+                        <input type="text" class="form-control" id="option-${i}" name="option-${i}" required />
+                        <input type="checkbox" name="answer-${i}" />
+                    </div>
+                </div>
+            `;
+            optionsContainer.append(newOption);
+        }
+    </script>
+</body>
+
+</html>
