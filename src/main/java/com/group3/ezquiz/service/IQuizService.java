@@ -6,22 +6,20 @@ import com.group3.ezquiz.payload.QuizDto;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 
 import java.util.List;
-import java.util.Optional;
 
 
-public interface QuizService {
+public interface IQuizService {
 
     List<Quiz> listAll();
     void createQuiz(HttpServletRequest request, QuizDto quizDto);
-    Optional<Quiz> findQuizById(Integer id);
-    Quiz updateQuiz(Integer id, Quiz quiz) throws ChangeSetPersister.NotFoundException;
+    Quiz findQuizById(Integer id);
+
     void deleteQuiz(Integer id);
 
     Page<Quiz> paginated(Integer pageNo, Integer pageSize);
 
-
+    void updateQuizById(HttpServletRequest http, Integer id, QuizDto updateQuiz);
 }

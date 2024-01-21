@@ -29,7 +29,7 @@ public class Quiz {
     private String description;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isAcitve;
+    private Boolean isActive;
 
     @Column(name = "is_exam_only", nullable = false)
     private Boolean isExamOnly;
@@ -44,6 +44,8 @@ public class Quiz {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;
+
+    private Long updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp

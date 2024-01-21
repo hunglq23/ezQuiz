@@ -1,9 +1,11 @@
 package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.repository.QuizRepository;
-import com.group3.ezquiz.service.QuizService;
+import com.group3.ezquiz.repository.UserRepo;
+import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +15,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
-public class QuizServiceImpl implements QuizService {
+public class QuizServiceImpl implements IQuizService {
 
     private final QuizRepository quizRepository;
     private final UserService userService;
+    private final UserRepo userRepo;
 
     @Override
     public List<Quiz> listAll() {
@@ -38,33 +42,22 @@ public class QuizServiceImpl implements QuizService {
                         .title(quizDto.getTitle())
                         .description(quizDto.getDescription())
                         .isExamOnly(quizDto.getIsExamOnly())
-                        .isAcitve(quizDto.getIsActive())
+                        .isActive(quizDto.getIsActive())
                         .createdBy(userService.getUserRequesting(request))
                         .build());
     }
 
     @Override
-    public Optional<Quiz> findQuizById(Integer id) {
-        return quizRepository.findById(id);
-    }
-
-    @Override
-    public Quiz updateQuiz(Integer id, Quiz quiz) throws ChangeSetPersister.NotFoundException {
-        Optional<Quiz> optionalQuiz = quizRepository.findById(id);
-        if(optionalQuiz.isPresent()){
-            Quiz existedQuiz = optionalQuiz.get();
-
-            existedQuiz.setCode(quiz.getCode());
-            existedQuiz.setTitle(quiz.getTitle());
-            existedQuiz.setDescription(quiz.getDescription());
-            existedQuiz.setIsExamOnly(quiz.getIsExamOnly());
-            existedQuiz.setIsAcitve(quiz.getIsAcitve());
-            existedQuiz.setUpdateAt(quiz.getUpdateAt());
-
-            return quizRepository.save(existedQuiz);
-        } else {
-            throw new ResourceNotFoundException("Quiz with id "+ id +" not found!");
+    public Quiz findQuizById(Integer id) {
+        //
+        Quiz quizById = quizRepository.findQuizByQuizId(id);
+        if(quizById != null){
+            if(quizById.getUpdatedBy()==null){
+                quizById.setUpdateAt(null);
+            }
+            return quizById;
         }
+        throw new ResourceNotFoundException("Cannot find quiz with"+ id);
     }
 
     @Override
@@ -82,6 +75,30 @@ public class QuizServiceImpl implements QuizService {
     public Page<Quiz> paginated(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         return quizRepository.findAll(pageable);
+    }
+
+    @Override
+    public void updateQuizById(HttpServletRequest http, Integer id, QuizDto updateQuiz) {
+        // get user requesting
+        Principal userPrincipal = http.getUserPrincipal();
+        String requestingUserEmail = userPrincipal.getName();
+        User requestingUser = userRepo.findByEmail(requestingUserEmail);
+        //
+        Quiz existedQuiz = findQuizById(id);
+        Quiz saveQuiz = Quiz.builder()
+                // unchangeable
+                .quizId(existedQuiz.getQuizId())
+                .createdAt(existedQuiz.getCreatedAt())
+                .createdBy(existedQuiz.getCreatedBy())
+                // to update
+                .code(updateQuiz.getCode())
+                .title(updateQuiz.getTitle())
+                .description(updateQuiz.getDescription())
+                .isActive(updateQuiz.getIsActive())
+                .isExamOnly(updateQuiz.getIsExamOnly())
+                .updatedBy(requestingUser.getId())
+                .build();
+        quizRepository.save(saveQuiz);
     }
 
 

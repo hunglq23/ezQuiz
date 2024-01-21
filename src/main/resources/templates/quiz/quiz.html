@@ -39,8 +39,8 @@
                 <td th:text="${quiz.code}"></td>
                 <td th:text="${quiz.title}"></td>
                 <td><button type="button"
-                            th:text="${quiz.isAcitve}? 'Active' : 'Inactive'"
-                            th:class="${quiz.isAcitve} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
+                            th:text="${quiz.getIsActive}? 'Active' : 'Inactive'"
+                            th:class="${quiz.getIsActive} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
                 <td th:text="${quiz.isExamOnly}? 'Exam Only' : 'Practice'"></td>
                 <td>
                         <a th:href="@{/quiz/edit/{id}(id=${quiz.quizId})}">Detail</a>
