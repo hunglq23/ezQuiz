@@ -6,10 +6,8 @@ import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.repository.QuizRepository;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IQuizService;
-import com.group3.ezquiz.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,20 +17,19 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements IQuizService {
 
     private final QuizRepository quizRepository;
-    private final UserService userService;
     private final UserRepo userRepo;
 
     @Override
     public List<Quiz> listAll() {
-        return (List<Quiz>) quizRepository.findAll() ;
+        return (List<Quiz>) quizRepository.findAll();
 
     }
+
     @Override
     public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
 
@@ -43,7 +40,7 @@ public class QuizServiceImpl implements IQuizService {
                         .description(quizDto.getDescription())
                         .isExamOnly(quizDto.getIsExamOnly())
                         .isActive(quizDto.getIsActive())
-                        .createdBy(userService.getUserRequesting(request))
+                        .createdBy(getUserRequesting(request))
                         .build());
     }
 
@@ -51,23 +48,23 @@ public class QuizServiceImpl implements IQuizService {
     public Quiz findQuizById(Integer id) {
         //
         Quiz quizById = quizRepository.findQuizByQuizId(id);
-        if(quizById != null){
-            if(quizById.getUpdatedBy()==null){
+        if (quizById != null) {
+            if (quizById.getUpdatedBy() == null) {
                 quizById.setUpdateAt(null);
             }
             return quizById;
         }
-        throw new ResourceNotFoundException("Cannot find quiz with"+ id);
+        throw new ResourceNotFoundException("Cannot find quiz with" + id);
     }
 
     @Override
     public void deleteQuiz(Integer id) {
         Optional<Quiz> optionalQuiz = quizRepository.findById(id);
-        if(optionalQuiz.isPresent()){
+        if (optionalQuiz.isPresent()) {
             Quiz existedQuiz = optionalQuiz.get();
             quizRepository.delete(existedQuiz);
         } else {
-            throw new ResourceNotFoundException("Quiz with id "+ id +"not found!");
+            throw new ResourceNotFoundException("Quiz with id " + id + "not found!");
         }
     }
 
@@ -78,12 +75,10 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
-    public void updateQuizById(HttpServletRequest http, Integer id, QuizDto updateQuiz) {
-        // get user requesting
-        Principal userPrincipal = http.getUserPrincipal();
-        String requestingUserEmail = userPrincipal.getName();
-        User requestingUser = userRepo.findByEmail(requestingUserEmail);
-        //
+    public void updateQuiz(HttpServletRequest request, Integer id, QuizDto updateQuiz) {
+
+        User userRequesting = getUserRequesting(request);
+
         Quiz existedQuiz = findQuizById(id);
         Quiz saveQuiz = Quiz.builder()
                 // unchangeable
@@ -96,15 +91,21 @@ public class QuizServiceImpl implements IQuizService {
                 .description(updateQuiz.getDescription())
                 .isActive(updateQuiz.getIsActive())
                 .isExamOnly(updateQuiz.getIsExamOnly())
-                .updatedBy(requestingUser.getId())
+                .updatedBy(userRequesting.getId())
                 .build();
         quizRepository.save(saveQuiz);
     }
-
 
     public class ResourceNotFoundException extends RuntimeException {
         public ResourceNotFoundException(String message) {
             super(message);
         }
+    }
+
+    private User getUserRequesting(HttpServletRequest http) {
+        Principal userPrincipal = http.getUserPrincipal();
+        String requestingUserEmail = userPrincipal.getName();
+        User requestingUser = userRepo.findByEmail(requestingUserEmail);
+        return requestingUser;
     }
 }
