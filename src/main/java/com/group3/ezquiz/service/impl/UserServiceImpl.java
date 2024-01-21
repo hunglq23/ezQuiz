@@ -25,7 +25,8 @@ public class UserServiceImpl implements UserService {
   public User getUserRequesting(HttpServletRequest http) {
 
     Principal userPrincipal = http.getUserPrincipal();
-    return userRepo.findByEmail(userPrincipal.getName());
+    String email = userPrincipal.getName(); //
+    return userRepo.findByEmail(email);
   }
 
   @Override
