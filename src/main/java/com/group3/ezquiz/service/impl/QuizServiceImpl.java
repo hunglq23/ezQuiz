@@ -10,15 +10,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
     private final UserService userService;
+
     @Override
     public List<Quiz> listAll() {
-        return (List<Quiz>)quizRepository.findAll();
+        return (List<Quiz>) quizRepository.findAll();
     }
 
     @Override
@@ -26,14 +28,13 @@ public class QuizServiceImpl implements QuizService {
 
         quizRepository.save(
                 Quiz.builder()
-                    .code(quizDto.getCode())
-                    .title(quizDto.getTitle())
-                    .description(quizDto.getDescription())
-                    .isExamOnly(quizDto.getIsExamOnly())
-                    .isAcitve(quizDto.getIsActive())
-                    .createdBy(userService.foundUserByPrincipal(request.getUserPrincipal()))
-                    .build()
-        );
+                        .code(quizDto.getCode())
+                        .title(quizDto.getTitle())
+                        .description(quizDto.getDescription())
+                        .isExamOnly(quizDto.getIsExamOnly())
+                        .isAcitve(quizDto.getIsActive())
+                        .createdBy(userService.getUserRequesting(request))
+                        .build());
     }
 
 }

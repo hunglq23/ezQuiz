@@ -3,11 +3,11 @@ package com.group3.ezquiz.service;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.UserRequest;
 
-import java.security.Principal;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
   void registerUser(UserRequest user);
 
-  User foundUserByPrincipal(Principal principal);
+  User getUserRequesting(HttpServletRequest http);
 
 }

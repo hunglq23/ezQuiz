@@ -19,22 +19,22 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer quizId;
 
-    @Column(name="code", nullable = false)
+    @Column(name = "code", nullable = false)
     private String code;
 
-    @Column(name="title", nullable = false, length = 50)
+    @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-    @Column(name="description", nullable = false, length=500)
+    @Column(name = "description", nullable = false, length = 500)
     private String description;
 
-    @Column(name="is_active", nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean isAcitve;
 
-    @Column(name="is_exam_only", nullable = false)
+    @Column(name = "is_exam_only", nullable = false)
     private boolean isExamOnly;
 
-    @Column(name="is_draft", nullable = false, columnDefinition = "boolean default true")
+    @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean isDraft;
 
     @ManyToOne

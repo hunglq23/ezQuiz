@@ -81,7 +81,9 @@
  */
 function togglePasswordVisibility(passwordFieldId) {
   const passwordField = document.getElementById(passwordFieldId);
-  const passwordToggleIcon = document.getElementById(`${passwordFieldId}-toggle-icon`);
+  const passwordToggleIcon = document.getElementById(
+    `${passwordFieldId}-toggle-icon`
+  );
 
   if (passwordField.type === "password") {
     passwordField.type = "text";

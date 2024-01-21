@@ -5,6 +5,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.group3.ezquiz.payload.UserRequest;
 import com.group3.ezquiz.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -32,7 +34,10 @@ public class AuthController {
   }
 
   @GetMapping("/login")
-  public String login() {
+  public String login(HttpServletRequest request) {
+    if (request.getUserPrincipal() != null) {
+      return "redirect:/home";
+    }
     return "login";
   }
 
