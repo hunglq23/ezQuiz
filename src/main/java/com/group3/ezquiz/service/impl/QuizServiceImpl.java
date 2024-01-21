@@ -8,6 +8,9 @@ import com.group3.ezquiz.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +22,11 @@ public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
     private final UserService userService;
+
     @Override
     public List<Quiz> listAll() {
-        return (List<Quiz>)quizRepository.findAll();
+        return (List<Quiz>) quizRepository.findAll() ;
     }
-
     @Override
     public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
 
@@ -72,6 +75,12 @@ public class QuizServiceImpl implements QuizService {
         } else {
             throw new ResourceNotFoundException("Quiz with id "+ id +"not found!");
         }
+    }
+
+    @Override
+    public Page<Quiz> paginated(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return quizRepository.findAll(pageable);
     }
 
 

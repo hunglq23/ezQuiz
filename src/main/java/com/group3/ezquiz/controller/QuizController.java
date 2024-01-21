@@ -6,6 +6,9 @@ import com.group3.ezquiz.service.QuizService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +31,7 @@ public class QuizController {
         model.addAttribute("listQuiz", quizList);
         return "quiz/quiz";
     }
+
 
     @GetMapping("create")
     public String showCreateQuizForm(Model model){
