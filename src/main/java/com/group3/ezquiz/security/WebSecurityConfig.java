@@ -2,7 +2,6 @@ package com.group3.ezquiz.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,8 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import com.group3.ezquiz.model.Role;
 
 @Configuration
 @EnableWebSecurity
@@ -21,30 +18,28 @@ public class WebSecurityConfig {
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http.csrf(csrf -> csrf.disable())
+
         .authorizeHttpRequests(
             authz -> authz
-                .requestMatchers(
-                    "/vendor/**",
-                    "/css/**",
-                    "/images/**",
-                    "/js/**",
-                    "/",
-                    "/login/**",
-                    "/register/**")
-                .permitAll()
+                // static resources permission
+                .requestMatchers("/vendor/**", "/css/**", "/images/**", "/js/**").permitAll()
+                // landing page, login page, registration end-point
+                .requestMatchers("/", "/login/**", "/register/**", "/profile").permitAll()
+                // other requests
                 .anyRequest().authenticated())
-
+        // login form config
         .formLogin(
             form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/home", true)
                 .permitAll())
+        // logout config
         .logout(
             logout -> logout
                 .logoutRequestMatcher(
                     new AntPathRequestMatcher("/logout"))
-                .permitAll());
+                .logoutSuccessUrl("/login"));
     return http.build();
   }
 

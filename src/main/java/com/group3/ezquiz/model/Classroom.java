@@ -3,7 +3,6 @@ package com.group3.ezquiz.model;
 import java.sql.Date;
 
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,8 +47,8 @@ public class Classroom {
     @Temporal(TemporalType.DATE)
     @UpdateTimestamp
     private Date startDate;
-    
+
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "created_by")
     private User creator;
 }
