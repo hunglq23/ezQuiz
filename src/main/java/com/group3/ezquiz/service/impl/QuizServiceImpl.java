@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
@@ -26,20 +27,20 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public List<Quiz> listAll() {
         return (List<Quiz>) quizRepository.findAll() ;
+
     }
     @Override
     public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
 
         quizRepository.save(
                 Quiz.builder()
-                    .code(quizDto.getCode())
-                    .title(quizDto.getTitle())
-                    .description(quizDto.getDescription())
-                    .isExamOnly(quizDto.getIsExamOnly())
-                    .isAcitve(quizDto.getIsActive())
-                    .createdBy(userService.foundUserByPrincipal(request.getUserPrincipal()))
-                    .build()
-        );
+                        .code(quizDto.getCode())
+                        .title(quizDto.getTitle())
+                        .description(quizDto.getDescription())
+                        .isExamOnly(quizDto.getIsExamOnly())
+                        .isAcitve(quizDto.getIsActive())
+                        .createdBy(userService.getUserRequesting(request))
+                        .build());
     }
 
     @Override

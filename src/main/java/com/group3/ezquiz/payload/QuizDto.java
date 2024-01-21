@@ -2,8 +2,6 @@ package com.group3.ezquiz.payload;
 
 import lombok.*;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @Builder

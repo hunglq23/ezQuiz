@@ -1,6 +1,5 @@
 package com.group3.ezquiz.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +9,7 @@ import com.group3.ezquiz.payload.UserRequest;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.security.Principal;
@@ -22,8 +22,11 @@ public class UserServiceImpl implements UserService {
   private final UserRepo userRepo;
 
   @Override
-  public User foundUserByPrincipal(Principal principal) {
-    return userRepo.findByEmail(principal.getName());
+  public User getUserRequesting(HttpServletRequest http) {
+
+    Principal userPrincipal = http.getUserPrincipal();
+    String email = userPrincipal.getName(); //
+    return userRepo.findByEmail(email);
   }
 
   @Override

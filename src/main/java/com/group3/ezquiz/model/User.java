@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -27,44 +26,44 @@ public class User {
   private Long id;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "role", nullable = false)
+  @Column(nullable = false)
   private Role role;
 
-  @Column(name = "email", nullable = false, unique = true, length = 100)
+  @Column(nullable = false, unique = true, length = 100)
   private String email;
 
   @Column(name = "password", nullable = false)
   private String password;
 
-  @Column(name = "full_name", nullable = false)
+  @Column(nullable = false)
   private String fullName;
 
-  @Column(name = "is_enable", nullable = false, columnDefinition = "boolean default false")
+  @Column(nullable = false, columnDefinition = "boolean default false")
   private Boolean isEnable;
 
-  @Column(name = "is_verified", nullable = false, columnDefinition = "boolean default false")
+  @Column(nullable = false, columnDefinition = "boolean default false")
   private Boolean isVerified;
 
-  @Column(name = "phone", length = 10)
+  @Column(length = 15)
   private String phone;
 
-  @Column(name = "avatar", length = 500)
+  @Column(length = 500)
   private String avatar;
 
-  @Column(name = "note")
+  @Column()
   private String note;
 
-  @Column(name = "token")
+  @Column()
   private String token;
 
-  @Column(name = "created_by")
+  @Column()
   private Integer createdBy;
 
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp
   private Timestamp createdAt;
 
-  @Column(name = "updated_by")
+  @Column()
   private Integer updatedBy;
 
   @Temporal(TemporalType.TIMESTAMP)
