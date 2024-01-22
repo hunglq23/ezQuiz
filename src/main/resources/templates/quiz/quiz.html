@@ -7,6 +7,12 @@
     <link th:href="@{css/main.css}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5; /* or any other styling to indicate it is disabled */
+        }
+    </style>
 </head>
 <body>
 <header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
@@ -14,11 +20,12 @@
 
     <div class="container-fluid text-center col-md-8">
         <div class="row">
-            <div class="input-group input-group-sm col-mb-3 offset-mb-6 text-md-start" style="padding-bottom:15px">
-                <div class="input-group-prepend">
+            <form th:action="@{/quiz}" method="get">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search by Code or Title" name="searchTerm" th:value="${search}"  />
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </div>
-                <input type="text" class="form-control" placeholder="search" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
-            </div>
+            </form>
             <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
                 <a class="btn btn-primary" th:href="@{/quiz/create}">Add A New Quiz</a>
             </div>
@@ -34,7 +41,7 @@
         </tr>
         </thead>
         <tbody>
-        <th:block th:each="quiz: ${listQuiz}">
+        <th:block th:each="quiz: ${quizList}">
             <tr>
                 <td th:text="${quiz.code}"></td>
                 <td th:text="${quiz.title}"></td>
@@ -43,34 +50,31 @@
                             th:class="${quiz.getIsActive} ? 'btn btn-success' : 'btn btn-danger'"></button></td>
                 <td th:text="${quiz.isExamOnly}? 'Exam Only' : 'Practice'"></td>
                 <td>
-                        <a th:href="@{/quiz/edit/{id}(id=${quiz.quizId})}">Detail</a>
+                        <a th:href="@{/quiz/detail/{id}(id=${quiz.quizId})}">Detail</a>
                     <a th:href="@{/quiz/delete/{id}(id=${quiz.quizId})}">Delete</a>
                 </td>
             </tr>
         </th:block>
         </tbody>
     </table>
-        <div th:if="${totalPages > 1}">
-            <div class="row col-sm-10">
-                <div class="col-sm-2">
-                    Total Rows: [[${totalItems}]]
-                </div>
-                <div class="col-sm-1">
-            <span th:each="i: ${#numbers.sequence(1, totalPages)}">
-      <a th:if="${currentPage != i}" th:href="@{'/page/' + ${i}}">[[${i}]]</a>
-      <span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp; &nbsp;
-            </span>
-                </div>
-                <div class="col-sm-1">
-                    <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${currentPage + 1}}">Next</a>
-                    <span th:unless="${currentPage < totalPages}">Next</span>
-                </div>
-
-                <div class="col-sm-1">
-                    <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${totalPages}}">Last</a>
-                    <span th:unless="${currentPage < totalPages}">Last</span>
-                </div>
-            </div>
+        <div>
+            <ul class="pagination">
+<!--                <li th:class="${currentPage == 0 ? 'disabled' : ''}">-->
+<!--                    <a th:href="@{/quiz(page=1,searchTerm=${search})}">First</a>-->
+<!--                </li>-->
+                <li th:class="${currentPage == 0 ? 'disabled' : ''}">
+                    <a th:href="@{/quiz(page=${currentPage - 1},searchTerm=${search})}">Previous</a>
+                </li>
+                <li th:each="pageNumber : ${#numbers.sequence(0, totalPages -1)}" th:class="${pageNumber == currentPage} ? 'active' : ''">
+                    <a th:href="@{/quiz(page=${pageNumber},searchTerm=${search})}" th:text="${pageNumber + 1}"></a>
+                </li>
+                <li th:class="${currentPage == totalPages -1 ? 'disabled' : ''}">
+                    <a th:href="@{/quiz(page=${currentPage + 1},searchTerm=${search})}">Next</a>
+                </li>
+<!--                <li th:class="${currentPage == totalPages -1} ? 'disabled' : ''">-->
+<!--                    <a th:href="@{/quiz(page=${totalPages - 1},searchTerm=${search})}">Last</a>-->
+<!--                </li>-->
+            </ul>
         </div>
     </div>
 <script src="https://kit.fontawesome.com/b16b259998.js" crossOrigin="anonymous"></script>

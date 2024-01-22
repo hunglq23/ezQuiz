@@ -25,9 +25,8 @@ public class QuizServiceImpl implements IQuizService {
     private final UserRepo userRepo;
 
     @Override
-    public List<Quiz> listAll() {
-        return (List<Quiz>) quizRepository.findAll();
-
+    public Page<Quiz> listAll(HttpServletRequest http, String searchTerm, Pageable pageable) {
+        return quizRepository.getAllQuiz(searchTerm, searchTerm, pageable);
     }
 
     @Override

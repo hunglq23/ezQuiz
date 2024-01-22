@@ -5,6 +5,8 @@ import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@PreAuthorize("hasRole('ROLE_TEACHER')")
+//@PreAuthorize("hasRole('ROLE_TEACHER')")
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
@@ -21,9 +23,19 @@ public class QuizController {
     private final IQuizService quizService;
 
     @GetMapping("")
-    public String showQuizList(Model model) {
-        List<Quiz> quizList = quizService.listAll();
-        model.addAttribute("listQuiz", quizList);
+    public String showQuizList(
+            HttpServletRequest http,
+            Model model,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "", name="searchTerm") String searchTerm) {
+        Page<Quiz> quizList = quizService.listAll(http, searchTerm, PageRequest.of(page, 5));
+        model.addAttribute("quizList", quizList);
+        model.addAttribute("items", quizList.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", quizList.getTotalPages());
+        model.addAttribute("search", searchTerm);
+//        List<Quiz> quizList = quizService.listAll();
+//        model.addAttribute("listQuiz", quizList);
         return "quiz/quiz";
     }
 
@@ -41,11 +53,10 @@ public class QuizController {
         return "redirect:/quiz";
     }
 
-    @GetMapping("edit/{id}")
+    @GetMapping("detail/{id}")
     public String showQuizDetail(@PathVariable("id") Integer id, Model model) {
         Quiz existedQuiz = quizService.findQuizById(id);
         model.addAttribute("quiz", existedQuiz);
-        // existedQuiz.ifPresent(quiz -> model.addAttribute("quiz", quiz));
         return "quiz/quiz-detail";
     }
 
