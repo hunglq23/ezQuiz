@@ -12,6 +12,8 @@ import com.group3.ezquiz.repository.ClassroomRepo;
 
 import com.group3.ezquiz.service.ClassroomService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
     @Autowired
@@ -36,8 +38,15 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public void deleteClassroomById(Long id) {
-        classroomRepo.deleteById(id);
+        Optional<Classroom> optional= classroomRepo.findById(id);
+        if (optional.isPresent()) {
+            Classroom classroom = optional.get();
+            classroomRepo.delete(classroom);
+        } else {
+            throw new EntityNotFoundException("Classroom with id " + id + " not found");
+        }
     }
+    
 
     @Override
     public Optional<Classroom> getClassroomById(Long id) {

@@ -1,7 +1,6 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Option;
-import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.service.impl.OptionServiceImpl;
 

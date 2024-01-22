@@ -75,7 +75,7 @@ public class ClassroomController {
     @GetMapping("/classroom/delete/{id}")
     public String ClassroomDeleting(@PathVariable(value = "id") Long id) {
         classroomService.deleteClassroomById(id);
-        return "redirect: teacher/classlist";
+        return "redirect:/teacher/classlist";
     }
 
 }

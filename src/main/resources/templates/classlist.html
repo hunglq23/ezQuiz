@@ -132,12 +132,14 @@
               <p class="card-text mb-2" th:text="${classroom.description}"></p>
             </div>
             <div class="text-end action">
-              <button type="button" class="btn btn-outline-success btn-sm me-2">
+              <a type="button" class="btn btn-outline-success btn-sm me-2" th:href = "@{/classroom/update/{id}(id=${classroom.id})}">
                 Edit
-              </button>
-              <button type="button" class="btn btn-outline-danger btn-sm">
+              </a>
+              <a type="button" class="btn btn-outline-danger btn-sm"
+              th:href="@{'/classroom/delete/' + ${classroom.id}}"
+              onclick="return confirm('Are you sure you want to delete this classroom?')">
                 Delete
-              </button>
+              </a>
             </div>
           </div>
         </div>
