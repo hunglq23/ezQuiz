@@ -7,10 +7,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Question;
+import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.QuestionDto;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.repository.QuestionRepo;
@@ -74,15 +77,8 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     @Override
-    public List<Question> searchQuestionsByText(String searchText) {
-
-        return questionRepo.findByTextContainingIgnoreCase(searchText);
-    }
-
-    @Override
-    public List<Question> getAllQuestions() {
-        // Implement the logic to get all questions
-        return questionRepo.findAll();
+    public Page<Question> listAll(HttpServletRequest http, String searchTerm, Pageable pageable) {
+        return questionRepo.getAllQuestions(searchTerm, searchTerm, pageable);
     }
 
     public void updateQuestion(Long id, Question question) {
