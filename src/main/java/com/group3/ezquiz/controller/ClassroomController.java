@@ -42,15 +42,9 @@ public class ClassroomController {
     }
 
     @PostMapping("/classroom/create")
-    public String ClassCreating(HttpServletRequest request,
-            @ModelAttribute("classroom") ClassroomDto dto) {
-        Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
-        Classroom classroom = Classroom.builder()
-                .className(dto.getClassName())
-                .description(dto.getDescription())
-                .creator(userRepo.findByEmail(principal.getName()))
-                .build();
-        classroomService.createClass(classroom);
+    public String ClassCreating(HttpServletRequest hRequest,
+            @ModelAttribute("classroom") ClassroomDto classroomDto) {
+        classroomService.createClass(hRequest, classroomDto);
         return "redirect:/teacher/classlist"; // den dia chi
     }
 
