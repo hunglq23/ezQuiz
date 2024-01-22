@@ -8,61 +8,69 @@
 </head>
 <body>
 <header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
-<div class="container-fluid col-md-4" style="padding-top: 30px">
-    <h2>UPDATE QUIZ</h2>
-    <form class="justify-content-center" th:action="@{/quiz/update/{id}(id=${quiz.quizId})}" th:object="${quiz}" method="post" >
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Quiz Code</label>
-            <input th:field="*{code}" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Quiz Code"
-                   style="align-content: center; width: 450px ">
-        </div>
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Quiz Title</label>
-            <input th:field="*{title}" type="text" class="form-control" id="exampleFormControlInput2" placeholder="Quiz Title"
-                   style="align-content: center; width: 450px ">
-        </div>
-        <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-            <textarea th:field="*{description}" class="form-control" id="exampleFormControlTextarea1" rows="3"
-                      style="align-content: center; width: 450px "></textarea>
-        </div>
-        <div style="display:flex">
-            <div class="form-check">
-                <input th:field="*{isExamOnly}" th:checked="${quiz.isExamOnly eq 1}" class="form-check-input" type="radio" name="is_exam_only" id="flexRadioDefault1" value="1">
-                <label class="form-check-label" for="flexRadioDefault1">
-                    Exam Only
-                </label>
+<div>
+<h2 class="justify-content-center" style="display: flex; padding-top: 15px">UPDATE QUIZ</h2>
+</div>
+<div class="container" style="padding-top: 15px">
+    <form th:action="@{/quiz/update/{id}(id=${quiz.quizId})}" th:object="${quiz}" method="post">
+        <div class="container justify-content-center" style="display: flex" >
+            <div class="col-md-5">
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Quiz Code</label>
+                    <input th:field="*{code}" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Quiz Code" style="align-content: center; width: 450px">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Quiz Title</label>
+                    <input th:field="*{title}" type="text" class="form-control" id="exampleFormControlInput2" placeholder="Quiz Title"
+                           style="align-content: center; width: 450px ">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+                    <textarea th:field="*{description}" class="form-control" id="exampleFormControlTextarea1" rows="3"
+                              style="align-content: center; width: 450px "></textarea>
+                </div>
+                <div style="display:flex">
+                    <div class="form-check">
+                        <input th:field="*{isExamOnly}" th:checked="${quiz.isExamOnly eq 1}" class="form-check-input" type="radio" name="is_exam_only" id="flexRadioDefault1" value="1">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Exam Only
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input th:field="*{isExamOnly}" th:checked="${quiz.isExamOnly eq 0}" class="form-check-input" type="radio" name="is_exam_only" id="flexRadioDefault2" value="0">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Practice
+                        </label>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input th:field="*{isActive}" class="form-check-input" type="checkbox" name="is_active" value="1" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Active
+                    </label>
+                </div>
             </div>
-            <div class="form-check">
-                <input th:field="*{isExamOnly}" th:checked="${quiz.isExamOnly eq 0}" class="form-check-input" type="radio" name="is_exam_only" id="flexRadioDefault2" value="0">
-                <label class="form-check-label" for="flexRadioDefault2">
-                    Practice
-                </label>
+            <div class="col-md-5">
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Created At</label>
+                    <input th:field="*{createdAt}" type="text" class="form-control" id="exampleFormControlInput3" readonly style="align-content: center; width: 450px">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Updated At</label>
+                    <input th:field="*{updateAt}" type="text" class="form-control" id="exampleFormControlInput4" readonly
+                           style="align-content: center; width: 450px ">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Created By</label>
+                    <input th:field="*{createdBy.fullName}" type="text" class="form-control" id="exampleFormControlInput5" readonly
+                           style="align-content: center; width: 450px ">
+                </div>
             </div>
         </div>
-        <div class="form-check">
-            <input th:field="*{isActive}" class="form-check-input" type="checkbox" name="is_active" value="1" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                Active
-            </label>
-        </div>
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Created At</label>
-            <input th:field="*{createdAt}" type="text" class="form-control" id="exampleFormControlInput3" readonly
-                   style="align-content: center; width: 450px ">
-        </div>
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Updated</label>
-            <input th:field="*{updateAt}" type="text" class="form-control" id="exampleFormControlInput3" readonly
-                   style="align-content: center; width: 450px ">
-        </div>
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Created By</label>
-            <input th:field="*{createdBy.fullName}" type="text" class="form-control" id="exampleFormControlInput4" readonly
-                   style="align-content: center; width: 450px ">
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Update</button>
         </div>
 
-        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
 </body>
