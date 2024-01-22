@@ -89,10 +89,10 @@
       </nav>
     </header>
     <div class="container">
-      <h3>Update Classroom</h3>
+      <h3 class="center">Update Classroom</h3>
       <hr />
       <form
-        th:action="@{/classroom/update/{id}}"
+        th:action="@{/classroom/update/{id}(id=${classroom.id})}"
         th:object="${classroom}"
         method="POST"
       >
@@ -119,9 +119,7 @@
         </div>
         <hr />
         <button type="submit" class="btn btn-outline-success">Save</button>
-        <button type="submit" class="btn btn-outline-warning">
-          <a th:href="@{/teacher/classlist}">Back</a>
-        </button>
+        <input type="button" onclick="history.back();" value="Back" class="btn btn-outline-warning">
       </form>
       <br />
     </div>

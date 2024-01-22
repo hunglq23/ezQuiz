@@ -1,8 +1,9 @@
-package com.group3.ezquiz.controller;
+    package com.group3.ezquiz.controller;
 
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,8 +27,11 @@ public class ClassroomController {
     private UserRepo userRepo;
 
     @GetMapping("/teacher/classlist")
-    public String getClassList(Model model) {
-        model.addAttribute("listClass", classroomService.getAllClass());
+    public String getClassList(Model model,
+    @Param("keyword") String keyword) {
+       
+        model.addAttribute("listClass", classroomService.getAllClass(keyword));
+        model.addAttribute("keyword", keyword);
         return "classlist";
     }
 

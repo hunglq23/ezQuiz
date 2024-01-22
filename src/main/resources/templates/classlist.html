@@ -92,28 +92,61 @@
     <div class="container">
       <div class="row d-flex justify-content-between text-right">
         <div class="col-sm-4">
-          <input type="text" class="form-control" placeholder="Search" />
+          <form th:action="@{/teacher/classlist}">
+            <input
+              type="text"
+              name="keyword"
+              th:value="${keyword}"
+              required
+              class="form-control"
+              placeholder="Search"
+            />
+          </form>
         </div>
         <div class="col-md-4 offset-md-4">
-          <button class="btn btn-success">
-            <a th:href="@{/classroom/create}" class="no-underline"
-              >Create a class</a
-            >
+          <button class="btn btn-success" onclick="redirectToCreateClass()">
+            Create a class
           </button>
         </div>
       </div>
-    
 
+      <!-- <div class="row">
+        <div class="col-sm-6" th:each="classroom : ${listClass}">
+            <div class="card">
+                <div class="card-body d-flex justify-content-between">
+                    <h6 class="card-title" th:text="${classroom.className}"></h6>
+                    <p class="card-text" th:text="${classroom.description}"></p>
+                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                      <button type="button" class="btn btn-outline-success">Edit</button>
+                      <button type="button" class="btn btn-outline-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
       <div class="row">
         <div class="col-sm-6" th:each="classroom : ${listClass}">
-          <div class="card">
+          <div class="card d-flex flex-column">
             <div class="card-body">
-              <h6 class="card-title" th:text="${classroom.className}"></h6>
-              <p class="card-text" th:text="${classroom.description}"></p>
+              <h6 class="card-title mb-2" th:text="${classroom.className}"></h6>
+              <p class="card-text mb-2" th:text="${classroom.description}"></p>
+            </div>
+            <div class="text-end action">
+              <button type="button" class="btn btn-outline-success btn-sm me-2">
+                Edit
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm">
+                Delete
+              </button>
             </div>
           </div>
         </div>
       </div> 
     </div>
+    <script>
+      function redirectToCreateClass() {
+        window.location.href = "/classroom/create";
+      }
+    </script>
   </body>
 </html>

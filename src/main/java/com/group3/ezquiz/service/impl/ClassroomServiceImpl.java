@@ -20,7 +20,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     // private UserRepo userRepo;
 
     @Override
-    public List<Classroom> getAllClass() {
+    public List<Classroom> getAllClass(String keyword) {
+        if(keyword != null){
+            return classroomRepo.findAll(keyword);
+        }
         return classroomRepo.findAll();
     }
 
@@ -52,7 +55,9 @@ public class ClassroomServiceImpl implements ClassroomService {
             classroomToUpdate.setDescription(updatedClassroom.getDescription());
     
             // Lưu lớp học đã cập nhật vào cơ sở dữ liệu và trả về kết quả
-            return classroomRepo.save(classroomToUpdate);
+             classroomRepo.save(classroomToUpdate);
+             System.out.println("Classroom updated sucessfully");
+             return classroomToUpdate;
         } else {
             throw new RuntimeException("Classroom not found for id: " + id);
         }
