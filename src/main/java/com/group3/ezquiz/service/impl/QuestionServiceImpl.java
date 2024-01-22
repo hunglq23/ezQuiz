@@ -1,6 +1,6 @@
 package com.group3.ezquiz.service.impl;
 
-import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +14,11 @@ import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.payload.QuestionDto;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.repository.QuestionRepo;
+import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class QuestionServiceImpl implements IQuestionService {
@@ -30,88 +30,73 @@ public class QuestionServiceImpl implements IQuestionService {
     private OptionRepo optionRepo;
 
     @Autowired
-    private HttpServletResponse response;
+    private UserRepo userRepo;
 
     @Override
-    public void createNewQuestion(QuestionDto dto, Map<String, String> params) {
+    public void createNewQuestion(HttpServletRequest request, QuestionDto dto, Map<String, String> params) {
+        Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
+
         // Create a new question
         Question question = Question.builder()
                 .questionCode(dto.getQuestionCode())
                 .text(dto.getText())
                 .isActive(true) // Assuming new questions are active by default
+                .createdBy(userRepo.findByEmail(principal.getName()))
                 .build();
-        // Save the question to the database using questionRepo
-        questionRepo.save(question);
         List<Option> options = new ArrayList<>();
-        Option currentOption = null;
+        boolean atLeastOneCorrectAnswer = false;
         // Iterate through the params to create options
         for (Map.Entry<String, String> entry : params.entrySet()) {
-            String option = entry.getKey();
+            String optionKey = entry.getKey();
             String optionText = entry.getValue();
             // Check if the key starts with "option"
-            if (option.startsWith("option")) {
-                // Create a new option
-                currentOption = Option.builder()
-                        .question(question) // Associate the option with the question
+            if (optionKey.startsWith("option")) {
+                boolean isAnswer = params.containsKey("answer" + optionKey.substring("option".length()));
+                Option option = Option.builder()
+                        .question(question)
                         .text(optionText)
-                        .isAnswer(false) // Default to false
+                        .isAnswer(isAnswer)
                         .build();
                 // Add the option to the list
-                options.add(currentOption);
-            } else if (option.startsWith("answer")) {
-                // Update the current option's isAnswer if it exists
-                if (currentOption != null) {
-                    currentOption.setAnswer(true);
+                options.add(option);
+                // Check if the current option is a correct answer
+                if (isAnswer) {
+                    atLeastOneCorrectAnswer = true;
                 }
-                currentOption = null;
             }
         }
-        // Save the options to the database using optionRepo
-        optionRepo.saveAll(options);
-
         // Check if at least one correct answer is set
-        if (options.stream().noneMatch(Option::isAnswer)) {
-            // No correct answer, perform a redirect
-            try {
-                response.sendRedirect("/questions");
-            } catch (IOException e) {
-                // Handle the IOException, if needed
-                e.printStackTrace();
-            }
+        if (!atLeastOneCorrectAnswer) {
+            throw new IllegalArgumentException("At least one correct answer must be set.");
         }
+        questionRepo.save(question);
+        optionRepo.saveAll(options);
     }
 
+    @Override
+    public List<Question> searchQuestionsByText(String searchText) {
+
+        return questionRepo.findByTextContainingIgnoreCase(searchText);
+    }
+
+    @Override
     public List<Question> getAllQuestions() {
+        // Implement the logic to get all questions
         return questionRepo.findAll();
     }
 
-    public Optional<Question> getQuestionById(Long id) {
-        return questionRepo.findById(id);
-    }
-
-    public Question updateQuestion(Long id, Question question) {
+    public void updateQuestion(Long id, Question question) {
         // Step 1: Check if the question with the given ID exists
-        Optional<Question> optionalQuestion = questionRepo.findById(id);
-        if (optionalQuestion.isPresent()) {
-            Question existingQuestion = optionalQuestion.get();
-
-            existingQuestion.setText(question.getText());
-
-            if (question.getQuestionCode() != null) {
-                existingQuestion.setQuestionCode(question.getQuestionCode());
-            }
-
-            Question updatedQuestion = questionRepo.save(existingQuestion);
-
-            // Step 7: Log the update for debugging
-            System.out.println("Question with ID " + id + " updated: " + updatedQuestion);
-
-            // Step 8: Return the updated question
-            return updatedQuestion;
-        } else {
-            // Step 9: Throw an exception if the question with the given ID is not found
-            throw new ResourceNotFoundException("Question with ID " + id + " not found");
-        }
+        Question existQuestion = questionRepo.findQuestionByQuestionId(id);
+        Question saveQuestion = Question.builder()
+                // unchangeable
+                .questionId(existQuestion.getQuestionId())
+                .options(existQuestion.getOptions())
+                // to update
+                .questionCode(question.getQuestionCode())
+                .text(question.getText())
+                .build();
+        questionRepo.save(saveQuestion);
     }
 
     public class ResourceNotFoundException extends RuntimeException {
@@ -132,12 +117,6 @@ public class QuestionServiceImpl implements IQuestionService {
         }
     }
 
-    @Override
-    public List<Question> getQuestionsForUser(Long numOfQuestion) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getQuestionsForUser'");
-    }
-
     public void toggleQuestionStatus(Long questionId) {
         Optional<Question> questionOptional = questionRepo.findById(questionId);
 
@@ -146,9 +125,6 @@ public class QuestionServiceImpl implements IQuestionService {
             // Toggle the question status
             question.setActive(!question.isActive());
             questionRepo.save(question);
-        } else {
-            // Handle the case where the question does not exist
-            // You might throw an exception or log a message
         }
     }
 

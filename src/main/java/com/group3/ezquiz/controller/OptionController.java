@@ -1,16 +1,12 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Option;
-import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.service.impl.OptionServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
