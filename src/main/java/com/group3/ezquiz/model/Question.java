@@ -36,8 +36,9 @@ public class Question {
     @Column(name = "isActive", nullable = false)
     private boolean isActive;
 
-    @Column(name = "createdBy")
-    private Long createdBy;
+    @ManyToOne
+    @JoinColumn(name = "createdBy")
+    private User createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

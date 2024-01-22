@@ -16,6 +16,17 @@
 
     <h2 class="text-center" style="padding-top: 50px">Question List</h2>
 
+    <!-- Add the search bar form -->
+    <div class="container mt-3">
+        <form th:action="@{/questions}" method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search questions..." name="searchTerm"
+                    th:value="${search}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
     <div class="row">
         <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
             <a class="btn btn-primary" th:href="@{/questions/create}">Add A New Question</a>
@@ -25,15 +36,21 @@
         <div class="row">
 
             <!-- Iterate through your list of questions -->
-            <div th:each="question : ${questions}" class="col-md-12">
-                <div class="card">
+            <div th:each="question : ${questions}" class="col-md-12 ">
+                <div class="card my-2">
                     <div class="card-body">
-                        <h4 class="card-title" th:text="${question.questionCode}">Question Code</h4>
-                        <h6 class="card-text" th:text="${question.text}">Question Content</h6>
-                        <a th:class="${question.isActive} ? 'btn btn-success' : 'btn btn-danger'"
-                            th:text="${question.isActive} ? 'Active' : 'Inactive'"
-                            th:href="@{'/questions/toggle/' + ${question.questionId}}">Toggle
-                            Status</a>
+                        <div class="row my-2">
+                            <div class="col">
+                                <h4 class="card-title" th:text="${question.questionCode}">Question Code</h4>
+                                <h6 class="card-text" th:text="${question.text}">Question Content</h6>
+                            </div>
+                            <div class="col">
+                                <a th:class="${question.isActive} ? 'btn btn-success text-end float-end' : 'btn btn-danger text-end float-end'"
+                                    th:text="${question.isActive} ? 'Active' : 'Inactive'"
+                                    th:href="@{'/questions/toggle/' + ${question.questionId}}">Toggle Status</a>
+                            </div>
+
+                        </div>
 
                         <!-- Inner loop for options -->
                         <ul class="list-group">
@@ -56,95 +73,117 @@
                             </li>
                         </ul>
 
-                        <a href="#" class="card-link btn btn-sm btn-primary edit-question" th:data-bs-toggle="'modal'"
-                            th:data-bs-target="'#editQuestionModal' + ${question.questionId}"
-                            data-question-id="${question.questionId}" data-question-text="${question.text}"
-                            data-question-code="${question.questionCode}">
-                            Edit
-                        </a>
+                        <div class="my-2">
+                            <a href="#" class="card-link btn btn-sm btn-primary edit-question"
+                                th:data-bs-toggle="'modal'"
+                                th:data-bs-target="'#editQuestionModal' + ${question.questionId}"
+                                data-question-id="${question.questionId}" data-question-text="${question.text}"
+                                data-question-code="${question.questionCode}">
+                                Edit
+                            </a>
 
-                        <a class="btn btn-sm btn-danger" role="button"
-                            th:href="@{'/questions/delete/' + ${question.questionId}}"
-                            onclick="return confirm('Are you sure you want to delete this question?')">Delete</a>
+                            <a class="btn btn-sm btn-danger" role="button"
+                                th:href="@{'/questions/delete/' + ${question.questionId}}"
+                                onclick="return confirm('Are you sure you want to delete this question?')">Delete</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Edit Question Modals (outside the loop) -->
-        <div th:each="question : ${questions}">
-            <div class="modal fade" th:id="'editQuestionModal' + ${question.questionId}" tabindex="-1"
-                aria-labelledby="'editQuestionModalLabel' + ${question.questionId}" aria-hidden="true">
+        <div class="d-flex justify-content-center">
+            <ul class="pagination">
+                <li th:class="${currentPage == 0 ? 'disabled page-item' : 'page-item'}">
+                    <a th:href="@{/questions(searchTerm=${search},page=${currentPage - 1})}"
+                        class="page-link">Previous</a>
+                </li>
+                <li th:each="pageNumber : ${#numbers.sequence(0, totalPages -1)}"
+                    th:class="${pageNumber == currentPage} ? 'active page-item' : 'page-item'">
+                    <a th:href="@{/questions(searchTerm=${search},page=${pageNumber})}" class="page-link"
+                        th:text="${pageNumber + 1}"></a>
+                </li>
+                <li th:class="${currentPage == totalPages -1 ? 'disabled page-item' : 'page-item'}">
+                    <a th:href="@{/questions(searchTerm=${search},page=${currentPage + 1})}" class="page-link">Next</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Edit Question Modals (outside the loop) -->
+    <div th:each="question : ${questions}">
+        <div class="modal fade" th:id="'editQuestionModal' + ${question.questionId}" tabindex="-1"
+            aria-labelledby="'editQuestionModalLabel' + ${question.questionId}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" th:id="'editQuestionModalLabel' + ${question.questionId}">Edit
+                            Question</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Your edit form for questions goes here -->
+                        <form th:action="@{/questions/edit/{id}(id=${question.questionId})}" method="post"
+                            id="editQuestionForm">
+                            <input type="hidden" name="id" th:value="${question.questionId}" />
+                            <div class="form-group">
+                                <label for="editText">Content:</label>
+                                <input type="text" class="form-control" id="editText" name="text"
+                                    th:value="${question.text}" />
+                            </div>
+                            <div class="form-group">
+                                <label for="editQuestionCode">Question Code:</label>
+                                <input type="text" class="form-control" id="editQuestionCode" name="questionCode"
+                                    th:value="${question.questionCode}" />
+                            </div>
+                            <!-- Add other fields as needed -->
+                            <div class="d-flex my-2 justify-content-between">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Edit Option Modals (outside the loop) -->
+    <div th:each="question : ${questions}">
+        <div th:each="option : ${question.options}">
+            <div class="modal fade" th:id="'editOptionModal' + ${option?.optionId}" tabindex="-1"
+                aria-labelledby="'editOptionModalLabel' + ${option?.optionId}" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" th:id="'editQuestionModalLabel' + ${question.questionId}">Edit
-                                Question</h5>
+                            <h5 class="modal-title" th:id="'editOptionModalLabel' + ${option?.optionId}">Edit
+                                Option
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <!-- Your edit form for questions goes here -->
-                            <form th:action="@{/questions/edit/{id}(id=${question.questionId})}" method="post"
-                                id="editQuestionForm">
-                                <input type="hidden" name="id" th:value="${question.questionId}" />
+                            <!-- Your edit form for options goes here -->
+                            <form th:action="@{/options/edit/{id}(id=${option?.optionId})}" method="post"
+                                th:object="${option}" id="editOptionForm">
+                                <input type="hidden" name="id" th:value="${option?.optionId}" />
                                 <div class="form-group">
                                     <label for="editText">Content:</label>
                                     <input type="text" class="form-control" id="editText" name="text"
-                                        th:value="${question.text}" />
+                                        th:value="${option?.text}" />
                                 </div>
-                                <div class="form-group">
-                                    <label for="editQuestionCode">Question Code:</label>
-                                    <input type="text" class="form-control" id="editQuestionCode" name="questionCode"
-                                        th:value="${question.questionCode}" />
+                                <div class="d-flex my-2 justify-content-between">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
                                 </div>
-                                <!-- Add other fields as needed -->
-                                <button type="submit" class="btn btn-primary">Save
-                                    Changes</button>
                             </form>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Edit Option Modals (outside the loop) -->
-        <div th:each="question : ${questions}">
-            <div th:each="option : ${question.options}">
-                <div class="modal fade" th:id="'editOptionModal' + ${option?.optionId}" tabindex="-1"
-                    aria-labelledby="'editOptionModalLabel' + ${option?.optionId}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" th:id="'editOptionModalLabel' + ${option?.optionId}">Edit
-                                    Option
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- Your edit form for options goes here -->
-                                <form th:action="@{/options/edit/{id}(id=${option?.optionId})}" method="post"
-                                    th:object="${option}" id="editOptionForm">
-                                    <input type="hidden" name="id" th:value="${option?.optionId}" />
-                                    <div class="form-group">
-                                        <label for="editText">Content:</label>
-                                        <input type="text" class="form-control" id="editText" name="text"
-                                            th:value="${option?.text}" />
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
     </div>
 
     <!-- Bootstrap JavaScript and jQuery -->

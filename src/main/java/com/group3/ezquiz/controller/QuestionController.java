@@ -1,27 +1,29 @@
 package com.group3.ezquiz.controller;
 
-import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.Question;
+import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.QuestionDto;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.repository.QuestionRepo;
 import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_TEACHER')")
 @RequestMapping("/questions")
 public class QuestionController {
 
@@ -29,10 +31,19 @@ public class QuestionController {
     private final QuestionRepo questionRepo;
     private final OptionRepo optionRepo;
 
-    @GetMapping
-    public String listQuestions(Model model) {
-        List<Question> questions = questionService.getAllQuestions();
-        model.addAttribute("questions", questions);
+    @GetMapping("")
+    public String listQuestion(
+            HttpServletRequest http,
+            Model model,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "", name = "searchTerm") String searchTerm) {
+        Page<Question> questionList = questionService.listAll(http, searchTerm, PageRequest.of(page, 5));
+        model.addAttribute("questions", questionList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", questionList.getTotalPages());
+        model.addAttribute("search", searchTerm);
+        // List<Quiz> quizList = quizService.listAll();
+        // model.addAttribute("listQuiz", quizList);
         return "question/question";
     }
 
@@ -44,12 +55,13 @@ public class QuestionController {
 
     @PostMapping("/create")
     public String submitQuestionCreatingForm(
+            HttpServletRequest request,
             @ModelAttribute QuestionDto dto,
             @RequestParam Map<String, String> params,
             Model model) {
 
         // Process the form data
-        questionService.createNewQuestion(dto, params);
+        questionService.createNewQuestion(request, dto, params);
 
         // Redirect to the questions page after creating the question
         return "redirect:/questions";
@@ -59,7 +71,6 @@ public class QuestionController {
     public String updateQuestion(@PathVariable Long id,
             @ModelAttribute("question") Question updatedQuestion) {
         questionService.updateQuestion(id, updatedQuestion);
-        System.out.println("sca");
         return "redirect:/questions";
     }
 

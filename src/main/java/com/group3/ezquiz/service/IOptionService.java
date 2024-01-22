@@ -7,11 +7,8 @@ import java.util.Optional;
 
 public interface IOptionService {
 
-    List<Option> getAllOptions();
-
     Optional<Option> getOptionById(Long id);
 
     Option updateOption(Long id, Option updatedOption);
 
-    void deleteOption(Long id);
 }
