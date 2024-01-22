@@ -20,8 +20,8 @@
     <div class="container mt-3">
         <form th:action="@{/questions}" method="get" class="mb-3">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search questions..." name="searchText"
-                    th:value="${searchText}">
+                <input type="text" class="form-control" placeholder="Search questions..." name="searchTerm"
+                    th:value="${search}">
                 <button type="submit" class="btn btn-primary">Search</button>
             </div>
         </form>
