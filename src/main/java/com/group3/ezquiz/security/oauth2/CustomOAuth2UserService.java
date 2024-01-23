@@ -6,13 +6,20 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.group3.ezquiz.repository.UserRepo;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+  private final UserRepo userRepo;
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest)
       throws OAuth2AuthenticationException {
-    return new CustomOAuth2User(super.loadUser(userRequest));
+    return new CustomOAuth2User(super.loadUser(userRequest), userRepo);
   }
 
 }
