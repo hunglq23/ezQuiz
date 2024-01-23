@@ -36,7 +36,10 @@ public class QuestionServiceImpl implements IQuestionService {
     private UserRepo userRepo;
 
     @Override
-    public void createNewQuestion(HttpServletRequest request, QuestionDto dto, Map<String, String> params) {
+    public void createNewQuestion(
+            HttpServletRequest request,
+            QuestionDto dto,
+            Map<String, String> params) {
         Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
 
         // Create a new question
