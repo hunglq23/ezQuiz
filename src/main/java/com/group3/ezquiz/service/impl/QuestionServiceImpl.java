@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Question;
-import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.QuestionDto;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.repository.QuestionRepo;
@@ -38,6 +37,7 @@ public class QuestionServiceImpl implements IQuestionService {
     private UserRepo userRepo;
 
     @Override
+
     public void createNewQuestion(HttpServletRequest request, QuestionDto dto, Map<String, String> params) {
         Principal principal = request.getUserPrincipal();
 

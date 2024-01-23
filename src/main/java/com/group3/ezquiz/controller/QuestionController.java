@@ -79,4 +79,26 @@ public class QuestionController {
         return "redirect:/questions";
     }
 
+    @GetMapping("/create2")
+    public String getQuestionCreatingPage(Model model) {
+        model.addAttribute("question", new QuestionDto());
+        return "question/question-creating2";
+    }
+
+    @GetMapping("/2")
+    public String getQuestionList(
+            HttpServletRequest http,
+            Model model,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "", name = "searchTerm") String searchTerm) {
+        Page<Question> questionList = questionService.listAll(http, searchTerm, PageRequest.of(page, 5));
+        model.addAttribute("questions", questionList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", questionList.getTotalPages());
+        model.addAttribute("search", searchTerm);
+        // List<Quiz> quizList = quizService.listAll();
+        // model.addAttribute("listQuiz", quizList);
+        return "question/question-list";
+    }
+
 }

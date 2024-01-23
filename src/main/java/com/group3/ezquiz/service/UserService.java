@@ -10,4 +10,6 @@ public interface UserService {
 
   User getUserRequesting(HttpServletRequest http);
 
+  User getUserByEmail(String email);
+
 }

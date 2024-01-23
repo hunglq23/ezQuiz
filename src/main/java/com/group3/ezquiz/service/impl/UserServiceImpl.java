@@ -47,4 +47,9 @@ public class UserServiceImpl implements UserService {
             .build());
   }
 
+  @Override
+  public User getUserByEmail(String email) {
+    return userRepo.findByEmail(email);
+  }
+
 }
