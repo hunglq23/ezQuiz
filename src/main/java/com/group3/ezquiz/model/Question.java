@@ -27,9 +27,6 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options;
 
-    @Column(name = "questionCode", nullable = false, length = 10)
-    private String questionCode;
-
     @Column(name = "text", nullable = false, length = 500)
     private String text;
 

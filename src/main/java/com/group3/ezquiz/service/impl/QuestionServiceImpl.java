@@ -37,11 +37,9 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public void createNewQuestion(HttpServletRequest request, QuestionDto dto, Map<String, String> params) {
-        Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
+        Principal principal = request.getUserPrincipal();
 
-        // Create a new question
         Question question = Question.builder()
-                .questionCode(dto.getQuestionCode())
                 .text(dto.getText())
                 .isActive(true) // Assuming new questions are active by default
                 .createdBy(userRepo.findByEmail(principal.getName()))
@@ -60,7 +58,6 @@ public class QuestionServiceImpl implements IQuestionService {
                         .text(optionText)
                         .isAnswer(isAnswer)
                         .build();
-                // Add the option to the list
                 options.add(option);
                 // Check if the current option is a correct answer
                 if (isAnswer) {
@@ -78,18 +75,17 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public Page<Question> listAll(HttpServletRequest http, String searchTerm, Pageable pageable) {
-        return questionRepo.getAllQuestions(searchTerm, searchTerm, pageable);
+        return questionRepo.getAllQuestions(searchTerm, pageable);
     }
 
     public void updateQuestion(Long id, Question question) {
-        // Step 1: Check if the question with the given ID exists
+        // Check if the question with the given ID exists
         Question existQuestion = questionRepo.findQuestionByQuestionId(id);
         Question saveQuestion = Question.builder()
                 // unchangeable
                 .questionId(existQuestion.getQuestionId())
                 .options(existQuestion.getOptions())
                 // to update
-                .questionCode(question.getQuestionCode())
                 .text(question.getText())
                 .build();
         questionRepo.save(saveQuestion);
@@ -104,7 +100,6 @@ public class QuestionServiceImpl implements IQuestionService {
     @Override
     public void deleteQuestion(Long questionId) {
         Optional<Question> optionalQuestion = questionRepo.findById(questionId);
-        System.out.println("abcsac");
         if (optionalQuestion.isPresent()) {
             Question question = optionalQuestion.get();
             questionRepo.delete(question);
@@ -118,7 +113,6 @@ public class QuestionServiceImpl implements IQuestionService {
 
         if (questionOptional.isPresent()) {
             Question question = questionOptional.get();
-            // Toggle the question status
             question.setActive(!question.isActive());
             questionRepo.save(question);
         }

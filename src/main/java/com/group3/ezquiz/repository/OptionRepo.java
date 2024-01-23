@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.group3.ezquiz.model.Option;
-import com.group3.ezquiz.model.Question;
 
 import jakarta.transaction.Transactional;
 

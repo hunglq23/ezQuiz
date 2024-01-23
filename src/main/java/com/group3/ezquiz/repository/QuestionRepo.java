@@ -12,17 +12,16 @@ import com.group3.ezquiz.model.Question;
 @Repository
 public interface QuestionRepo extends JpaRepository<Question, Long> {
 
-    Question findByText(String text);
+        Question findByText(String text);
 
-    Question findQuestionByQuestionId(Long questionId);
+        Question findQuestionByQuestionId(Long questionId);
 
-    Page<Question> findByTextContainingIgnoreCase(String searchText, Pageable pageable);
+        Page<Question> findByTextContainingIgnoreCase(String searchText, Pageable pageable);
 
-    @Query("SELECT q FROM Question q WHERE " +
-            "(:questionCode IS NULL OR q.questionCode LIKE %:questionCode%) OR " +
-            "(:text IS NULL OR q.text LIKE %:text%)")
-    Page<Question> getAllQuestions(@Param("questionCode") String questionCode,
-            @Param("text") String text,
-            Pageable page);
+        @Query("SELECT q FROM Question q WHERE " +
+                        "(:text IS NULL OR q.text LIKE %:text%)")
+        Page<Question> getAllQuestions(
+                        @Param("text") String text,
+                        Pageable page);
 
 }

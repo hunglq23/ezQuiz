@@ -7,11 +7,46 @@
     <title>Bootstrap demo</title>
 
     <!-- Bootstrap CSS -->
+    <link th:href="@{css/profile-menu.css}" rel="stylesheet" />
     <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
 </head>
 
 <body>
-    <header th:insert="~{index :: header-navbar}" class="bg-light">
+    <header class="bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" id="header-nav" role="navigation"
+            th:fragment="header-navbar">
+            <div class="container">
+                <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto me-2">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/home}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#services">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#team">Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#portfolio">Portfolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                        <div th:replace="~{fragments/profile-menu.html :: profile-menu}"></div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
 
     <h2 class="text-center" style="padding-top: 50px">Question List</h2>
@@ -36,12 +71,13 @@
         <div class="row">
 
             <!-- Iterate through your list of questions -->
-            <div th:each="question : ${questions}" class="col-md-12 ">
+            <div th:each="question, questionStatus : ${questions}" class="col-md-12 ">
                 <div class="card my-2">
                     <div class="card-body">
                         <div class="row my-2">
                             <div class="col">
-                                <h4 class="card-title" th:text="${question.questionCode}">Question Code</h4>
+                                <h4 class="card-title" th:text="'Question ' + ${questionStatus.index + 1}">Question
+                                    Code</h4>
                                 <h6 class="card-text" th:text="${question.text}">Question Content</h6>
                             </div>
                             <div class="col">
@@ -110,7 +146,7 @@
     </div>
 
     <!-- Edit Question Modals (outside the loop) -->
-    <div th:each="question : ${questions}">
+    <div th:each="question, questionStatus : ${questions}">
         <div class="modal fade" th:id="'editQuestionModal' + ${question.questionId}" tabindex="-1"
             aria-labelledby="'editQuestionModalLabel' + ${question.questionId}" aria-hidden="true">
             <div class="modal-dialog">
@@ -121,21 +157,16 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Your edit form for questions goes here -->
                         <form th:action="@{/questions/edit/{id}(id=${question.questionId})}" method="post"
                             id="editQuestionForm">
                             <input type="hidden" name="id" th:value="${question.questionId}" />
+                            <h4 class="card-title" th:text="'Question ' + ${questionStatus.index + 1}">Question
+                                Code</h4>
                             <div class="form-group">
                                 <label for="editText">Content:</label>
                                 <input type="text" class="form-control" id="editText" name="text"
                                     th:value="${question.text}" />
                             </div>
-                            <div class="form-group">
-                                <label for="editQuestionCode">Question Code:</label>
-                                <input type="text" class="form-control" id="editQuestionCode" name="questionCode"
-                                    th:value="${question.questionCode}" />
-                            </div>
-                            <!-- Add other fields as needed -->
                             <div class="d-flex my-2 justify-content-between">
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -163,7 +194,6 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <!-- Your edit form for options goes here -->
                             <form th:action="@{/options/edit/{id}(id=${option?.optionId})}" method="post"
                                 th:object="${option}" id="editOptionForm">
                                 <input type="hidden" name="id" th:value="${option?.optionId}" />
@@ -186,19 +216,14 @@
     </div>
     </div>
 
-    <!-- Bootstrap JavaScript and jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script th:inline="javascript">
         $(document).ready(function () {
-            /* Show corresponding modals when clicking "Edit" links */
             $('.edit-question').on('click', function () {
                 var targetModalId = $(this).attr('th:data-bs-target');
                 $(targetModalId).modal('show');
-
-                // Uncomment the next line if you want to prevent redirection for debugging
-                // return false;
             });
         });
     </script>
