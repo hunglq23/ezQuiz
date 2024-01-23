@@ -12,7 +12,7 @@ import com.group3.ezquiz.model.Question;
 @Repository
 public interface QuestionRepo extends JpaRepository<Question, Long> {
 
-        Question findByText(String text);
+        boolean existsByText(String text);
 
         Question findQuestionByQuestionId(Long questionId);
 

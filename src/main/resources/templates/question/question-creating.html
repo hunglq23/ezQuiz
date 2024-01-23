@@ -19,9 +19,7 @@
                     <h2 class="text-center">Add Question</h2>
 
                     <form th:action="@{/questions/create}" th:object="${question}" method="post">
-                        <!-- Question Code and Content -->
                         <div style="flex-wrap: wrap;">
-
                             <div class="form-group flex-grow-1 my-3">
                                 <label for="text">Question Content:</label>
                                 <textarea class="form-control" id="text" th:field="*{text}" rows="4"

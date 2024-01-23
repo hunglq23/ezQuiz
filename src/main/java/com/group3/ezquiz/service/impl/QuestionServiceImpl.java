@@ -2,9 +2,11 @@ package com.group3.ezquiz.service.impl;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,12 +41,18 @@ public class QuestionServiceImpl implements IQuestionService {
     public void createNewQuestion(HttpServletRequest request, QuestionDto dto, Map<String, String> params) {
         Principal principal = request.getUserPrincipal();
 
+        String questionText = dto.getText();
+        if (questionRepo.existsByText(questionText)) {
+            throw new IllegalArgumentException("A question with the same text already exists.");
+        }
+
         Question question = Question.builder()
                 .text(dto.getText())
                 .isActive(true) // Assuming new questions are active by default
                 .createdBy(userRepo.findByEmail(principal.getName()))
                 .build();
         List<Option> options = new ArrayList<>();
+        Set<String> optionTexts = new HashSet<>();
         boolean atLeastOneCorrectAnswer = false;
         // Iterate through the params to create options
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -52,6 +60,9 @@ public class QuestionServiceImpl implements IQuestionService {
             String optionText = entry.getValue();
             // Check if the key starts with "option"
             if (optionKey.startsWith("option")) {
+                if (!optionTexts.add(optionText)) {
+                    throw new IllegalArgumentException("Duplicate option text found: " + optionText);
+                }
                 boolean isAnswer = params.containsKey("answer" + optionKey.substring("option".length()));
                 Option option = Option.builder()
                         .question(question)
