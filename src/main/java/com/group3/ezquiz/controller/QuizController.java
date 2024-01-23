@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-//@PreAuthorize("hasRole('ROLE_TEACHER')")
+@PreAuthorize("hasRole('ROLE_TEACHER')")
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
@@ -27,15 +27,15 @@ public class QuizController {
             HttpServletRequest http,
             Model model,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "", name="searchTerm") String searchTerm) {
+            @RequestParam(required = false, defaultValue = "", name = "searchTerm") String searchTerm) {
         Page<Quiz> quizList = quizService.listAll(http, searchTerm, PageRequest.of(page, 5));
         model.addAttribute("quizList", quizList);
         model.addAttribute("items", quizList.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", quizList.getTotalPages());
         model.addAttribute("search", searchTerm);
-//        List<Quiz> quizList = quizService.listAll();
-//        model.addAttribute("listQuiz", quizList);
+        // List<Quiz> quizList = quizService.listAll();
+        // model.addAttribute("listQuiz", quizList);
         return "quiz/quiz";
     }
 
