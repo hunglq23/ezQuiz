@@ -33,8 +33,11 @@
   <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
 
   <!-- Bootstrap 5 CSS -->
-  <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
-
+  <link
+          href="vendor/bootstrap/bootstrap.min.css"
+          th:href="@{vendor/bootstrap/bootstrap.min.css}"
+          rel="stylesheet"
+  />
   <!-- Customize CSS -->
   <link th:href="@{css/main.css}" rel="stylesheet" />
 
@@ -61,7 +64,7 @@
           th:fragment="header-navbar"
   >
     <div class="container">
-      <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+      <a class="link-dark navbar-brand site-title mb-0" href="admin">ezQuiz</a>
       <button
               class="navbar-toggler"
               type="button"
@@ -101,62 +104,39 @@
     </div>
   </nav>
 </header>
-
 <section style="background-color: #f4f5f7">
   <div class="container pb-2">
     <div class="row d-flex justify-content-center">
       <div class="col col-lg-10 mb-4 mb-lg-0">
         <div class="card mb-3" style="border-radius: 0.5rem">
           <div class="row g-0">
-            <form th:action="@{/admin/user-management/list}" method="get">
-              <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Search by Email or Name" name="email" th:value="${search}"  />
-                <button class="btn btn-outline-secondary" type="submit">Search</button>
-              </div>
-            </form>
-            <table border="1">
-              <thead>
-              <tr>
-                <th>ID</th>
-                <th>Role</th>
-                <th>Email</th>
-                <th>Full Name</th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="user : ${userList}">
-                <td th:text="${user.id}"></td>
-                <td th:text="${user.role}"></td>
-                <td th:text="${user.email}"></td>
-                <td th:text="${user.fullName}"></td>
-                <td>
-                  <a th:href="@{/admin/user-management/view/{userId}(userId=${user.id})}">View</a>
-                  <a th:href="@{/admin/user-management/update/{userId}(userId=${user.id})}">Update</a>
-                  <a th:href="@{/admin/user-management/delete/{userId}(userId=${user.id})}">Delete</a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-            <div>
-              <ul class="pagination">
-                <li th:class="${currentPage == 0} ? 'disabled' : ''">
-                  <a th:href="@{/admin/user-management/list(page=0,email=${search})}">First</a>
-                </li>
-                <li th:class="${currentPage == 0} ? 'disabled' : ''">
-                  <a th:href="@{/admin/user-management/list(page=${currentPage - 1},email=${search})}">Previous</a>
-                </li>
-                <li th:each="pageNumber : ${#numbers.sequence(0, totalPages-1)}" th:class="${pageNumber == currentPage} ? 'active' : ''">
-                  <a th:href="@{/admin/user-management/list(page=${pageNumber},email=${search})}" th:text="${pageNumber + 1}"></a>
-                </li>
-                <li th:class="${currentPage == totalPages-1} ? 'disabled' : ''">
-                  <a th:href="@{/admin/user-management/list(page=${currentPage + 1},email=${search})}">Next</a>
-                </li>
-                <li th:class="${currentPage == totalPages-1} ? 'disabled' : ''">
-                  <a th:href="@{/admin/user-management/list(page=${totalPages - 1},email=${search})}">Last</a>
-                </li>
-              </ul>
-            </div>
+<form th:object="${userDTO}" th:action="@{'/admin/user-management/' + ${userDTO.id}}" method="post">
+  <label for="role">Role:</label>
+  <input type="text" id="role" name="role" th:field="*{role}" required/><br/>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" th:field="*{email}" required/><br/>
+
+  <label for="fullName">Full Name:</label>
+  <input type="text" id="fullName" name="fullName" th:field="*{fullName}" required/><br/>
+
+  <label for="isEnable">Is Enable:</label>
+  <input type="checkbox" id="isEnable" name="isEnable" th:field="*{isEnable}"/><br/>
+
+  <label for="isVerified">Is Verified:</label>
+  <input type="checkbox" id="isVerified" name="isVerified" th:field="*{isVerified}"/><br/>
+
+  <label for="phone">Phone:</label>
+  <input type="text" id="phone" name="phone" th:field="*{phone}"/><br/>
+
+  <label for="avatar">Avatar:</label>
+  <input type="text" id="avatar" name="avatar" th:field="*{avatar}"/><br/>
+
+  <label for="note">Note:</label>
+  <textarea id="note" name="note" th:field="*{note}"></textarea><br/>
+
+  <button type="submit">Update User</button>
+</form>
           </div>
         </div>
       </div>
