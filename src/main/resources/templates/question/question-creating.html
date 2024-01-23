@@ -21,11 +21,6 @@
                     <form th:action="@{/questions/create}" th:object="${question}" method="post">
                         <!-- Question Code and Content -->
                         <div style="flex-wrap: wrap;">
-                            <div class="form-group my-3">
-                                <label for="questionCode">Question Code:</label>
-                                <input type="text" class="form-control" id="questionCode" th:field="*{questionCode}"
-                                    required />
-                            </div>
 
                             <div class="form-group flex-grow-1 my-3">
                                 <label for="text">Question Content:</label>
