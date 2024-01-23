@@ -28,9 +28,4 @@ public class UserController {
     return "profile";
   }
 
-  @GetMapping()
-  public String getString() {
-    return new String();
-  }
-
 }
