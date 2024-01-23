@@ -17,6 +17,13 @@
             th:fragment="header-navbar">
             <div class="container">
                 <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+                <form th:action="@{/questions}" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search questions..." name="searchTerm"
+                            th:value="${search}">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -50,17 +57,6 @@
     </header>
 
     <h2 class="text-center" style="padding-top: 50px">Question List</h2>
-
-    <!-- Add the search bar form -->
-    <div class="container mt-3">
-        <form th:action="@{/questions}" method="get" class="mb-3">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search questions..." name="searchTerm"
-                    th:value="${search}">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-        </form>
-    </div>
 
     <div class="row">
         <div class="container-fluid text-md-end col-mb-3" style="padding-bottom:15px ">
@@ -110,8 +106,7 @@
                             <a href="#" class="card-link btn btn-sm btn-primary edit-question"
                                 th:data-bs-toggle="'modal'"
                                 th:data-bs-target="'#editQuestionModal' + ${question.questionId}"
-                                data-question-id="${question.questionId}" data-question-text="${question.text}"
-                                data-question-code="${question.questionCode}">
+                                data-question-id="${question.questionId}" data-question-text="${question.text}">
                                 Edit
                             </a>
 

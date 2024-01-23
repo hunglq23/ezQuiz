@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class QuestionDto {
 
-    private String questionCode;
     private String text;
 }
