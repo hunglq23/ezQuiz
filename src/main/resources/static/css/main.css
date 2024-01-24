@@ -303,3 +303,16 @@ login-form input {
 /* .input-before {
   background: :#fff;
 } */
+
+.center{
+  text-align: center;
+  margin-top: 50px;
+}
+
+.text-right {
+  margin: 50px auto; 
+}
+
+.action{
+  margin-bottom: 20px;
+}
