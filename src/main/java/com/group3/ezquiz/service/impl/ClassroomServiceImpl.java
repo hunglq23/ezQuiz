@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Classroom;
@@ -23,13 +26,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Autowired
     private UserRepo userRepo;
 
-    @Override
-    public List<Classroom> getAllClass(String keyword) {
-        if (keyword != null) {
-            return classroomRepo.findAll(keyword);
-        }
-        return classroomRepo.findAll();
-    }
+ 
+   
 
     @Override
     public void deleteClassroomById(Long id) {
@@ -78,4 +76,13 @@ public class ClassroomServiceImpl implements ClassroomService {
                             .creator(userRepo.findByEmail(principal.getName()))
                             .build());
         }
+
+    @Override
+    public Page<Classroom> getAllClass(int pageNumber,  String keyword) {
+       Pageable pageable = PageRequest.of(pageNumber-1, 6);
+    if(keyword != null){
+        return classroomRepo.findAll(keyword,pageable);
+    }
+    return classroomRepo.findAll(pageable);
+    }
     }
