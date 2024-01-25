@@ -12,16 +12,17 @@ import java.util.List;
 
 public interface IQuizService {
 
-
     void createQuiz(HttpServletRequest request, QuizDto quizDto);
 
     Quiz findQuizById(Integer id);
 
     void deleteQuiz(Integer id);
 
-    Page<Quiz> paginated(Integer pageNo, Integer pageSize);
-
     void updateQuiz(HttpServletRequest http, Integer id, QuizDto updateQuiz);
 
     Page<Quiz> listAll(HttpServletRequest http, String searchTerm, Pageable pageable);
+
+    void toggleQuizStatus(Integer id);
+
+    boolean existedQuizByCode(String code);
 }
