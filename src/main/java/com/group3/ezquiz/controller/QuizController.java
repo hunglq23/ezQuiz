@@ -3,10 +3,13 @@ package com.group3.ezquiz.controller;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
+import com.group3.ezquiz.service.impl.QuizServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,12 +48,22 @@ public class QuizController {
         return "quiz/quiz-creating";
     }
 
-    @PostMapping("create")
-    public String createQuiz(HttpServletRequest http, QuizDto quizDto) {
-        // process the form data
-        quizService.createQuiz(http, quizDto);
-        // redirect to the quiz list page after creating a new quiz
-        return "redirect:/quiz";
+//    @PostMapping("create")
+//    public String createQuiz(HttpServletRequest http, QuizDto quizDto, Model model) {
+//        // process the form data
+//        quizService.createQuiz(http, quizDto);
+//        // redirect to the quiz list page after creating a new quiz
+//        return "redirect:/quiz";
+//    }
+
+    @PostMapping("/create")
+    public ResponseEntity<String> createQuiz(HttpServletRequest request, QuizDto quizDto) {
+        try {
+            quizService.createQuiz(request, quizDto);
+            return ResponseEntity.ok("Quiz created successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
+        }
     }
 
     @GetMapping("detail/{id}")
@@ -74,6 +87,12 @@ public class QuizController {
     @GetMapping("/delete/{id}")
     public String deleteQuestion(@PathVariable Integer id) {
         quizService.deleteQuiz(id);
+        return "redirect:/quiz";
+    }
+
+    @GetMapping("/toggle/{id}")
+    public String toggleQuestionStatus(@PathVariable Integer id) {
+        quizService.toggleQuizStatus(id);
         return "redirect:/quiz";
     }
 }
