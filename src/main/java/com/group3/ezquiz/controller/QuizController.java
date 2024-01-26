@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -37,6 +38,8 @@ public class QuizController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", quizList.getTotalPages());
         model.addAttribute("search", searchTerm);
+        String successMessage = (String) http.getSession().getAttribute("successMessage");
+        model.addAttribute("successMessage", successMessage);
         // List<Quiz> quizList = quizService.listAll();
         // model.addAttribute("listQuiz", quizList);
         return "quiz/quiz";
@@ -65,6 +68,8 @@ public class QuizController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
         }
     }
+
+
 
     @GetMapping("detail/{id}")
     public String showQuizDetail(@PathVariable("id") Integer id, Model model) {
