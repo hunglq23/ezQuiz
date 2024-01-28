@@ -38,8 +38,6 @@ public class QuizController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", quizList.getTotalPages());
         model.addAttribute("search", searchTerm);
-        String successMessage = (String) http.getSession().getAttribute("successMessage");
-        model.addAttribute("successMessage", successMessage);
         // List<Quiz> quizList = quizService.listAll();
         // model.addAttribute("listQuiz", quizList);
         return "quiz/quiz";
@@ -63,15 +61,23 @@ public class QuizController {
     public ResponseEntity<String> createQuiz(HttpServletRequest request, QuizDto quizDto) {
         try {
             quizService.createQuiz(request, quizDto);
-            return ResponseEntity.ok("Quiz created successfully");
+            return ResponseEntity.ok("Create Quiz Successfully!");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                    body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
         }
     }
 
 
 
-    @GetMapping("detail/{id}")
+    @GetMapping("edit/{id}")
+    public String showQuizEditForm(@PathVariable("id") Integer id, Model model) {
+        Quiz existedQuiz = quizService.findQuizById(id);
+        model.addAttribute("quiz", existedQuiz);
+        return "quiz/quiz-editing";
+    }
+
+    @GetMapping("/detail/{id}")
     public String showQuizDetail(@PathVariable("id") Integer id, Model model) {
         Quiz existedQuiz = quizService.findQuizById(id);
         model.addAttribute("quiz", existedQuiz);
@@ -82,11 +88,11 @@ public class QuizController {
     public String updateQuiz(
             HttpServletRequest http,
             @PathVariable("id") Integer id,
-            @ModelAttribute("quiz") QuizDto updateQuiz) {
-
+            @ModelAttribute("quiz") QuizDto updateQuiz,
+            RedirectAttributes redirectAttributes) {
         quizService.updateQuiz(http, id, updateQuiz);
-
-        return "redirect:/quiz";
+        redirectAttributes.addAttribute("id", id);
+        return "redirect:/quiz/detail/{id}";
     }
 
     @GetMapping("/delete/{id}")

@@ -50,7 +50,7 @@
                        th:href="@{'/quiz/toggle/' + ${quiz.quizId}}">Status</a></td>
                 <td th:text="${quiz.isExamOnly}? 'Exam Only' : 'Practice'"></td>
                 <td class="justify-content-between">
-                        <a th:href="@{/quiz/detail/{id}(id=${quiz.quizId})}">
+                        <a th:href="@{/quiz/edit/{id}(id=${quiz.quizId})}">
                             <i class="fa fa-edit edit-icon" style="color: #F6BB42"></i>
                         </a>
                     <a th:href="@{/quiz/delete/{id}(id=${quiz.quizId})}">
