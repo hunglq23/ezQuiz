@@ -90,9 +90,9 @@ public class QuizServiceImpl implements IQuizService {
         User userRequesting = getUserRequesting(request);
 
         Quiz existedQuiz = findQuizById(id);
-        if(existedQuizByCode(updateQuiz.getCode())){
-            throw new IllegalArgumentException("A quiz with the same code already existed");
-        }
+//        if(existedQuizByCode(updateQuiz.getCode())){
+//            throw new IllegalArgumentException("A quiz with the same code already existed");
+//        }
         Quiz saveQuiz = Quiz.builder()
                 // unchangeable
                 .quizId(existedQuiz.getQuizId())
