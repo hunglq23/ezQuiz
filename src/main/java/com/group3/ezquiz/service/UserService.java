@@ -4,6 +4,8 @@ import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.UserRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
   void registerUser(UserRequest user);
@@ -11,5 +13,7 @@ public interface UserService {
   User getUserRequesting(HttpServletRequest http);
 
   User getUserByEmail(String email);
+
+  Page<User> getListUser(HttpServletRequest http, String email, Pageable page);
 
 }
