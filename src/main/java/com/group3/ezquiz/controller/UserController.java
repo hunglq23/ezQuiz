@@ -1,5 +1,6 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.payload.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import com.group3.ezquiz.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -44,4 +46,17 @@ public class UserController {
     return "admin/user-list";
   }
 
+  @GetMapping("/admin/create")
+  public String showCreateQuizForm(Model model) {
+    model.addAttribute("user", new UserDto());
+    return "admin/user-create-form";
+  }
+
+  @PostMapping("/admin/create")
+  public String createQuiz(HttpServletRequest http, UserDto userDto) {
+    // process the form data
+    userService.createUser(http, userDto);
+    // redirect to the user list page after creating a new user
+    return "redirect:/admin/list";
+  }
 }
