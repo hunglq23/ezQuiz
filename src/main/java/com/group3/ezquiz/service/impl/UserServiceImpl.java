@@ -1,5 +1,7 @@
 package com.group3.ezquiz.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,5 +53,13 @@ public class UserServiceImpl implements UserService {
   public User getUserByEmail(String email) {
     return userRepo.findByEmail(email);
   }
+
+
+  @Override
+  public Page<User> getListUser(HttpServletRequest http, String email, Pageable page) {
+    return userRepo.getAllUser(email, email, page);
+  }
+
+
 
 }

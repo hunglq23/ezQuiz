@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin1
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/ezquiz
-    password: "123"
+    password: "1234"
   output:
     ansi:
       enabled: always
