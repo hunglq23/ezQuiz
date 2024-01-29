@@ -1,8 +1,11 @@
+
+Hung Luong
 package com.group3.ezquiz.model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,23 +35,25 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "code")
+    // unique
+    @Column(nullable = false, length = 10)
     private String code;
 
-    @Column(name = "_class_name")
+    @Column(nullable = false, length = 100)
     private String className;
 
-    @Column(name = "_description")
+    @Column(nullable = false)
+    private Boolean isEnable;
+
     private String description;
 
-    @Column(name = "_status")
-    private String status;
-
-    @Temporal(TemporalType.DATE)
-    @UpdateTimestamp
     private Date startDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Timestamp createdAt;
+
     @ManyToOne
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_id")
     private User creator;
 }
