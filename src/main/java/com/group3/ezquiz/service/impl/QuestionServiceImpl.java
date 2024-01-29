@@ -95,9 +95,9 @@ public class QuestionServiceImpl implements IQuestionService {
         Question saveQuestion = Question.builder()
                 // unchangeable
                 .questionId(existQuestion.getQuestionId())
-                .options(existQuestion.getOptions())
                 // to update
                 .text(question.getText())
+                .options(question.getOptions())
                 .build();
         questionRepo.save(saveQuestion);
     }

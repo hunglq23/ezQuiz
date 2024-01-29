@@ -1,52 +1,266 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ezQuiz Login Page</title>
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap" />
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap" media="print"
-        onload="this.media='all'" />
-    <noscript>
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap" />
-    </noscript>
-
-    <!-- Remove Bootstrap Icons CSS -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.19.0/font/bootstrap-icons.css" /> -->
-    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" />
-
-    <!-- Bootstrap 5 CSS -->
-    <link href="../static/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" />
-
-    <!-- Customize CSS -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="../static/css/main.css" rel="stylesheet" />
-
+    <link href="../static/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="../static/css/profile-menu.css" rel="stylesheet" />
-
-    <!-- Include Font Awesome -->
     <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
 
+
     <!-- Include your main.js at the end -->
-    <script src="/js/main.js"></script>
+    <title>Practice Quiz</title>
+    <style>
+        body {
+            background-color: #f9f9f9;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+
+        }
+
+        .center-container {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quiz-search {
+            background-color: #f4f4f5;
+            border-radius: 16px;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            border: solid 2px #0000001a;
+        }
+
+        ::placeholder {
+            color: #eee;
+            opacity: 1;
+        }
+
+        .quiz-input {
+            height: 45px;
+            border: none;
+            font-weight: bolder;
+            margin: 10px 0;
+            box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
+        }
+
+        .quiz-input:focus {
+            border-color: none;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .quiz-button {
+            border: none;
+            background-color: rgba(246, 211, 101, 1);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        .div {
+            text-align: center;
+
+        }
+
+        .divider {
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            font-weight: bold;
+            padding-right: 10px;
+            display: inline-block;
+            width: 10%;
+            padding: 0 3px;
+            vertical-align: middle;
+        }
+
+        .div-line {
+            border-bottom: 1px solid #f0f0f0;
+            border-top: 1px solid #f0f0f0;
+            width: 75%;
+            height: 1px;
+            display: inline-block;
+            vertical-align: middle;
+            background-color: gray;
+        }
+
+        .div-line1 {
+            border-bottom: 1px solid #f0f0f0;
+            border-top: 1px solid #f0f0f0;
+            width: 10%;
+            height: 1px;
+            display: inline-block;
+            vertical-align: middle;
+            background-color: gray;
+        }
+
+        .recent-quiz {
+            bottom: 0;
+            width: 100%;
+            padding: 20px 0;
+            height: 236px;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+
+        .bottom-content {
+            position: absolute;
+            width: 100%;
+            padding-top: 50px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px gray;
+            border-radius: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: gray;
+            border-radius: 10px;
+        }
+
+        .card1 {
+            background: #fff;
+            border-radius: 4px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: row;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .card1 h2 {
+            margin: 0;
+            padding: 0 1rem;
+        }
+
+        .card1 .title {
+            padding: 1rem;
+            text-align: right;
+            color: green;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .card1 .desc {
+            padding: 0.5rem 1rem;
+            font-size: 12px;
+        }
+
+        .card1 .actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-items: center;
+            padding: 0.5rem 1rem;
+        }
+
+        .card1-text {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+        }
+
+        .title-total {
+            padding: 2.5em 1.5em 1.5em 1.5em;
+        }
+
+        path {
+            fill: white;
+        }
+
+        .portada {
+            width: 100%;
+            height: 100%;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            background-color: rgba(246, 211, 101, 1);
+            background-position: bottom center;
+            background-size: cover;
+        }
+
+        button {
+            border: none;
+            background: none;
+            font-size: 24px;
+            color: #8bc34a;
+            cursor: pointer;
+            transition: .5s;
+            box-shadow: #000;
+
+            &:hover {
+                color: #4CAF50;
+                transform: rotate(4deg)
+            }
+        }
+
+        .quiz-search1 {
+            background-color: #fff;
+            border-radius: 14px;
+            max-width: 400px;
+            width: 80%;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            align-content: center;
+        }
+
+        .quiz-input1 {
+            height: 35px;
+            border: none;
+            width: 100%;
+            font-weight: bolder;
+            margin: 7px 0;
+        }
+
+        .quiz-input1:focus {
+            border-color: none;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .quiz-button1 {
+            border: none;
+            height: 35px;
+            background-color: rgba(246, 211, 101, 1);
+            color: #fff;
+            width: 95%;
+            margin: 10px;
+            padding: 10px 0px;
+        }
+    </style>
 </head>
 
-<body id="top">
+<body>
     <header class="bg-light">
         <nav class="navbar navbar-expand-lg navbar-light bg-light" id="header-nav" role="navigation"
             th:fragment="header-navbar">
             <div class="container">
-                <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+                <a class="link-dark navbar-brand site-title mb-0" style="font-size: 40px;" href="./">ezQuiz</a>
                 <form th:action="#" method="get" aria-disabled="true">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search questions..." name="searchTerm"
-                            th:value="${search}">
-                        <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search"></i></button>
+                    <div class="quiz-search1" style="margin-left: 100px;">
+                        <div class="col-md-9">
+                            <input type="text" class="form-control quiz-input1" id="joinCode"
+                                placeholder="Enter to search">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" style="font-weight: bold;"
+                                class="btn btn-primary quiz-button "><a><span><i
+                                            class="fas fa-search"></i></span></a></button>
+                        </div>
                     </div>
                 </form>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -80,6 +294,229 @@
             </div>
         </nav>
     </header>
+
+    <div style="padding-top: 50px;margin: 0 0 16px;
+            display: flex;
+            position: relative;
+            justify-content: center;
+            top: auto;
+            left: auto;
+            right: auto; ">
+        <div class="div col-6">
+            <div class="center-container"
+                style="position: relative; border-radius: 10px;box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;">
+                <div class="quiz-search">
+                    <div class="col-md-9">
+                        <input type="text" class="form-control quiz-input" id="joinCode" placeholder="Enter code">
+                    </div>
+                    <div>
+                        <button type="button" style="font-weight: bold;"
+                            class="btn btn-primary quiz-button">Join</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="div col-3">
+            <div class="card1"
+                style="box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;">
+                <div class="card1-text">
+                    <div class="portada">
+                        <!-- Your content for the 'portada' div -->
+                    </div>
+                    <div class="title-total">
+                        <h5>User Name</h5>
+                        <div class="desc">User Description</div>
+                        <div class="actions">
+                            <button><i class="far fa-heart"></i></button>
+                            <button><i class="far fa-envelope"></i></button>
+                            <button><i class="fas fa-user-friends"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Quiz Attempts -->
+    <div class="bottom-content">
+        <div class="container">
+            <div style="justify-content: space-between;
+                            align-items: center;
+                            display: flex;
+                            padding: 20px 0 0 0;">
+                <p style="font-size: 30px;">Recent Quiz</p>
+                <a href="#" style="color: #8854c0;
+                                        background-color: #8854c01a;
+                                        border-radius: 4px;
+                                        padding: 5px 12px;
+                                        font-size: 16px;
+                                        font-weight: 700;
+                                        text-decoration: none;
+                                        transition: all .2s;
+                                        display: inline-block;">See All</a>
+            </div>
+            <div class="row row-cols-1 row-cols-md-5 g-2">
+                <!-- Card 1 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 1</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 2</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 3</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 4</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 4</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="container">
+            <div style="justify-content: space-between;
+                            align-items: center;
+                            display: flex;
+                            padding: 20px 0 0 0;">
+                <p style="font-size: 40px;">Recent Quiz</p>
+                <a href="#" style="color: #8854c0;
+                                        background-color: #8854c01a;
+                                        border-radius: 4px;
+                                        padding: 5px 12px;
+                                        font-size: 16px;
+                                        font-weight: 700;
+                                        text-decoration: none;
+                                        transition: all .2s;
+                                        display: inline-block;">See All</a>
+            </div>
+            <div class="row row-cols-1 row-cols-md-6 g-2">
+                <!-- Card 1 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 1</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 2</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 3</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 4</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 5</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 6</h5>
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 </body>
 
 </html>

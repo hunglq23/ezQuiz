@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="../static/css/main.css" rel="stylesheet" />
+    <link href="../static/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="../static/css/profile-menu.css" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
+
+
+    <!-- Include your main.js at the end -->
+    <title>Practice Quiz</title>
+    <style>
+        body {
+            background-image: linear-gradient(to right top, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+            min-height: 150vh;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .center-container {
+            height: 73vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quiz-search {
+            background-color: #fff;
+            border-radius: 14px;
+            max-width: 400px;
+            width: 80%;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            align-content: center;
+        }
+
+        .quiz-input {
+            height: 35px;
+            border: none;
+            width: 100%;
+            font-weight: bolder;
+            margin: 7px 0;
+        }
+
+        .quiz-input:focus {
+            border-color: none;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .quiz-button {
+            border: none;
+            height: 35px;
+            background-color: rgba(246, 211, 101, 1);
+            color: #fff;
+            width: 95%;
+            margin: 10px;
+            padding: 10px 0px;
+        }
+
+        ::placeholder {
+            color: #eee;
+            opacity: 1;
+        }
+
+
+
+        .div {
+            text-align: center;
+
+        }
+
+        .divider {
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            font-weight: bold;
+            padding-right: 10px;
+            display: inline-block;
+            width: 10%;
+            padding: 0 3px;
+            vertical-align: middle;
+        }
+
+        .div-line {
+            border-bottom: 1px solid #f0f0f0;
+            border-top: 1px solid #f0f0f0;
+            width: 60%;
+            height: 1px;
+            display: inline-block;
+            vertical-align: middle;
+            background-color: gray;
+        }
+
+        .div-line1 {
+            border-bottom: 1px solid #f0f0f0;
+            border-top: 1px solid #f0f0f0;
+            width: 20%;
+            height: 1px;
+            display: inline-block;
+            vertical-align: middle;
+            background-color: gray;
+        }
+
+        .quiz-card {
+            border-radius: 20px;
+            padding: 10px;
+        }
+
+        .recent-quiz {
+            bottom: 0;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .bottom-content {
+            position: absolute;
+            left: 0;
+            width: 100%;
+
+            /* Set z-index as needed */
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px gray;
+            border-radius: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: gray;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 800px) {
+            .quiz-input {
+                padding-left: 34px;
+            }
+
+            .quiz-button {
+                height: 37px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" id="header-nav" role="navigation"
+            th:fragment="header-navbar">
+            <div class="container">
+                <a class="link-dark navbar-brand site-title mb-0" style="font-size: 40px;" href="./">ezQuiz</a>
+                <form th:action="#" method="get" aria-disabled="true">
+                    <div class="quiz-search" style="margin-left: 100px;">
+                        <div class="col-md-9">
+                            <input type="text" class="form-control quiz-input" id="joinCode"
+                                placeholder="Enter to search">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" style="font-weight: bold;"
+                                class="btn btn-primary quiz-button "><a><span><i
+                                            class="fas fa-search"></i></span></a></button>
+                        </div>
+                    </div>
+                </form>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto me-2">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/home}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#services">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#team">Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#portfolio">Portfolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                        <!-- <div th:replace="~{fragments/profile-menu.html :: profile-menu}"></div> -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Centered Quiz Search Bar -->
+    <div class="div" style="position: relative;">
+        <div class="center-container">
+            <img src="../static/images/logo-no-background.png"
+                style="height: 20vh; position: absolute; top: 100px; left: 50%; transform: translateX(-50%); z-index: 2;">
+            <div class="quiz-search">
+                <div class="col-md-8">
+                    <input type="text" class="form-control quiz-input" id="joinCode" placeholder="Enter code">
+                </div>
+                <div class="col-md-4">
+                    <button type="button" style="font-weight: bold;" class="btn btn-primary quiz-button"
+                        th:onclick="|joinQuiz()|">Join</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Recent Quiz Attempts -->
+    <div class="bottom-content">
+        <div class="div">
+            <span class="div-line1" style="margin-bottom:0;"></span>
+            <h3 class="divider">Recent Quiz</h3>
+            <span class="div-line" style="margin-bottom:0;"></span>
+        </div>
+        <div class="container recent-quiz">
+            <div class="row">
+                <div class="col-2">
+                    <div class="card quiz-card">
+                        <div class="card-title" style="text-align: center;">
+                            <h5 class="card-title">Quiz Attempt 1</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="card quiz-card">
+                        <div class="card-title">
+                            <h5 class="card-title">Quiz Attempt 1</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="card quiz-card">
+                        <div class="card-title">
+                            <h5 class="card-title">Quiz Attempt 1</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="card quiz-card">
+                        <div class="card-title">
+                            <h5 class="card-title">Quiz Attempt 1</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">num of ques</p>
+                            <p class="card-text">name</p>
+                            <p class="card-text">Score: 80%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="div" style="margin-bottom: 20px;">
+            <a href="#" class="divider">See All</a>
+        </div>
+    </div>
+
+
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

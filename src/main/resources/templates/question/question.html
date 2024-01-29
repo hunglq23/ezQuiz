@@ -94,9 +94,6 @@
                                             disabled>Answer</button>
                                         <button th:unless="${option.isAnswer}" class="btn btn-sm btn-danger"
                                             disabled>Not Answer</button>
-                                        <a href="@{'/options/edit/' + ${option?.optionId}}"
-                                            class="btn btn-sm btn-primary" th:data-bs-toggle="'modal'"
-                                            th:data-bs-target="'#editOptionModal' + ${option?.optionId}">Edit</a>
                                     </div>
                                 </div>
                             </li>
@@ -144,32 +141,45 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" th:id="'editQuestionModalLabel' + ${question.questionId}">Edit
-                            Question</h5>
+                        <h5 class="modal-title" th:id="'editQuestionModalLabel' + ${question.questionId}">Edit Question
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form th:action="@{/questions/edit/{id}(id=${question.questionId})}" method="post"
-                            id="editQuestionForm">
+                            id="'editQuestionForm' + ${question.questionId}">
                             <input type="hidden" name="id" th:value="${question.questionId}" />
-                            <h4 class="card-title" th:text="'Question ' + ${questionStatus.index + 1}">Question
-                                Code</h4>
-                            <div class="form-group">
-                                <label for="editText">Content:</label>
-                                <input type="text" class="form-control" id="editText" name="text"
-                                    th:value="${question.text}" />
-                            </div>
+                            <h4 class="card-title" th:text="'Question ' + ${questionStatus.index + 1}">Question Code
+                            </h4>
+                            <ul class="list-group">
+                                <div class="form-group">
+                                    <label for="'editQuestionText' + ${question.questionId}">Content:</label>
+                                    <input type="text" class="form-control"
+                                        id="'editQuestionText' + ${question.questionId}" name="text"
+                                        th:value="${question.text}" />
+                                </div>
+                                <li th:each="option, answerStatus : ${question.options}" class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="form-group">
+                                            <label for="'editOptionText' + ${option.optionId}"
+                                                th:text="'answer ' + ${answerStatus.index + 1}">Content:</label>
+                                            <input type="text" class="form-control"
+                                                id="'editOptionText' + ${option.optionId}" name="text"
+                                                th:value="${option.text}" />
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
                             <div class="d-flex my-2 justify-content-between">
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             </div>
-
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Edit Option Modals (outside the loop) -->

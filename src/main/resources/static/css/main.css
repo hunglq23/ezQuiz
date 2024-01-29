@@ -120,6 +120,7 @@ img.avatar {
 }
 
 @media (min-width: 48em) {
+
   .grid-sizer,
   .grid-item {
     width: 25%;
@@ -281,10 +282,6 @@ footer a:not(.nav-link) {
 .no-underline {
   text-decoration: none;
   color: #fff;
-}
-
-.card {
-  margin-top: 15px;
 }
 
 /* Login form */
