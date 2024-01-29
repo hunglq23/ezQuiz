@@ -1,5 +1,6 @@
 package com.group3.ezquiz.service.impl;
 
+import com.group3.ezquiz.payload.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,6 +61,20 @@ public class UserServiceImpl implements UserService {
     return userRepo.getAllUser(email, email, page);
   }
 
+  @Override
+  public void createUser(HttpServletRequest request, UserDto userDto) {
+    userRepo.save(
+            User.builder()
+                    .role(userDto.getRole())
+                    .email(userDto.getEmail())
+                    .fullName(userDto.getFullName())
+                    .password(userDto.getPassword())
+                    .isVerified(userDto.getIsVerified())
+                    .isEnable(userDto.getIsEnable())
+                    .phone(userDto.getPhone())
+                    .note(userDto.getNote())
+                    .build());
+  }
 
 
 }
