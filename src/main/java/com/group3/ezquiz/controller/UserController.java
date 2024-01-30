@@ -12,8 +12,11 @@ import com.group3.ezquiz.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,27 +39,52 @@ public class UserController {
   @GetMapping("/admin/list")
   public String userManagement(HttpServletRequest http, Model model,
                                @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(required = false, defaultValue = "", name = "email") String email) {
-    Page<User> userList = userService.getListUser(http, email, PageRequest.of(page, 3));
+                               @RequestParam(required = false, defaultValue = "", name = "email") String email,
+                               @RequestParam(required = false, defaultValue = "all", name = "status") String statusReq) {
+    Boolean status = Objects.equals(statusReq, "all") ? null : Boolean.valueOf(statusReq);
+    Page<User> userList = userService.getListUser(http, email, status, PageRequest.of(page, 10 ));
     model.addAttribute("userList", userList);
     model.addAttribute("items", userList.getContent());
     model.addAttribute("currentPage", page);
     model.addAttribute("totalPages", userList.getTotalPages());
     model.addAttribute("search", email);
+    model.addAttribute("status", statusReq);
     return "admin/user-list";
   }
 
   @GetMapping("/admin/create")
-  public String showCreateQuizForm(Model model) {
+  public String showCreateUserForm(Model model) {
     model.addAttribute("user", new UserDto());
     return "admin/user-create-form";
   }
 
   @PostMapping("/admin/create")
-  public String createQuiz(HttpServletRequest http, UserDto userDto) {
+  public String createUser(HttpServletRequest http, UserDto userDto) {
     // process the form data
     userService.createUser(http, userDto);
     // redirect to the user list page after creating a new user
+    return "redirect:/admin/list";
+  }
+
+  @GetMapping("/admin/edit/{id}")
+  public String getUserUpdate(Model model,
+                              @PathVariable Long id) {
+    User user = userService.getUserById(id);
+    model.addAttribute("user", user);
+    return "/admin/user-editing";
+  }
+
+  @PostMapping("/admin/update/{id}")
+  public String update(HttpServletRequest http, Model model,
+                       @PathVariable(name = "id") Long id, UserDto user) {
+    userService.update(http, user, id);
+    return "redirect:/admin/list";
+  }
+
+  @GetMapping("/admin/delete/{id}")
+  public String delete(
+          @PathVariable(name = "id") Long id) {
+    userService.delete(id);
     return "redirect:/admin/list";
   }
 }

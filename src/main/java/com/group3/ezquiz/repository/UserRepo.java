@@ -13,7 +13,10 @@ public interface UserRepo extends JpaRepository<User, Long> {
   User findByEmail(String email);
 
   @Query("SELECT u FROM User u WHERE " +
-          "(:email IS NULL OR u.email LIKE %:email%) OR " +
-          "(:name IS NULL OR u.fullName LIKE %:name%)")
-  Page<User> getAllUser(String email, String name, Pageable page);
+          "((:email IS NULL OR u.email LIKE %:email%) OR " +
+          "(:name IS NULL OR u.fullName LIKE %:name%)) " +
+          " AND (:status IS NULL OR u.isEnable = :status)")
+  Page<User> getAllUser(String email,String name, Boolean status, Pageable page);
+
+  User findUserById(Long id);
 }
