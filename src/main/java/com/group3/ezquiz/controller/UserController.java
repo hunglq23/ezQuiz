@@ -75,4 +75,11 @@ public class UserController {
     userService.update(http, user, id);
     return "redirect:/admin/list";
   }
+
+  @GetMapping("/admin/delete/{id}")
+  public String delete(
+          @PathVariable(name = "id") Long id) {
+    userService.delete(id);
+    return "redirect:/admin/list";
+  }
 }

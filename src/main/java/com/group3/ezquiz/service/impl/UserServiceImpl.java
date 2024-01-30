@@ -115,6 +115,11 @@ public class UserServiceImpl implements UserService {
     userRepo.save(saveUser);
   }
 
+  @Override
+  public void delete(Long id) {
+    userRepo.deleteById(id);
+  }
+
   public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {
       super(message);

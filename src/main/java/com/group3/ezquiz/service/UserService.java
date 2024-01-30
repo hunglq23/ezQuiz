@@ -23,4 +23,6 @@ public interface UserService {
 
   void update(HttpServletRequest request,UserDto user, Long id);
 
+  void delete(Long id);
+
 }
