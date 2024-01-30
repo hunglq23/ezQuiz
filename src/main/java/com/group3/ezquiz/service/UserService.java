@@ -15,7 +15,7 @@ public interface UserService {
 
   User getUserByEmail(String email);
 
-  Page<User> getListUser(HttpServletRequest http, String email, Pageable page);
+  Page<User> getListUser(HttpServletRequest http, String email, Boolean status, Pageable page);
 
   void createUser(HttpServletRequest request, UserDto userDto);
 
