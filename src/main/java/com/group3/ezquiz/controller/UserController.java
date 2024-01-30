@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Objects;
+
 @Controller
 @RequiredArgsConstructor
 public class UserController {
@@ -37,13 +39,16 @@ public class UserController {
   @GetMapping("/admin/list")
   public String userManagement(HttpServletRequest http, Model model,
                                @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(required = false, defaultValue = "", name = "email") String email) {
-    Page<User> userList = userService.getListUser(http, email, PageRequest.of(page, 3));
+                               @RequestParam(required = false, defaultValue = "", name = "email") String email,
+                               @RequestParam(required = false, defaultValue = "all", name = "status") String statusReq) {
+    Boolean status = Objects.equals(statusReq, "all") ? null : Boolean.valueOf(statusReq);
+    Page<User> userList = userService.getListUser(http, email, status, PageRequest.of(page, 10 ));
     model.addAttribute("userList", userList);
     model.addAttribute("items", userList.getContent());
     model.addAttribute("currentPage", page);
     model.addAttribute("totalPages", userList.getTotalPages());
     model.addAttribute("search", email);
+    model.addAttribute("status", statusReq);
     return "admin/user-list";
   }
 

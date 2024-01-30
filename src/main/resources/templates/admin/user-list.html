@@ -41,11 +41,17 @@
 <div class="row d-flex justify-content-center">
     <div class="col col-lg-10 mb-4 mb-lg-0">
         <div class="row g-0">
-            <form th:action="@{/list}" method="get">
+            <form th:action="@{/admin/list}" method="get">
                 <div class="input-group mb-3">
                     <label>
                         <input type="text" class="form-control" placeholder="Search by Email or Name" name="email" th:value="${search}"  />
                     </label>
+                    <label for="status"></label>
+                    <select id="status" name="status">
+                        <option value="all">All</option>
+                        <option th:value="false" th:selected="${status == 'false'}">Inactive</option>
+                        <option th:value="true" th:selected="${status == 'true'}">Active</option>
+                    </select>
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </div>
             </form>

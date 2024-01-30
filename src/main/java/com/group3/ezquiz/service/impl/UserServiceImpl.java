@@ -57,10 +57,9 @@ public class UserServiceImpl implements UserService {
     return userRepo.findByEmail(email);
   }
 
-
   @Override
-  public Page<User> getListUser(HttpServletRequest http, String email, Pageable page) {
-    return userRepo.getAllUser(email, email, page);
+  public Page<User> getListUser(HttpServletRequest http, String email, Boolean status, Pageable page) {
+    return userRepo.getAllUser(email, email, status, page);
   }
 
   @Override
