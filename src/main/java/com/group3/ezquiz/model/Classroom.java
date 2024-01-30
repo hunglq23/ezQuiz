@@ -1,5 +1,4 @@
 
-Hung Luong
 package com.group3.ezquiz.model;
 
 import java.sql.Date;
