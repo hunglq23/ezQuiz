@@ -16,4 +16,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
           "(:email IS NULL OR u.email LIKE %:email%) OR " +
           "(:name IS NULL OR u.fullName LIKE %:name%)")
   Page<User> getAllUser(String email, String name, Pageable page);
+
+  User findUserById(Long id);
 }

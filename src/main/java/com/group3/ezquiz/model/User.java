@@ -64,7 +64,7 @@ public class User {
   private Timestamp createdAt;
 
   @Column()
-  private Integer updatedBy;
+  private Long updatedBy;
 
   @Temporal(TemporalType.TIMESTAMP)
   @UpdateTimestamp
