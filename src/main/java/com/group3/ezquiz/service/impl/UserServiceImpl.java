@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.payload.UserRequest;
+import com.group3.ezquiz.payload.RegisterRequest;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.UserService;
 
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void registerUser(UserRequest regUser) {
+  public void registerUser(RegisterRequest regUser) {
     // Validation (include pass)
     // Encrypt password
     String encodedPass = passwordEncoder.encode(regUser.getPassword());
@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
     return userRepo.findByEmail(email);
   }
 
-
   @Override
   public Page<User> getListUser(HttpServletRequest http, String email, Pageable page) {
     return userRepo.getAllUser(email, email, page);
@@ -64,17 +63,16 @@ public class UserServiceImpl implements UserService {
   @Override
   public void createUser(HttpServletRequest request, UserDto userDto) {
     userRepo.save(
-            User.builder()
-                    .role(userDto.getRole())
-                    .email(userDto.getEmail())
-                    .fullName(userDto.getFullName())
-                    .password(userDto.getPassword())
-                    .isVerified(userDto.getIsVerified())
-                    .isEnable(userDto.getIsEnable())
-                    .phone(userDto.getPhone())
-                    .note(userDto.getNote())
-                    .build());
+        User.builder()
+            .role(userDto.getRole())
+            .email(userDto.getEmail())
+            .fullName(userDto.getFullName())
+            .password(userDto.getPassword())
+            .isVerified(userDto.getIsVerified())
+            .isEnable(userDto.getIsEnable())
+            .phone(userDto.getPhone())
+            .note(userDto.getNote())
+            .build());
   }
-
 
 }
