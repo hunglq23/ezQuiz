@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.ClassroomDto;
 import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.repository.UserRepo;
@@ -67,22 +68,34 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public void createClass(HttpServletRequest request, ClassroomDto dto) {
          Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
+              String code = generateClassCode(); //Fix cung code "CODE123456"
 
+              
             // Tiếp tục xử lý khi có người dùng xác thực
             classroomRepo.save(
                     Classroom.builder()
                             .className(dto.getClassName())
                             .description(dto.getDescription())
-                            .creator(userRepo.findByEmail(principal.getName()))
+                            .code(code)
+                            .isEnable(true)
+                            .creator(getUserRequesting(request))
                             .build());
         }
 
-    @Override
-    public Page<Classroom> getAllClass(int pageNumber,  String keyword) {
-       Pageable pageable = PageRequest.of(pageNumber-1, 6);
-    if(keyword != null){
-        return classroomRepo.findAll(keyword,pageable);
+ @Override
+ public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
+     
+     return classroomRepo.getAllClassroom(searchName, PageRequest.of(page -1, 5));  
     }
-    return classroomRepo.findAll(pageable);
+
+    private User getUserRequesting(HttpServletRequest http){
+        Principal userPrincipal = http.getUserPrincipal();
+        String requestingUserByEmail = userPrincipal.getName();
+        User requestingUser = userRepo.findByEmail(requestingUserByEmail) ;
+        return requestingUser;
+    } 
+
+    private String generateClassCode () {
+        return "CODE123456";
     }
-    }
+}
