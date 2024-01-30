@@ -85,7 +85,7 @@ public class ClassroomServiceImpl implements ClassroomService {
  @Override
  public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
      
-     return classroomRepo.getAllClassroom(searchName, PageRequest.of(page -1, 5));  
+     return classroomRepo.getAllClassroom(searchName, PageRequest.of(page, 5));  
     }
 
     private User getUserRequesting(HttpServletRequest http){
