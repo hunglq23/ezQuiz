@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register ezQuiz account</title>
+    <title>ezQuiz Register Page</title>
 
     <link
       rel="preconnect"
@@ -28,12 +28,177 @@
       />
     </noscript>
 
-    <!-- Remove Bootstrap Icons CSS -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.19.0/font/bootstrap-icons.css" /> -->
-
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+
+    <!-- Bootstrap 5 CSS -->
     <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+
+    <!-- Customize CSS -->
     <link th:href="@{css/main.css}" rel="stylesheet" />
+  </head>
+
+  <body id="top">
+    <header>
+      <nav
+        class="navbar navbar-expand-lg"
+        id="header-nav"
+        role="navigation"
+        th:fragment="header-navbar"
+      >
+        <div class="container">
+          <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto me-2">
+              <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#about">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#contact">Contact</a>
+              </li>
+            </ul>
+            <a class="btn btn-primary" href="" th:href="@{/login}">SIGN IN</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-fluid">
+      <div class="section px-8" id="login">
+        <div class="container-narrow">
+          <div class="row justify-content-center">
+            <div
+              class="col-8 bg-light rounded-end"
+              data-aos="zoom-in"
+              data-aos-delay="100"
+            >
+              <div class="text-center mt-2">
+                <h2 class="marker marker-center">SIGN UP</h2>
+              </div>
+              <div class="px-4 py-2">
+                <form
+                  th:action="@{/register}"
+                  th:object="${user}"
+                  method="post"
+                  role="form"
+                >
+                  <div class="form-group my-2">
+                    <label for="fullName" class="form-label fw-bolder"
+                      >Full Name</label
+                    >
+                    <div class="register-input-custom email-input">
+                      <input
+                        class="form-control"
+                        type="text"
+                        th:field="*{fullName}"
+                        id="fullName"
+                        name="fullName"
+                        placeholder="Full Name"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group my-2">
+                    <label for="email" class="form-label fw-bolder"
+                      >Email</label
+                    >
+                    <div class="register-input-custom email-input">
+                      <input
+                        class="form-control"
+                        type="text"
+                        th:field="*{email}"
+                        id="email"
+                        name="email"
+                        placeholder="Email@example"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group my-2">
+                    <label for="password" class="form-label fw-bolder"
+                      >Password
+                    </label>
+                    <div class="register-input-custom password-input">
+                      <input
+                        class="form-control"
+                        type="password"
+                        th:field="*{password}"
+                        id="password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                      />
+                      <span
+                        class="btn-show-pass"
+                        onclick="togglePasswordVisibility('password')"
+                      >
+                        <i
+                          id="password-toggle-icon"
+                          class="fas fa-eye"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="form-group my-2">
+                    <label for="passwordConfirm" class="form-label fw-bolder"
+                      >Confirm Password
+                    </label>
+                    <div class="register-input-custom password-input">
+                      <input
+                        class="form-control"
+                        type="password"
+                        th:field="*{passwordConfirm}"
+                        id="passwordConfirm"
+                        name="passwordConfirm"
+                        placeholder="Password"
+                        required
+                      />
+                      <span
+                        class="btn-show-pass"
+                        onclick="togglePasswordVisibility('passwordConfirm')"
+                      >
+                        <i
+                          id="passwordConfirm-toggle-icon"
+                          class="fas fa-eye"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="my-1 text-center">
+                    <button class="btn btn-primary" type="submit">
+                      SIGN UP
+                    </button>
+                  </div>
+
+                  <div class="divider">or</div>
+                  <div class="row mx-3">
+                    <p>
+                      Already have an account?
+                      <a class="mx-1" th:href="@{/login}">
+                        <strong>Login here!</strong>
+                      </a>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Include Font Awesome -->
     <script
@@ -41,101 +206,6 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- Include your main.js at the end -->
     <script th:src="@{/js/main.js}"></script>
-  </head>
-
-  <body id="top">
-    <header
-      th:insert="~{index.html :: header-navbar}"
-      class="bg-light"
-    ></header>
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6 offset-md-3 my-5">
-          <form
-            class="login-form"
-            th:action="@{/register}"
-            th:object="${user}"
-            method="post"
-          >
-            <div class="form-group my-2">
-              <label for="email" class="form-label fw-bolder">Email</label>
-              <input
-                class="form-control"
-                type="text"
-                th:field="*{email}"
-                id="email"
-                name="email"
-                required
-              />
-              <label for="fullname" class="form-label fw-bolder"
-                >Full Name</label
-              >
-              <input
-                class="form-control"
-                type="text"
-                th:field="*{fullName}"
-                id="fullname"
-                name="fullname"
-                required
-              />
-              <label for="password" class="form-label fw-bolder"
-                >Password</label
-              >
-              <div>
-                <input
-                  class="form-control"
-                  type="password"
-                  th:field="*{password}"
-                  id="password"
-                  name="password"
-                  required
-                />
-                <span
-                  class="btn-show-pass p-viewer"
-                  onclick="togglePasswordVisibility('password')"
-                >
-                  <i
-                    id="password-toggle-icon"
-                    class="fas fa-eye"
-                    aria-hidden="true"
-                  ></i>
-                </span>
-              </div>
-
-              <!-- Confirm Password input with eye icon for visibility toggle -->
-              <label for="confirmPassword" class="form-label fw-bolder"
-                >Confirm Password</label
-              >
-              <div>
-                <input
-                  class="form-control"
-                  type="password"
-                  th:field="*{passwordConfirm}"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  required
-                />
-                <i class="fas fa-eye" id="togglePassword"></i>
-                <span
-                  class="btn-show-pass p-viewer"
-                  onclick="togglePasswordVisibility('confirmPassword')"
-                >
-                  <!-- <i
-                    id="confirmPassword-toggle-icon"
-                    class="fas fa-eye"
-                    aria-hidden="true"
-                  ></i> -->
-                  <i class="fas fa-eye" id="togglePassword"></i>
-                </span>
-              </div>
-            </div>
-            <button class="btn btn-primary" type="submit">Submit form</button>
-          </form>
-        </div>
-      </div>
-    </div>
   </body>
 </html>

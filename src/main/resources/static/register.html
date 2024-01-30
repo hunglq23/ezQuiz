@@ -55,36 +55,6 @@
 
     <!-- Include your main.js at the end -->
     <script src="js/main.js" th:src="@{/js/main.js}"></script>
-
-    <style>
-      .login-right {
-        background: radial-gradient(
-          circle at 3.1% 8.2%,
-          rgb(248, 250, 107) 0%,
-          rgb(238, 148, 148) 98.2%
-        );
-      }
-
-      form i {
-        margin-left: -30px;
-        cursor: pointer;
-      }
-
-      .divider {
-        font-size: 15px;
-        display: flex;
-        align-items: center;
-      }
-
-      .divider::before,
-      .divider::after {
-        flex: 1;
-        content: "";
-        padding: 0.1px;
-        background-color: #9b9898;
-        margin: 5px;
-      }
-    </style>
   </head>
 
   <body id="top">
@@ -118,9 +88,7 @@
                 <a class="nav-link" href="#contact">Contact</a>
               </li>
             </ul>
-            <a class="btn btn-primary" href="" th:href="@{/register}"
-              >SIGN UP</a
-            >
+            <a class="btn btn-primary" href="" th:href="@{/login}">SIGN IN</a>
           </div>
         </div>
       </nav>
@@ -129,28 +97,49 @@
     <div class="container-fluid">
       <div class="section px-8" id="login">
         <div class="container-narrow">
-          <div class="row">
+          <div class="row justify-content-center">
             <div
-              class="col-md-8 bg-light rounded-start"
+              class="col-8 bg-light rounded-end"
               data-aos="zoom-in"
               data-aos-delay="100"
             >
               <div class="text-center mt-2">
-                <h2 class="marker marker-center">SIGN IN</h2>
+                <h2 class="marker marker-center">SIGN UP</h2>
               </div>
               <div class="px-4 py-2">
-                <form th:action="@{/login}" method="post" role="form">
+                <form
+                  th:action="@{/register}"
+                  th:object="${user}"
+                  method="post"
+                  role="form"
+                >
                   <div class="form-group my-2">
-                    <label for="username" class="form-label fw-bolder"
-                      >Email</label
+                    <label for="fullName" class="form-label fw-bolder"
+                      >Full Name</label
                     >
-                    <div class="input-custom email-input">
-                      <span><i class="fas fa-envelope"></i></span>
+                    <div class="register-input-custom email-input">
                       <input
                         class="form-control"
                         type="text"
-                        id="username"
-                        name="username"
+                        th:field="*{fullName}"
+                        id="fullName"
+                        name="fullName"
+                        placeholder="Full Name"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group my-2">
+                    <label for="email" class="form-label fw-bolder"
+                      >Email</label
+                    >
+                    <div class="register-input-custom email-input">
+                      <input
+                        class="form-control"
+                        type="text"
+                        th:field="*{email}"
+                        id="email"
+                        name="email"
                         placeholder="Email@example"
                         required
                       />
@@ -160,13 +149,11 @@
                     <label for="password" class="form-label fw-bolder"
                       >Password
                     </label>
-                    <div class="input-custom password-input">
-                      <span>
-                        <i class="fas fa-lock"></i>
-                      </span>
+                    <div class="register-input-custom password-input">
                       <input
                         class="form-control"
                         type="password"
+                        th:field="*{password}"
                         id="password"
                         name="password"
                         placeholder="Password"
@@ -184,72 +171,48 @@
                       </span>
                     </div>
                   </div>
-                  <div class="row my-1">
-                    <div class="col-6 text-left px-3">
-                      <button class="btn btn-primary" type="submit">
-                        SIGN IN
-                      </button>
-                    </div>
-                    <div class="col-6 text-center mt-1">
-                      <a
-                        class="nav-link px-0 pt-1"
-                        th:href="@{/forgot-password}"
+                  <div class="form-group my-2">
+                    <label for="passwordConfirm" class="form-label fw-bolder"
+                      >Confirm Password
+                    </label>
+                    <div class="register-input-custom password-input">
+                      <input
+                        class="form-control"
+                        type="password"
+                        th:field="*{passwordConfirm}"
+                        id="passwordConfirm"
+                        name="passwordConfirm"
+                        placeholder="Password"
+                        required
+                      />
+                      <span
+                        class="btn-show-pass"
+                        onclick="togglePasswordVisibility('passwordConfirm')"
                       >
-                        Forgot Password
-                      </a>
+                        <i
+                          id="passwordConfirm-toggle-icon"
+                          class="fas fa-eye"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
                     </div>
                   </div>
-                  <div class="row my-2 px-2">
-                    <a
-                      class="btn btn-secondary mt-3 px-0"
-                      th:href="@{oauth2/authorization/google}"
-                      style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                      "
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-google"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M15.545 6.558a9.4 9.4 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.7 7.7 0 0 1 5.352 2.082l-2.284 2.284A4.35 4.35 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.8 4.8 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.7 3.7 0 0 0 1.599-2.431H8v-3.08z"
-                        />
-                      </svg>
-                      <div class="px-2">Continue with Google</div>
-                    </a>
+                  <div class="my-1 text-center">
+                    <button class="btn btn-primary" type="submit">
+                      SIGN UP
+                    </button>
                   </div>
+
                   <div class="divider">or</div>
-                  <div class="row mx-1">
+                  <div class="row mx-3">
                     <p>
-                      Don't have an account yet?
+                      Already have an account?
                       <a class="mx-1" th:href="@{/register}">
-                        <strong>Register</strong>
+                        <strong>Login here!</strong>
                       </a>
                     </p>
                   </div>
                 </form>
-              </div>
-            </div>
-            <div
-              class="col-md-4 rounded-end login-right"
-              data-aos="fade-left"
-              data-aos-delay="300"
-            >
-              <div class="my-5 px-2">
-                <div class="h5">Let’s talk how we can help you!</div>
-                <p>
-                  If you like to work with us then drop us a message using the
-                  contact form.
-                </p>
-                <p>Or get in touch using email, skype or contact number.</p>
-                <p>See you!</p>
-                <h6>From group 3 with love!</h6>
               </div>
             </div>
           </div>

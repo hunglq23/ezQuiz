@@ -287,8 +287,37 @@ footer a:not(.nav-link) {
   margin-top: 15px;
 }
 
+/* Login and Register */
+form i {
+  margin-left: -30px;
+  cursor: pointer;
+}
+
+.divider {
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.divider::before,
+.divider::after {
+  flex: 1;
+  content: "";
+  padding: 0.1px;
+  background-color: #9b9898;
+  margin: 5px;
+}
+
 /* Login form */
-.input-custom {
+.login-right {
+  background: radial-gradient(
+    circle at 3.1% 8.2%,
+    rgb(248, 250, 107) 0%,
+    rgb(238, 148, 148) 98.2%
+  );
+}
+
+.login-input-custom {
   display: flex;
   align-items: center;
   margin-left: 20px;
@@ -300,22 +329,26 @@ login-form input {
   outline: 0;
 }
 
-/* .input-before {
-  background: :#fff;
-} */
+/* Register form */
+.register-input-custom {
+  display: flex;
+  align-items: center;
+}
 
-.center{
+/* Ngoc oi? */
+.center {
   text-align: center;
   margin-top: 50px;
 }
 
 .text-right {
-  margin: 50px auto; 
+  margin: 50px auto;
 }
 
-.action{
+.action {
   margin-bottom: 20px;
 }
+
 .pagination {
   display: flex;
   justify-content: flex-end;
@@ -372,3 +405,4 @@ login-form input {
 .edit-icon:hover {
   color: #007bff; /* Màu xanh khi rê chuột vào */
 }
+

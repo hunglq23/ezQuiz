@@ -28,8 +28,6 @@
       />
     </noscript>
 
-    <!-- Remove Bootstrap Icons CSS -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.19.0/font/bootstrap-icons.css" /> -->
     <link
       rel="icon"
       type="image/x-icon"
@@ -46,45 +44,6 @@
 
     <!-- Customize CSS -->
     <link href="css/main.css" th:href="@{css/main.css}" rel="stylesheet" />
-
-    <!-- Include Font Awesome -->
-    <script
-      src="https://kit.fontawesome.com/b16b259998.js"
-      crossorigin="anonymous"
-    ></script>
-
-    <!-- Include your main.js at the end -->
-    <script src="js/main.js" th:src="@{/js/main.js}"></script>
-
-    <style>
-      .login-right {
-        background: radial-gradient(
-          circle at 3.1% 8.2%,
-          rgb(248, 250, 107) 0%,
-          rgb(238, 148, 148) 98.2%
-        );
-      }
-
-      form i {
-        margin-left: -30px;
-        cursor: pointer;
-      }
-
-      .divider {
-        font-size: 15px;
-        display: flex;
-        align-items: center;
-      }
-
-      .divider::before,
-      .divider::after {
-        flex: 1;
-        content: "";
-        padding: 0.1px;
-        background-color: #9b9898;
-        margin: 5px;
-      }
-    </style>
   </head>
 
   <body id="top">
@@ -144,7 +103,7 @@
                     <label for="username" class="form-label fw-bolder"
                       >Email</label
                     >
-                    <div class="input-custom email-input">
+                    <div class="login-input-custom email-input">
                       <span><i class="fas fa-envelope"></i></span>
                       <input
                         class="form-control"
@@ -160,7 +119,7 @@
                     <label for="password" class="form-label fw-bolder"
                       >Password
                     </label>
-                    <div class="input-custom password-input">
+                    <div class="login-input-custom password-input">
                       <span>
                         <i class="fas fa-lock"></i>
                       </span>
@@ -256,5 +215,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Include Font Awesome -->
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="js/main.js" th:src="@{/js/main.js}"></script>
   </body>
 </html>

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.payload.UserRequest;
+import com.group3.ezquiz.payload.RegisterRequest;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.UserService;
 
@@ -35,12 +35,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void registerUser(UserRequest regUser) {
+  public void registerUser(RegisterRequest regUser) {
     // Validation (include pass)
-    // Encrypt password
+
     String encodedPass = passwordEncoder.encode(regUser.getPassword());
 
-    // Save
     userRepo.save(
         User.builder()
             .email(regUser.getEmail())
@@ -66,16 +65,16 @@ public class UserServiceImpl implements UserService {
   public void createUser(HttpServletRequest request, UserDto userDto) {
     String encodedPass = passwordEncoder.encode(userDto.getPassword());
     userRepo.save(
-            User.builder()
-                    .role(userDto.getRole())
-                    .email(userDto.getEmail())
-                    .fullName(userDto.getFullName())
-                    .password(encodedPass)
-                    .isVerified(userDto.getIsVerified())
-                    .isEnable(userDto.getIsEnable())
-                    .phone(userDto.getPhone())
-                    .note(userDto.getNote())
-                    .build());
+        User.builder()
+            .role(userDto.getRole())
+            .email(userDto.getEmail())
+            .fullName(userDto.getFullName())
+            .password(encodedPass)
+            .isVerified(userDto.getIsVerified())
+            .isEnable(userDto.getIsEnable())
+            .phone(userDto.getPhone())
+            .note(userDto.getNote())
+            .build());
   }
 
   @Override
@@ -96,21 +95,21 @@ public class UserServiceImpl implements UserService {
     User userRequesting = getUserRequesting(request);
     User existedUser = getUserById(id);
     User saveUser = User.builder()
-            // unchangeable
-            .id(existedUser.getId())
-            .createdAt(existedUser.getCreatedAt())
-            .createdBy(existedUser.getCreatedBy())
-            // to update
-            .role(user.getRole())
-            .email(user.getEmail())
-            .fullName(user.getFullName())
-            .password(encodedPass)
-            .isVerified(user.getIsVerified())
-            .isEnable(user.getIsEnable())
-            .phone(user.getPhone())
-            .note(user.getNote())
-            .updatedBy(userRequesting.getId())
-            .build();
+        // unchangeable
+        .id(existedUser.getId())
+        .createdAt(existedUser.getCreatedAt())
+        .createdBy(existedUser.getCreatedBy())
+        // to update
+        .role(user.getRole())
+        .email(user.getEmail())
+        .fullName(user.getFullName())
+        .password(encodedPass)
+        .isVerified(user.getIsVerified())
+        .isEnable(user.getIsEnable())
+        .phone(user.getPhone())
+        .note(user.getNote())
+        .updatedBy(userRequesting.getId())
+        .build();
     userRepo.save(saveUser);
   }
 
