@@ -41,26 +41,32 @@
             <label for="email">Role</label>
             <input th:field="*{role}" type="text" class="form-control" id="role" placeholder="Enter Role" style="align-content: center; width: 450px ">
         </div>
+        <span th:if="${#fields.hasErrors('role')}" style="color: red" th:errors="*{role}"></span ><br/>
         <div class="form-group">
             <label for="full_name">Full Name</label>
             <input th:field="*{fullName}" type="text" class="form-control" id="full_name" placeholder="Enter Full Name" style="align-content: center; width: 450px ">
         </div>
+        <span th:if="${#fields.hasErrors('fullName')}" style="color: red" th:errors="*{fullName}"></span ><br/>
         <div class="form-group">
             <label for="email">Email</label>
             <input th:field="*{email}" type="email" class="form-control" id="email" placeholder="Enter Email" style="align-content: center; width: 450px ">
         </div>
+        <span th:if="${#fields.hasErrors('email')}" style="color: red" th:errors="*{email}"></span ><br/>
         <div class="form-group">
             <label for="password">Password</label>
-            <input th:field="*{password}" type="password" class="form-control" id="password" placeholder="Enter Email" style="align-content: center; width: 450px ">
+            <input th:field="*{password}" type="password" class="form-control" id="password" placeholder="Enter Password" style="align-content: center; width: 450px ">
         </div>
+        <span th:if="${#fields.hasErrors('password')}" style="color: red" th:errors="*{password}"></span ><br/>
         <div class="form-group">
             <label for="phone">Phone Number</label>
             <input th:field="*{phone}" type="text" class="form-control" id="phone" placeholder="Enter Phone Number" style="align-content: center; width: 450px ">
         </div>
+        <span th:if="${#fields.hasErrors('phone')}" style="color: red" th:errors="*{phone}"></span ><br/>
         <div class="form-group">
             <label for="note">Note</label>
             <input th:field="*{note}" type="text" class="form-control" id="note" placeholder="Enter Note" style="align-content: center; width: 450px ">
         </div>
+        <span th:if="${#fields.hasErrors('note')}" style="color: red" th:errors="*{note}"></span ><br/>
         <div class="form-group">
             <label for="isEnable">Is Enable:</label>
             <input type="checkbox" id="isEnable" name="isEnable" th:field="*{isEnable}"/><br/>
