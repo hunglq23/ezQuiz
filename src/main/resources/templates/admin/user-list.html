@@ -70,7 +70,7 @@
                                 th:class="${user.isEnable} ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'">
                     </button></td>
                     <td>
-                        <a th:href="@{/update(id=${user.id})}" title="Edit">
+                        <a th:href="@{/admin/edit/{id}(id=${user.id})}" title="Edit">
                             <i class="fa fa-edit edit-icon" style="color: #f6bb42"></i>
                         </a>
                         <!--                  <a th:href="@{/delete/{userId}(userId=${user.id})}" title="Delete">-->
@@ -78,6 +78,8 @@
                         <!--                  </a>-->
                         <a href="#" th:onclick="'confirmDelete(' + ${user.id} + ')'" title="Delete">
                             <i class="fa fa-trash delete-icon" style="color: #f6bb42"></i>
+                        </a>
+                    </td>
                 </tbody>
             </table>
             <div>

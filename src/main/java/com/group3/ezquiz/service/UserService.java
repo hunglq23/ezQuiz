@@ -18,4 +18,9 @@ public interface UserService {
   Page<User> getListUser(HttpServletRequest http, String email, Pageable page);
 
   void createUser(HttpServletRequest request, UserDto userDto);
+
+  User getUserById(Long id);
+
+  void update(HttpServletRequest request,UserDto user, Long id);
+
 }
