@@ -284,8 +284,44 @@ footer a:not(.nav-link) {
   color: #fff;
 }
 
+<<<<<<< HEAD
+=======
+.card {
+  margin-top: 15px;
+}
+
+/* Login and Register */
+form i {
+  margin-left: -30px;
+  cursor: pointer;
+}
+
+.divider {
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.divider::before,
+.divider::after {
+  flex: 1;
+  content: "";
+  padding: 0.1px;
+  background-color: #9b9898;
+  margin: 5px;
+}
+
+>>>>>>> 69a051941a31422073e86fc4c31ac8465cb5e379
 /* Login form */
-.input-custom {
+.login-right {
+  background: radial-gradient(
+    circle at 3.1% 8.2%,
+    rgb(248, 250, 107) 0%,
+    rgb(238, 148, 148) 98.2%
+  );
+}
+
+.login-input-custom {
   display: flex;
   align-items: center;
   margin-left: 20px;
@@ -297,6 +333,86 @@ login-form input {
   outline: 0;
 }
 
+<<<<<<< HEAD
 /* .input-before {
   background: :#fff;
 } */
+=======
+/* Register form */
+.register-input-custom {
+  display: flex;
+  align-items: center;
+}
+
+/* Ngoc oi? */
+.center {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.text-right {
+  margin: 50px auto;
+}
+
+.action {
+  margin-bottom: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li {
+  display: inline-block;
+  margin-right: 1px; /* Khoảng cách giữa các thành phần */
+}
+
+.pagination li:last-child {
+  margin-right: 0; /* Không có khoảng cách với phần tử cuối cùng */
+}
+
+.pagination a {
+  display: block;
+  padding: 5px 10px;
+  text-decoration: none;
+  /*border: 1px solid #ddd;*/
+  color: #333;
+}
+
+.pagination a:hover {
+  background-color: #f5f5f5;
+}
+.pagination li.disabled a {
+  pointer-events: none;
+  color: #6c757d; /* Màu chữ cho trạng thái disabled */
+  background-color: #f8f9fa; /* Màu nền cho trạng thái disabled */
+  border: 1px solid #dee2e6; /* Biên cho trạng thái disabled */
+}
+.pagination li.active {
+  background-color: #007bff; /* Màu nền cho trạng thái active */
+  color: #fff; /* Màu chữ cho trạng thái active */
+  border-color: #007bff; /* Biên cho trạng thái active */
+}
+.delete-icon {
+  color: #000; /* Màu mặc định của biểu tượng */
+  cursor: pointer;
+  transition: color 0.3s ease; /* Hiệu ứng chuyển đổi màu */
+}
+
+.delete-icon:hover {
+  color: #ff0000; /* Màu đỏ khi rê chuột vào */
+}
+.edit-icon {
+  color: #000; /* Màu mặc định của biểu tượng */
+  cursor: pointer;
+  transition: color 0.3s ease; /* Hiệu ứng chuyển đổi màu */
+}
+
+.edit-icon:hover {
+  color: #007bff; /* Màu xanh khi rê chuột vào */
+}
+
+>>>>>>> 69a051941a31422073e86fc4c31ac8465cb5e379

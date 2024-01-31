@@ -3,7 +3,7 @@ package com.group3.ezquiz.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import com.group3.ezquiz.payload.UserRequest;
+import com.group3.ezquiz.payload.RegisterRequest;
 import com.group3.ezquiz.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,24 +17,27 @@ public class AuthController {
   private final UserService userService;
 
   @GetMapping("/")
-  public String landingPage() {
+  public String getLandingPage() {
     return "index";
   }
 
   @GetMapping("/register")
-  public String register(Model model) {
-    model.addAttribute("user", new UserRequest());
+  public String getRegisterPage(HttpServletRequest request, Model model) {
+    if (request.getUserPrincipal() != null) {
+      return "redirect:/home";
+    }
+    model.addAttribute("user", new RegisterRequest());
     return "register";
   }
 
   @PostMapping("/register")
-  public String registerUser(UserRequest user) {
+  public String submitRegisterForm(RegisterRequest user) {
     userService.registerUser(user);
     return "redirect:/login";
   }
 
   @GetMapping("/login")
-  public String login(HttpServletRequest request) {
+  public String getLoginPage(HttpServletRequest request) {
     if (request.getUserPrincipal() != null) {
       return "redirect:/home";
     }

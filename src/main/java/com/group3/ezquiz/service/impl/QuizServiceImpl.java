@@ -1,9 +1,10 @@
 package com.group3.ezquiz.service.impl;
 
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.QuizDto;
-import com.group3.ezquiz.repository.QuizRepository;
+import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IQuizService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,14 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements IQuizService {
 
-    private final QuizRepository quizRepository;
+    private final QuizRepo quizRepository;
     private final UserRepo userRepo;
 
     @Override
@@ -30,8 +30,25 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
-    public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
+    public void toggleQuizStatus(Integer id) {
+        Quiz existedQuiz = quizRepository.findQuizByQuizId(id);
 
+        if (existedQuiz != null) {
+            existedQuiz.setIsActive(!existedQuiz.getIsActive());
+            quizRepository.save(existedQuiz);
+        }
+    }
+
+    @Override
+    public boolean existedQuizByCode(String code) {
+        return quizRepository.existsQuizByCode(code);
+    }
+
+    @Override
+    public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
+        if(existedQuizByCode(quizDto.getCode())){
+            throw new IllegalArgumentException("A quiz with the same code already existed");
+        }
         quizRepository.save(
                 Quiz.builder()
                         .code(quizDto.getCode())
@@ -68,17 +85,14 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
-    public Page<Quiz> paginated(Integer pageNo, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        return quizRepository.findAll(pageable);
-    }
-
-    @Override
     public void updateQuiz(HttpServletRequest request, Integer id, QuizDto updateQuiz) {
 
         User userRequesting = getUserRequesting(request);
 
         Quiz existedQuiz = findQuizById(id);
+//        if(existedQuizByCode(updateQuiz.getCode())){
+//            throw new IllegalArgumentException("A quiz with the same code already existed");
+//        }
         Quiz saveQuiz = Quiz.builder()
                 // unchangeable
                 .quizId(existedQuiz.getQuizId())
@@ -95,11 +109,19 @@ public class QuizServiceImpl implements IQuizService {
         quizRepository.save(saveQuiz);
     }
 
+
+
     public class ResourceNotFoundException extends RuntimeException {
         public ResourceNotFoundException(String message) {
             super(message);
         }
     }
+
+//    public class DuplicateException extends RuntimeException {
+//        public DuplicateException(String message) {
+//            super(message);
+//        }
+//    }
 
     private User getUserRequesting(HttpServletRequest http) {
         Principal userPrincipal = http.getUserPrincipal();

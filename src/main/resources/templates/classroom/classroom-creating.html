@@ -3,24 +3,102 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Classes</title>
+    <title>ezQuiz ClassList</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+
+    <!-- Remove Bootstrap Icons CSS -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.19.0/font/bootstrap-icons.css" /> -->
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+
+    <!-- Bootstrap 5 CSS -->
+    <link th:href="@{/vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+
+    <!-- Customize CSS -->
+    <link th:href="@{/css/main.css}" rel="stylesheet" />
+
+    <!-- Include Font Awesome -->
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Include your main.js at the end -->
+    <script th:src="@{/js/main.js}"></script>
   </head>
   <body>
+    <header class="bg-light">
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light"
+        id="header-nav"
+        role="navigation"
+        th:fragment="header-navbar"
+      >
+        <div class="container">
+          <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto me-2">
+              <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#myLibrary">My Library</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">My Class</a>
+              </li>
+              <div
+              th:replace="~{fragments/profile-menu.html :: profile-menu}"
+            ></div>
+            </ul>
+            
+          </div>
+        </div>
+      </nav>
+    </header>
     <div class="container">
-      <h1>Create a new Classroom</h1>
+      <h1 class="center">Create a new Classroom</h1>
       <hr />
       <form
         th:action="@{/classroom/create}"
         th:object="${classroom}"
         method="POST"
       >
-        <!-- <input type="hidden" name="user_id" value="1" th:field="*{userId}" /> -->
         <div class="form-group">
           <label for="exampleFormControlInput1">Class Name</label>
           <input
@@ -28,6 +106,7 @@
             class="form-control"
             id="exampleFormControlInput1"
             th:field="*{className}"
+            required
           />
         </div>
         <div class="form-group">
@@ -43,11 +122,14 @@
         </div>
         <hr />
         <button type="submit" class="btn btn-outline-success">Save</button>
-        <button type="submit" class="btn btn-outline-warning">
-          <a th:href="@{/}">Back Home</a>
-        </button>
+        <input type="button" onclick="history.back();" value="Back" class="btn btn-outline-warning">
       </form>
       <br />
     </div>
+    <script>
+      function backToClassList() {
+        window.location.href = "/teacher/classlist";
+      }
+    </script>
   </body>
 </html>

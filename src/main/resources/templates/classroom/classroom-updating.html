@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ezQuiz ClassList</title>
+    <title>ezQuiz Classroom Management System</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -52,8 +52,7 @@
     <!-- Include your main.js at the end -->
     <script th:src="@{/js/main.js}"></script>
   </head>
-
-  <body id="top">
+  <body>
     <header class="bg-light">
       <nav
         class="navbar navbar-expand-lg navbar-light bg-light"
@@ -83,37 +82,49 @@
               <li class="nav-item">
                 <a class="nav-link" href="#">My Class</a>
               </li>
+              <div
+              th:replace="~{fragments/profile-menu.html :: profile-menu}"
+            ></div>
             </ul>
-            <a class="btn btn-primary" th:href="@{/logout}">SIGN OUT</a>
+            
           </div>
         </div>
       </nav>
     </header>
     <div class="container">
-      <div class="row d-flex justify-content-between text-right">
-        <div class="col-sm-4">
-          <input type="text" class="form-control" placeholder="Search" />
+      <h3 class="center">Update Classroom</h3>
+      <hr />
+      <form
+        th:action="@{/classroom/update/{id}(id=${classroom.id})}"
+        th:object="${classroom}"
+        method="POST"
+      >
+         <input type="hidden"  th:field="*{id}" />
+        <div class="form-group">
+          <label for="exampleFormControlInput1">Class Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="exampleFormControlInput1"
+            th:field="*{className}"
+          />
         </div>
-        <div class="col-md-4 offset-md-4">
-          <button class="btn btn-success">
-            <a th:href="@{/classroom/create}" class="no-underline"
-              >Create a class</a
-            >
-          </button>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Description</label
+          >
+          <textarea
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+            th:field="*{description}"
+          ></textarea>
         </div>
-      </div>
-    
-
-      <div class="row">
-        <div class="col-sm-6" th:each="classroom : ${listClass}">
-          <div class="card">
-            <div class="card-body">
-              <h6 class="card-title" th:text="${classroom.className}"></h6>
-              <p class="card-text" th:text="${classroom.description}"></p>
-            </div>
-          </div>
-        </div>
-      </div> 
+        <hr />
+        <button type="submit" class="btn btn-outline-success">Save</button>
+        <input type="button" onclick="history.back();" value="Back" class="btn btn-outline-warning">
+      </form>
+      <br />
     </div>
   </body>
 </html>

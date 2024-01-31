@@ -32,7 +32,7 @@ public class User {
   @Column(nullable = false, unique = true, length = 100)
   private String email;
 
-  @Column(name = "password", nullable = false)
+  @Column(nullable = false)
   private String password;
 
   @Column(nullable = false)
@@ -48,27 +48,21 @@ public class User {
   private String phone;
 
   @Column(length = 500)
-  private String avatar;
+  private String avatarUrl;
 
-  @Column()
   private String note;
 
-  @Column()
   private String token;
 
-  @Column()
-  private Integer createdBy;
+  private Long createdId;
 
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp
   private Timestamp createdAt;
 
-  @Column()
-  private Integer updatedBy;
-
   @Temporal(TemporalType.TIMESTAMP)
   @UpdateTimestamp
-  private Timestamp updateAt;
+  private Timestamp updatedAt;
 
   @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
   private List<Quiz> quizCreated;

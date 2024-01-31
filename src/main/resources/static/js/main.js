@@ -85,7 +85,10 @@ function togglePasswordVisibility(passwordFieldId) {
     `${passwordFieldId}-toggle-icon`
   );
 
-  if (passwordField.type === "password") {
+  if (
+    passwordField.type === "password" ||
+    passwordField.type === "passwordConfirm"
+  ) {
     passwordField.type = "text";
     passwordToggleIcon.classList.remove("fa-eye");
     passwordToggleIcon.classList.add("fa-eye-slash");
