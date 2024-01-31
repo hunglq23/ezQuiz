@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,9 +27,6 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options;
-
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> answers;
 
     @Column(name = "text", nullable = false, length = 500)
     private String text;
@@ -53,4 +51,10 @@ public class Question {
 
     @Column(name = "value")
     private String value;
+
+    public void addOption(Option option) {
+        this.options.add(option);
+        option.setQuestion(this);
+    }
+
 }

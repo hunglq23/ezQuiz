@@ -18,7 +18,7 @@ public interface IQuestionService {
 
     Page<Question> listAll(HttpServletRequest http, String searchTerm, Pageable pageable);
 
-    void updateQuestion(Long id, Question question) throws NotFoundException;
+    void updateQuestion(Long id, Question updatedQuestion);
 
     void deleteQuestion(Long id);
 

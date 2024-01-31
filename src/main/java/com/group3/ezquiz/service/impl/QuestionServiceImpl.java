@@ -23,6 +23,7 @@ import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
 public class QuestionServiceImpl implements IQuestionService {
@@ -37,7 +38,6 @@ public class QuestionServiceImpl implements IQuestionService {
     private UserRepo userRepo;
 
     @Override
-
     public void createNewQuestion(HttpServletRequest request, QuestionDto dto, Map<String, String> params) {
         Principal principal = request.getUserPrincipal();
 
@@ -48,7 +48,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
         Question question = Question.builder()
                 .text(dto.getText())
-                .isActive(true) // Assuming new questions are active by default
+                .isActive(true)
                 .createdBy(userRepo.findByEmail(principal.getName()))
                 .build();
         List<Option> options = new ArrayList<>();
@@ -70,7 +70,6 @@ public class QuestionServiceImpl implements IQuestionService {
                         .isAnswer(isAnswer)
                         .build();
                 options.add(option);
-                // Check if the current option is a correct answer
                 if (isAnswer) {
                     atLeastOneCorrectAnswer = true;
                 }
@@ -89,17 +88,38 @@ public class QuestionServiceImpl implements IQuestionService {
         return questionRepo.getAllQuestions(searchTerm, pageable);
     }
 
-    public void updateQuestion(Long id, Question question) {
-        // Check if the question with the given ID exists
-        Question existQuestion = questionRepo.findQuestionByQuestionId(id);
-        Question saveQuestion = Question.builder()
-                // unchangeable
-                .questionId(existQuestion.getQuestionId())
-                // to update
-                .text(question.getText())
-                .options(question.getOptions())
-                .build();
-        questionRepo.save(saveQuestion);
+    @Transactional
+    public void updateQuestion(Long id, Question updatedQuestion) {
+        Question existingQuestion = questionRepo.findById(id).orElse(null);
+
+        if (existingQuestion != null) {
+            existingQuestion.setText(updatedQuestion.getText());
+
+            // Update existing options or add new options
+            if (updatedQuestion.getOptions() != null) {
+                for (Option updatedOption : updatedQuestion.getOptions()) {
+                    // Find the existing option by optionId
+                    Option existingOption = findOptionById(existingQuestion.getOptions(), updatedOption.getOptionId());
+
+                    if (existingOption != null) {
+                        // Update the existing option
+                        existingOption.setText(updatedOption.getText());
+                        existingOption.setAnswer(updatedOption.isAnswer());
+                    } else {
+                        // If option not found, add it to the list
+                        existingQuestion.addOption(updatedOption);
+                    }
+                }
+            }
+            questionRepo.save(existingQuestion);
+        }
+    }
+
+    private Option findOptionById(List<Option> options, Long optionId) {
+        return options.stream()
+                .filter(option -> option.getOptionId().equals(optionId))
+                .findFirst()
+                .orElse(null);
     }
 
     public class ResourceNotFoundException extends RuntimeException {

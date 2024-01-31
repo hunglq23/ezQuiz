@@ -20,7 +20,7 @@ public class Option {
     @Column(name = "option_id")
     private Long optionId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "question_id")
     private Question question;
 
