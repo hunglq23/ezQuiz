@@ -81,9 +81,9 @@ public class UserServiceImpl implements UserService {
   public User getUserById(Long id) {
     User userById = userRepo.findUserById(id);
     if (userById != null) {
-      if (userById.getUpdatedBy() == null) {
-        userById.setUpdateAt(null);
-      }
+      // if (userById.getUpdatedBy() == null) {
+      // userById.setUpdateAt(null);
+      // }
       return userById;
     }
     throw new ResourceNotFoundException("Cannot find user with" + id);
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
         // unchangeable
         .id(existedUser.getId())
         .createdAt(existedUser.getCreatedAt())
-        .createdBy(existedUser.getCreatedBy())
+        // .createdBy(existedUser.getCreatedBy())
         // to update
         .role(user.getRole())
         .email(user.getEmail())
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         .isEnable(user.getIsEnable())
         .phone(user.getPhone())
         .note(user.getNote())
-        .updatedBy(userRequesting.getId())
+        // .updatedBy(userRequesting.getId())
         .build();
     userRepo.save(saveUser);
   }
