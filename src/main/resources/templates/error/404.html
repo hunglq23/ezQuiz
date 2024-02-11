@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" th:xmlns="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 Error</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+
+    <link rel="icon" type="image/x-icon" th:href="@{../images/favicon.ico}" />
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <section class="my-5">
+      <div
+        class="container pt-1 pb-3 bg-light min-vh-50 d-flex justify-content-center align-items-center"
+        style="max-width: 999px"
+      >
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <h1 class="fw-bold display-1">404</h1>
+            <p class="h2">Sorry, we can’t find the page you’re looking for.</p>
+            <p>Click the button below to go back to the homepage</p>
+            <a class="btn btn-primary" th:href="@{/home}" role="button"
+              >Go to Homepage</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
