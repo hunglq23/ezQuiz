@@ -3,7 +3,6 @@ package com.group3.ezquiz.controller;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
-import com.group3.ezquiz.service.impl.QuizServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,16 +15,58 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@PreAuthorize("hasRole('ROLE_TEACHER')")
+@PreAuthorize("hasAnyRole('LEARNER', 'TEACHER')")
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
 
     private final IQuizService quizService;
 
+    @GetMapping("/search?code=23847da234asf")
+    public String search() {
+        return null;
+    }
+
+    @PreAuthorize("hasRole('ROLE_LEARNER')")
+    @GetMapping("/assigned-list")
+    public String assigned() {
+        return null;
+    }
+
+    @PreAuthorize("hasRole('ROLE_LEARNER')")
+    @GetMapping("/taken-list")
+    public String joinedList() {
+        return null;
+    }
+
+    @PreAuthorize("hasRole('ROLE_LEARNER')")
+    @GetMapping("/{id}/start/{quiz-taking-id}?exam=0")
+    public String takeAQuiz() {
+        return null;
+    }
+
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    @GetMapping("/{id}/edit")
+    public String getQuizEditPage(
+            HttpServletRequest request,
+            @PathVariable String id,
+            Model model) {
+        Quiz quiz = quizService.getQuizById(id);
+        model.addAttribute("quiz", quiz);
+        return "quiz/quiz-editing";
+    }
+
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    @GetMapping("/assignable-list")
+    public String getAssignableQuiz() {
+        return null;
+    }
+
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping("")
     public String showQuizList(
             HttpServletRequest http,
@@ -43,19 +84,11 @@ public class QuizController {
         return "quiz/quiz";
     }
 
-    @GetMapping("create")
+    @GetMapping("/create")
     public String showCreateQuizForm(Model model) {
         model.addAttribute("quiz", new QuizDto());
         return "quiz/quiz-creating";
     }
-
-//    @PostMapping("create")
-//    public String createQuiz(HttpServletRequest http, QuizDto quizDto, Model model) {
-//        // process the form data
-//        quizService.createQuiz(http, quizDto);
-//        // redirect to the quiz list page after creating a new quiz
-//        return "redirect:/quiz";
-//    }
 
     @PostMapping("/create")
     public ResponseEntity<String> createQuiz(HttpServletRequest request, QuizDto quizDto) {
@@ -63,12 +96,9 @@ public class QuizController {
             quizService.createQuiz(request, quizDto);
             return ResponseEntity.ok("Create Quiz Successfully!");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).
-                    body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
         }
     }
-
-
 
     @GetMapping("edit/{id}")
     public String showQuizEditForm(@PathVariable("id") Integer id, Model model) {

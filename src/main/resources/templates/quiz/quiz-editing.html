@@ -1,77 +1,446 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Quiz Update</title>
-    <link th:href="@{../../vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
-    <link th:href="@{../../css/main.css}" rel="stylesheet" />
-</head>
-<body>
-<header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
-<div>
-    <h2 class="justify-content-center" style="display: flex; padding-top: 15px">UPDATE QUIZ</h2>
-</div>
-<div class="container" style="padding-top: 15px">
-    <form th:action="@{/quiz/update/{id}(id=${quiz.quizId})}" th:object="${quiz}" method="post">
-        <div class="container justify-content-center" style="display: flex" >
-            <div class="col-md-5">
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Quiz Code</label>
-                    <input th:field="*{code}" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Quiz Code" style="align-content: center; width: 450px">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Quiz Title</label>
-                    <input th:field="*{title}" type="text" class="form-control" id="exampleFormControlInput2" placeholder="Quiz Title"
-                           style="align-content: center; width: 450px ">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-                    <textarea th:field="*{description}" class="form-control" id="exampleFormControlTextarea1" rows="3"
-                              style="align-content: center; width: 450px "></textarea>
-                </div>
-                <div style="display:flex">
-                    <div class="form-check">
-                        <input th:field="*{isExamOnly}" th:checked="${quiz.isExamOnly eq 1}" class="form-check-input" type="radio" name="is_exam_only" id="flexRadioDefault1" value="1">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Exam Only
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input th:field="*{isExamOnly}" th:checked="${quiz.isExamOnly eq 0}" class="form-check-input" type="radio" name="is_exam_only" id="flexRadioDefault2" value="0">
-                        <label class="form-check-label" for="flexRadioDefault2">
-                            Practice
-                        </label>
-                    </div>
-                </div>
-                <div class="form-check">
-                    <input th:field="*{isActive}" class="form-check-input" type="checkbox" name="is_active" value="1" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        Active
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Created At</label>
-                    <input th:field="*{createdAt}" type="text" class="form-control" id="exampleFormControlInput3" readonly style="align-content: center; width: 450px">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Updated At</label>
-                    <input th:field="*{updateAt}" type="text" class="form-control" id="exampleFormControlInput4" readonly
-                           style="align-content: center; width: 450px ">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Created By</label>
-                    <input th:field="*{createdBy.fullName}" type="text" class="form-control" id="exampleFormControlInput5" readonly
-                           style="align-content: center; width: 450px ">
-                </div>
-            </div>
-        </div>
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">Update</button>
-        </div>
+<html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quiz Editting Page</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      th:href="@{../../images/favicon.ico}"
+    />
 
-    </form>
-</div>
-</body>
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+    <link
+      href="../vendor/bootstrap/bootstrap.min.css"
+      th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../css/main.css"
+      th:href="@{../../css/main.css}"
+      rel="stylesheet"
+    />
+
+    <style>
+      .page-content {
+        padding-left: 5%;
+        padding-right: 3%;
+        min-height: 90vh;
+      }
+
+      #left-content {
+        min-width: 300px;
+        max-width: 345px;
+      }
+
+      #right-content {
+        max-width: 789px;
+      }
+
+      .border {
+        border-color: rgba(229, 229, 229, 1) !important;
+      }
+
+      .bd-left {
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+        text-align: left;
+      }
+
+      .divider {
+        color: rgba(0, 0, 0, 0.2);
+        font-size: small;
+      }
+
+      .left-content-divider::before {
+        display: none;
+      }
+
+      .qcard-tool:hover {
+        background-color: buttonface;
+        border: none;
+      }
+
+      .answer-divider::before {
+        flex: none;
+        width: 60px;
+        margin-left: 10px;
+      }
+
+      .answer-divider::after {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="bg-light">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+          <a class="btn btn-sm mx-2 px-3 bd-left" href="">Quiz Title</a>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto me-2">
+              <!-- <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#about">About</a>
+              </li> -->
+            </ul>
+            <a class="btn btn-sm btn-primary px-2"
+              ><i class="fas fa-save me-1"></i> SAVE</a
+            >
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="page-content bg-light py-3">
+      <div class="container-fluid" id="content">
+        <div class="row">
+          <!-- <left content> -->
+          <div
+            id="left-content"
+            class="col-md-5 col-lg-4 d-sm-none d-md-block px-2"
+            style="height: fit-content"
+          >
+            <div class="border border-1 rounded-1 px-1">
+              <div class="container p-1 pt-2">
+                <div id="quiz-image" class="bg-light">
+                  <button
+                    class="border border-1 rounded-1 w-100 py-4 glitter-button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#quizInfo"
+                  >
+                    <span class="d-md-block rounded-full"
+                      ><i class="fas fa-image" style="font-size: 28px"> </i>
+                    </span>
+                    <span>Upload quiz image here</span>
+                  </button>
+                </div>
+                <div id="quiz-detail" class="my-2">
+                  <a
+                    class="btn btn-sm d-flex justify-content-between align-items-center glitter-button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#quizInfo"
+                  >
+                    <h4
+                      id="quiz-title"
+                      class="m-0"
+                      th:text="${quiz.title}"
+                    ></h4>
+
+                    <div
+                      class="d-flex justify-content-center align-items-center rounded-1"
+                      style="
+                        height: 30px;
+                        width: 30px;
+                        background-color: buttonface;
+                      "
+                    >
+                      <i class="fas fa-pencil mx-2"></i>
+                    </div>
+                  </a>
+                  <p class="m-1" th:text="${quiz.description}"></p>
+                </div>
+
+                <div class="divider left-content-divider"></div>
+                <div class="mx-1">
+                  <div class="w-100">
+                    <strong>Import from:</strong>
+                  </div>
+
+                  <!-- Excel input trigger button -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary w-50 my-1 border-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#excelImport"
+                  >
+                    <i class="fas fa-file-excel me-1"></i> Excel file
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- </left content> -->
+
+          <!-- <right content> -->
+          <div id="right-content" class="col-md-7 col-lg-8">
+            <div class="container-fluid">
+              <div class="section d-flex justify-content-between">
+                <strong class="p-1">
+                  <i class="fas fa-list-check mx-1"></i>
+                  999 Questions
+                </strong>
+
+                <a
+                  class="btn btn-sm rounded-1 mx-2 p-1 text-secondary glitter-button"
+                  style="background-color: buttonface"
+                  href=""
+                >
+                  <i class="fas fa-plus mx-1"></i>
+                  Add
+                  <span class="d-md-none d-lg-inline"> more question</span
+                  >&nbsp;&nbsp;
+                </a>
+              </div>
+              <div class="section">
+                <div class="card text-left mt-2">
+                  <div
+                    class="card-header bg-white d-flex justify-content-between py-1 px-0"
+                  >
+                    <!-- question number to the left-->
+                    <div class="qcard-number mx-2">
+                      <i class="far fa-check-square mx-1"></i>
+                      Question 1
+                    </div>
+                    <!-- edit, delete,... to the right -->
+                    <div class="d-flex">
+                      <a class="btn btn-sm p-0 px-2 qcard-tool"
+                        ><i class="fas fa-edit mx-1"></i> Edit
+                        <span class="d-md-none d-lg-inline">this question</span>
+                      </a>
+                      <a class="btn btn-sm p-0 px-2 qcard-tool bd-left"
+                        ><i class="fas fa-trash mx-1"></i
+                      ></a>
+                    </div>
+                  </div>
+                  <div class="card-body px-3 pb-1 pt-2">
+                    <h6 class="card-title">
+                      Fill in the blank to make a completed lyric : <br />
+                    </h6>
+                    <p class="card-text mx-2">
+                      "Mừng ngày Tết trên khắp quê tôi <br />
+                      ....................... khoe sắc xinh tươi <br />
+                      Đàn em thơ................... <br />
+                      Chạy tung tăng vui pháo hoa"
+                    </p>
+
+                    <div class="divider answer-divider mb-1">answer</div>
+
+                    <div class="row">
+                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                        <div class="px-0 d-flex align-items-start">
+                          <div class="badge bg-danger me-2 rounded-full">
+                            <i class="fas fa-x"></i>
+                          </div>
+                          <div class="text-secondary fw-bold">
+                            Ngàn em thơ / mua sắm tết
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                        <div class="px-0 d-flex align-items-start">
+                          <div class="badge bg-danger me-2">
+                            <i class="fas fa-x"></i>
+                          </div>
+                          <div class="text-secondary fw-bold">
+                            Người nông dân / mau phát tài
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                        <div class="px-0 d-flex align-items-start">
+                          <div class="badge bg-success me-2">
+                            <i class="fas fa-check"></i>
+                          </div>
+                          <div class="text-secondary fw-bold">
+                            Ngàn hoa thơm / khoe áo mới
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                        <div class="px-0 d-flex align-items-start">
+                          <div class="badge bg-danger me-2">
+                            <i class="fas fa-x"></i>
+                          </div>
+                          <div class="text-secondary fw-bold">
+                            Người đi thăm / mua sắm tết
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz info form modal -->
+    <div
+      class="modal fade"
+      id="quizInfo"
+      tabindex="-1"
+      aria-labelledby="quizInfoLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog mt-5">
+        <div class="modal-content border-0 bg-light">
+          <div class="modal-header p-2 align-items-start">
+            <div class="text-center mx-2">
+              <h4 class="modal-title" id="quizInfoLabel">
+                <i class="fas fa-pencil"></i>&nbsp;&nbsp;Edit quiz
+                <span class="marker marker-center">details</span>
+              </h4>
+            </div>
+            <button
+              type="button"
+              class="btn-sm btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="row justify-content-center">
+              <div class="px-3">
+                <form
+                  th:object="${quiz}"
+                  th:action="@{quiz/{id}/edit(id=${quiz.id})}"
+                  method="post"
+                  role="form"
+                  id="quizEditForm"
+                >
+                  <div class="form-group my-2">
+                    <label for="quizImage" class="form-label fw-bolder m-0 mx-2"
+                      >Upload Image</label
+                    >
+                    <input
+                      type="file"
+                      class="form-control"
+                      name="file"
+                      id="quizImage"
+                    />
+                  </div>
+                  <div class="form-group my-2">
+                    <label for="quizTitle" class="form-label fw-bolder m-0 mx-2"
+                      >Title</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="quizTitle"
+                      id="quizTitle"
+                      placeholder="Type the quiz's title here"
+                      required
+                    />
+                  </div>
+                  <div class="form-group my-2">
+                    <label
+                      for="description"
+                      class="form-label fw-bolder m-0 mx-2"
+                      >Description</label
+                    >
+                    <textarea
+                      class="form-control"
+                      name="description"
+                      id="description"
+                      rows="4"
+                      required
+                      placeholder="Type something here..."
+                    ></textarea>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer p-0 px-2 pb-2 text-end">
+            <button
+              class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
+              onclick="document.getElementById('quizEditForm').submit()"
+            >
+              Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Excel input modal -->
+    <div
+      class="modal fade"
+      id="excelImport"
+      tabindex="-1"
+      aria-labelledby="excelImportLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog mt-5">
+        <div class="modal-content border-0">
+          <div class="modal-header p-2 align-items-start">
+            <div>
+              <h5 class="modal-title" id="excelImportLabel">
+                Import questions from excel file
+              </h5>
+              <p class="fw-lighter fst-italic m-0" style="font-size: small">
+                Please upload questions according to the template below
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn-sm btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input
+                type="file"
+                class="form-control"
+                name="excel-file"
+                id="inputExcelFile"
+              />
+            </div>
+          </div>
+          <div class="modal-footer p-1 d-flex justify-content-between">
+            <button class="btn btn-sm bg-light px-2 glitter-button">
+              <i class="fas fa-download me-1"></i>Download template
+            </button>
+            <a class="btn btn-sm btn-secondary px-2 glitter-button"
+              >Load & View&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="../js/bootstrap.bundle.min.js"
+      th:src="@{../../js/bootstrap.bundle.min.js}"
+    ></script>
+    <script src="../js/main.js" th:src="@{../../js/main.js}"></script>
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>

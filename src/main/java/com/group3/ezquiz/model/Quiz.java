@@ -17,37 +17,35 @@ import java.sql.Timestamp;
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer quizId;
+    private Integer id;
 
-    @Column(name = "code", nullable = false)
+    @Column(nullable = false, length = 10)
     private String code;
 
-    @Column(name = "title", nullable = false, length = 50)
+    @Column(nullable = false, length = 64)
     private String title;
-
-    @Column(name = "description", nullable = false, length = 500)
-    private String description;
-
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isActive;
-
-    @Column(name = "is_exam_only", nullable = false)
-    private Boolean isExamOnly;
 
     @Column(nullable = true, columnDefinition = "boolean default true")
     private Boolean isDraft;
 
+    @Column(nullable = true, columnDefinition = "boolean default true")
+    private Boolean isActive;
+
+    @Column(nullable = false)
+    private Boolean isExamOnly;
+
+    @Column()
+    private String description;
+
     @ManyToOne
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_id")
     private User createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;
 
-    private Long updatedBy;
-
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Timestamp updateAt;
+    private Timestamp updatedAt;
 }

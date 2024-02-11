@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuizRepo extends JpaRepository<Quiz, Integer> {
-    Quiz findQuizByQuizId(Integer id);
 
-    boolean existsQuizByCode(String code);
+    Quiz findQuizById(Integer id);
+
+    Boolean existsQuizByCode(String code);
 
     @Query("SELECT q FROM Quiz q WHERE " +
             "(:code IS NULL OR q.code LIKE %:code%) OR " +

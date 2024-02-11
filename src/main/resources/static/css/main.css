@@ -30,7 +30,7 @@ html {
 
 /* Header */
 .site-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   line-height: 3rem;
   text-decoration: none;
@@ -120,7 +120,6 @@ img.avatar {
 }
 
 @media (min-width: 48em) {
-
   .grid-sizer,
   .grid-item {
     width: 25%;
@@ -284,8 +283,6 @@ footer a:not(.nav-link) {
   color: #fff;
 }
 
-<<<<<<< HEAD
-=======
 .card {
   margin-top: 15px;
 }
@@ -307,11 +304,10 @@ form i {
   flex: 1;
   content: "";
   padding: 0.1px;
-  background-color: #9b9898;
+  background-color: #e1dbdb;
   margin: 5px;
 }
 
->>>>>>> 69a051941a31422073e86fc4c31ac8465cb5e379
 /* Login form */
 .login-right {
   background: radial-gradient(
@@ -333,16 +329,39 @@ login-form input {
   outline: 0;
 }
 
-<<<<<<< HEAD
-/* .input-before {
-  background: :#fff;
-} */
-=======
 /* Register form */
 .register-input-custom {
   display: flex;
   align-items: center;
 }
+
+/* Glitter button hover effect */
+.glitter-button {
+  border: none; /* Loại bỏ viền */
+  position: relative; /* Để sử dụng vị trí tương đối cho lớp .glitter */
+  overflow: hidden; /* Ẩn bớt phần vượt ra ngoài của hiệu ứng */
+}
+
+.glitter-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%; /* Đặt vị trí ban đầu bên ngoài button */
+  width: 100%; /* Chiều rộng là 100% của button */
+  height: 100%; /* Chiều cao là 100% của button */
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  ); /* Tạo gradient từ trong suốt sang trắng để tạo hiệu ứng lấp lánh */
+  transition: left 1.23s; /* Thời gian di chuyển từ trái sang phải */
+}
+
+.glitter-button:hover::before {
+  left: 100%; /* Di chuyển pseudo-element sang phải khi hover */
+}
+/* </glitter>  */
 
 /* Ngoc oi? */
 .center {
@@ -414,5 +433,3 @@ login-form input {
 .edit-icon:hover {
   color: #007bff; /* Màu xanh khi rê chuột vào */
 }
-
->>>>>>> 69a051941a31422073e86fc4c31ac8465cb5e379

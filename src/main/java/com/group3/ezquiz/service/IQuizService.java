@@ -25,4 +25,6 @@ public interface IQuizService {
     void toggleQuizStatus(Integer id);
 
     boolean existedQuizByCode(String code);
+
+    Quiz getQuizById(String id);
 }

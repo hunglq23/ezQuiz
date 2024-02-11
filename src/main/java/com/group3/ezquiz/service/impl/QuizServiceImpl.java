@@ -1,5 +1,6 @@
 package com.group3.ezquiz.service.impl;
 
+import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
@@ -9,6 +10,9 @@ import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IQuizService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class QuizServiceImpl implements IQuizService {
 
+    private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
     private final QuizRepo quizRepository;
     private final UserRepo userRepo;
 
@@ -31,7 +36,7 @@ public class QuizServiceImpl implements IQuizService {
 
     @Override
     public void toggleQuizStatus(Integer id) {
-        Quiz existedQuiz = quizRepository.findQuizByQuizId(id);
+        Quiz existedQuiz = quizRepository.findQuizById(id);
 
         if (existedQuiz != null) {
             existedQuiz.setIsActive(!existedQuiz.getIsActive());
@@ -46,7 +51,7 @@ public class QuizServiceImpl implements IQuizService {
 
     @Override
     public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
-        if(existedQuizByCode(quizDto.getCode())){
+        if (existedQuizByCode(quizDto.getCode())) {
             throw new IllegalArgumentException("A quiz with the same code already existed");
         }
         quizRepository.save(
@@ -61,13 +66,20 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
+    public Quiz getQuizById(String stringId) {
+        Integer id = getIntegerId(stringId);
+        if (id != null) {
+            Optional<Quiz> byId = quizRepository.findById(id);
+            if (byId.isPresent())
+                return byId.get();
+        }
+        throw new ResourceNotFoundException("Not found quiz with ID: " + stringId);
+    }
+
+    @Override
     public Quiz findQuizById(Integer id) {
-        //
-        Quiz quizById = quizRepository.findQuizByQuizId(id);
+        Quiz quizById = quizRepository.findQuizById(id);
         if (quizById != null) {
-            if (quizById.getUpdatedBy() == null) {
-                quizById.setUpdateAt(null);
-            }
             return quizById;
         }
         throw new ResourceNotFoundException("Cannot find quiz with" + id);
@@ -90,12 +102,13 @@ public class QuizServiceImpl implements IQuizService {
         User userRequesting = getUserRequesting(request);
 
         Quiz existedQuiz = findQuizById(id);
-//        if(existedQuizByCode(updateQuiz.getCode())){
-//            throw new IllegalArgumentException("A quiz with the same code already existed");
-//        }
+        // if(existedQuizByCode(updateQuiz.getCode())){
+        // throw new IllegalArgumentException("A quiz with the same code already
+        // existed");
+        // }
         Quiz saveQuiz = Quiz.builder()
                 // unchangeable
-                .quizId(existedQuiz.getQuizId())
+                .id(existedQuiz.getId())
                 .createdAt(existedQuiz.getCreatedAt())
                 .createdBy(existedQuiz.getCreatedBy())
                 // to update
@@ -104,24 +117,9 @@ public class QuizServiceImpl implements IQuizService {
                 .description(updateQuiz.getDescription())
                 .isActive(updateQuiz.getIsActive())
                 .isExamOnly(updateQuiz.getIsExamOnly())
-                .updatedBy(userRequesting.getId())
                 .build();
         quizRepository.save(saveQuiz);
     }
-
-
-
-    public class ResourceNotFoundException extends RuntimeException {
-        public ResourceNotFoundException(String message) {
-            super(message);
-        }
-    }
-
-//    public class DuplicateException extends RuntimeException {
-//        public DuplicateException(String message) {
-//            super(message);
-//        }
-//    }
 
     private User getUserRequesting(HttpServletRequest http) {
         Principal userPrincipal = http.getUserPrincipal();
@@ -129,4 +127,16 @@ public class QuizServiceImpl implements IQuizService {
         User requestingUser = userRepo.findByEmail(requestingUserEmail);
         return requestingUser;
     }
+
+    private Integer getIntegerId(String stringId) {
+
+        try {
+            return Integer.parseInt(stringId);
+
+        } catch (NumberFormatException e) {
+            log.error("Cannot parse ID " + stringId + " to Integer");
+        }
+        return null;
+    }
+
 }
