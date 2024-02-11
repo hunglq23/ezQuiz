@@ -335,6 +335,74 @@ login-form input {
   align-items: center;
 }
 
+/* Home page nav search */
+#navSearch .form-control {
+  padding: 3px 30px 3px 10px;
+  &:focus {
+    border-color: #f0f0f0;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
+      rgba(17, 17, 26, 0.1) 0px 0px 8px;
+  }
+}
+
+#navSearch .form-control::-webkit-search-cancel-button {
+  display: none;
+}
+
+#navSearch button {
+  position: absolute;
+  right: 11px;
+  top: 2px;
+  bottom: 0;
+}
+
+#navSearch .suggestions-list {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  z-index: 10;
+  display: none;
+}
+
+#navSearch .suggestions-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#navSearch .suggestions-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#navSearch .suggestions-list li:hover {
+  background-color: #f2f2f2;
+}
+
+#search-input:focus + .suggestions-list {
+  display: block;
+}
+
+/* Box shadow customize */
+.custom-box-shadow {
+  box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
+    rgba(17, 17, 26, 0.1) 0px 0px 8px;
+}
+
+/* Purple button style */
+.btn-purple {
+  color: #8854c0;
+  background-color: #8854c01a;
+}
+.btn-purple:hover {
+  color: #ac82d8;
+}
+
 /* Glitter button hover effect */
 .glitter-button {
   border: none; /* Loại bỏ viền */
@@ -361,7 +429,6 @@ login-form input {
 .glitter-button:hover::before {
   left: 100%; /* Di chuyển pseudo-element sang phải khi hover */
 }
-/* </glitter>  */
 
 /* Ngoc oi? */
 .center {
