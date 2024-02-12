@@ -49,61 +49,6 @@
       th:href="@{css/profile-menu.css}"
       rel="stylesheet"
     />
-
-    <style>
-      #top-left {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .left-center {
-        border-radius: 10px;
-        border: solid 2px #0000001a;
-      }
-      .actions {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        align-items: center;
-        padding: 0.5rem 1rem;
-      }
-      .portada {
-        width: 100%;
-        height: 100%;
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        background-color: rgba(246, 211, 101, 1);
-        background-position: bottom center;
-        background-size: cover;
-      }
-      .actions button {
-        border: none;
-        background: none;
-        font-size: 24px;
-        color: #8bc34a;
-        cursor: pointer;
-        transition: 0.5s;
-        box-shadow: #000;
-
-        &:hover {
-          color: #4caf50;
-          transform: rotate(4deg);
-        }
-      }
-
-      .content .btn-purple {
-        margin-top: 20px;
-        font-size: 16px;
-        font-weight: 800;
-        transition: all 0.2s;
-      }
-
-      #libraryDropdown a {
-        color: #8854c0;
-        &:hover {
-          background-color: #f1edf6;
-        }
-      }
-    </style>
   </head>
 
   <body>
@@ -115,15 +60,15 @@
       >
         <div class="container-fluid mx-2">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="link-dark navbar-brand site-title mb-0" href="./"
+            <a class="link-dark navbar-brand site-title mb-0" href="./home"
               >ezQuiz</a
             >
-            <div id="navSearch" class="position-relative mx-2">
+            <div id="navSearch" class="position-relative mx-2 suggest-search">
               <input
                 type="search"
-                id="search-input"
+                id="navSearchInput"
                 class="form-control"
-                placeholder="Search in library"
+                placeholder="Search in Library"
               />
               <button
                 id="navSearchButton"
@@ -145,7 +90,7 @@
                 <a
                   class="btn btn-sm bg-light mx-1 px-2 bd-left"
                   style="min-width: 111px"
-                  href=""
+                  th:href="@{/home}"
                 >
                   Home&nbsp;&nbsp;<i class="fas fa-home"></i>
                 </a>
@@ -168,8 +113,21 @@
                   aria-labelledby="libraryDropdown"
                   style="min-width: 0; width: 100px; right: 25px"
                 >
-                  <a class="dropdown-item btn btn-sm p-1"> Quiz </a>
-                  <a class="dropdown-item btn btn-sm p-1" href="#">
+                  <a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/quiz/list}"
+                  >
+                    Quiz </a
+                  ><a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/question/list}"
+                  >
+                    Question
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/classroom/list}"
+                  >
                     Classroom
                   </a>
                 </div>
@@ -211,12 +169,7 @@
                     Activity Log
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a
-                    class="dropdown-item"
-                    th:href="@{/logout}"
-                    data-toggle="modal"
-                    data-target="#logoutModal"
-                  >
+                  <a class="dropdown-item" th:href="@{/logout}">
                     <i
                       class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
                     ></i>
@@ -225,25 +178,26 @@
                 </div>
               </li>
             </ul>
-            <!-- <a class="btn btn-sm btn-primary px-2"
-              ><i class="fas fa-save me-1"></i> SAVE</a
-            > -->
           </div>
         </div>
       </nav>
     </header>
 
-    <div class="page-content bg-light py-3">
+    <div class="page-content bg-light py-1">
       <div id="top-content" class="d-none d-md-block my-2">
-        <div class="d-flex position-relative justify-content-center">
+        <!-- Learner -->
+        <div
+          sec:authorize="hasRole('ROLE_LEARNER')"
+          class="d-flex position-relative justify-content-center my-3"
+        >
           <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
             <div class="d-flex position-relative bg-light left-center p-2">
               <form action="" class="p-0">
                 <input
                   id="joinCode"
                   type="text"
-                  class="col-8 form-control rounded-3 custom-box-shadow"
-                  style="border: none; font-weight: bolder"
+                  class="col-8 form-control border-0 rounded-3 custom-box-shadow"
+                  style="font-weight: bolder"
                   placeholder="Enter code"
                 />
               </form>
@@ -272,8 +226,77 @@
                 <!-- Your content for the 'portada' div -->
               </div>
               <div class="p-3 rounded-2">
-                <h6 class="m-0" style="min-width: 180px">Nguyen Minh Thanh</h6>
-                <div>(K16 Hoa Lac)</div>
+                <h6
+                  class="m-0"
+                  style="min-width: 180px"
+                  th:text="${user.fullName}"
+                >
+                  Nguyen Minh Thanh
+                </h6>
+                <div>Welcome Learner!</div>
+                <div class="actions">
+                  <button><i class="far fa-heart"></i></button>
+                  <button><i class="far fa-envelope"></i></button>
+                  <button><i class="fas fa-user-friends"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teacher -->
+        <div
+          sec:authorize="hasRole('ROLE_TEACHER')"
+          class="d-flex position-relative justify-content-center my-3"
+        >
+          <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
+            <div class="border-0 left-center p-2">
+              <h5 style="font-weight: 900">
+                What are you expecting to teach today?
+              </h5>
+              <div class="position-relative w-100 suggest-search">
+                <input
+                  type="search"
+                  id="topSearch"
+                  class="form-control border-0 custom-box-shadow"
+                  style="font-size: 18px; padding-right: 33px"
+                  placeholder="Looking for many other quizzes..."
+                />
+                <button type="button" class="btn p-0 h-100 border-0 rounded-2">
+                  <i class="fas fa-arrow-right"></i>
+                </button>
+                <div id="topSuggestions" class="suggestions-list">
+                  <ul>
+                    <li>Gợi ý 1</li>
+                    <li>Gợi ý 2</li>
+                    <li>Gợi ý 3</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="top-right" class="col-3" style="min-width: 299px">
+            <div
+              class="border-1 rounded-2 custom-box-shadow position-relative"
+              style="
+                margin-left: 16px;
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+              "
+            >
+              <div class="portada">
+                <!-- Your content for the 'portada' div -->
+              </div>
+              <div class="p-3 rounded-2">
+                <h6
+                  class="m-0"
+                  style="min-width: 180px"
+                  th:text="${user.fullName}"
+                >
+                  Nguyen Minh Thanh
+                </h6>
+                <div>Welcome Teacher!</div>
                 <div class="actions">
                   <button><i class="far fa-heart"></i></button>
                   <button><i class="far fa-envelope"></i></button>
@@ -286,143 +309,91 @@
       </div>
 
       <!-- Recent Quiz Attempts -->
-      <div id="bottom-content" class="container">
-        <div class="section my-2">
-          <div
-            style="
-              justify-content: space-between;
-              align-items: center;
-              display: flex;
-              padding: 20px 0 0 0;
-            "
-          >
+      <div id="bottom-content" class="container-fluid my-3">
+        <div class="section m-2 px-3 px-lg-5 pt-2">
+          <div class="d-flex justify-content-between align-items-center">
             <h6 class="marker marker-center" style="font-size: 24px">
               Recent quiz
             </h6>
             <a href="#" class="btn btn-sm btn-purple">See more</a>
           </div>
-          <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
+          <div class="row row-cols-3 g-1 g-md-2 g-lg-4">
             <!-- Card 1 -->
             <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 1</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
+              <button class="card btn w-100 p-0">
+                <img
+                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                  class="card-img-top"
+                  alt="Quiz Image"
+                />
+
+                <div class="card-body p-1 px-2 mb-3">
+                  <div class="d-flex flex-row-reverse">
+                    <div class="bg-light px-1 rounded-2 text-end quiz-tag">
+                      quiz
+                    </div>
+                  </div>
+                  <h5 class="card-title p-0 d-flex">Card title</h5>
+                  <p class="card-text d-none d-md-flex">
+                    Some quick example text.
+                  </p>
                 </div>
-              </div>
+                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                  99 questions
+                </div>
+              </button>
             </div>
 
             <!-- Card 2 -->
             <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 2</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
+              <button class="card btn w-100 p-0">
+                <img
+                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                  class="card-img-top"
+                  alt="Quiz Image"
+                />
+
+                <div class="card-body p-1 px-2 mb-3">
+                  <div class="d-flex flex-row-reverse">
+                    <div class="bg-light px-1 rounded-2 text-end quiz-tag">
+                      exam
+                    </div>
+                  </div>
+                  <h5 class="card-title p-0 d-flex">Card title</h5>
+                  <p class="card-text d-none d-md-flex">
+                    Some quick example text.
+                  </p>
                 </div>
-              </div>
+                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                  99 questions
+                </div>
+              </button>
             </div>
 
             <!-- Card 3 -->
             <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 3</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
-                </div>
-              </div>
-            </div>
+              <button class="card btn w-100 p-0">
+                <img
+                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                  class="card-img-top"
+                  alt="Quiz Image"
+                />
 
-            <!-- Card 4 -->
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 4</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
+                <div class="card-body p-1 px-2 mb-3">
+                  <div class="d-flex flex-row-reverse">
+                    <div class="bg-light px-1 rounded-2 text-end quiz-tag">
+                      quiz
+                    </div>
+                  </div>
+                  <h5 class="card-title p-0 d-flex">Card title</h5>
+                  <p class="card-text d-none d-md-flex">
+                    Some quick example text.
+                  </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section my-2">
-          <div
-            style="
-              justify-content: space-between;
-              align-items: center;
-              display: flex;
-              padding: 20px 0 0 0;
-            "
-          >
-            <p style="font-size: 30px">Recent Quiz</p>
-            <a
-              href="#"
-              class="btn btn-sm"
-              style="
-                margin-top: 25px;
-                color: #8854c0;
-                background-color: #8854c01a;
-                font-size: 16px;
-                font-weight: 800;
-                transition: all 0.2s;
-              "
-              >See All2</a
-            >
-          </div>
-          <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
-            <!-- Card 1 -->
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 1</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
+                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                  99 questions
                 </div>
-              </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 2</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 3</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="col">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Card 4</h5>
-                  <p class="card-text">num of ques</p>
-                  <p class="card-text">name</p>
-                  <p class="card-text">Score: 80%</p>
-                </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -440,19 +411,32 @@
     ></script>
 
     <script>
-      const searchInput = document.getElementById("search-input");
-      const suggestionsList = document.querySelector(".suggestions-list");
+      const navSearchInput = document.getElementById("navSearchInput");
+      const navSuggestionList = document.querySelector(".suggestions-list");
 
-      searchInput.addEventListener("input", () => {
+      navSearchInput.addEventListener("input", () => {
         // Cập nhật danh sách gợi ý dựa trên nội dung nhập của người dùng
         // ...
 
-        suggestionsList.style.display = "block";
+        navSuggestionList.style.display = "block";
       });
-
       document.addEventListener("click", (event) => {
         if (!event.target.closest(".suggestions-list")) {
-          suggestionsList.style.display = "none";
+          navSuggestionList.style.display = "none";
+        }
+      });
+
+      const topSearch = document.getElementById("topSearch");
+      const topSuggestions = document.getElementById("topSuggestions");
+      topSearch.addEventListener("input", () => {
+        // Cập nhật danh sách gợi ý dựa trên nội dung nhập của người dùng
+        // ...
+
+        topSuggestions.style.display = "block";
+      });
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest("#topSuggestions")) {
+          topSuggestions.style.display = "none";
         }
       });
     </script>

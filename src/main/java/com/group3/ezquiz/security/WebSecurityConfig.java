@@ -40,8 +40,6 @@ public class WebSecurityConfig {
                 .requestMatchers("/vendor/**", "/css/**", "/images/**", "/js/**").permitAll()
                 // landing page, login page, registration end-point
                 .requestMatchers("/", "/login/**", "/register/**").permitAll()
-                // for testing end-point
-                 .requestMatchers("/questions/**", "/options/**", "/quiz/**").permitAll()
                 // other requests
                 .anyRequest().authenticated())
 
@@ -58,7 +56,7 @@ public class WebSecurityConfig {
             form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/profile", true)
+                .defaultSuccessUrl("/home", true)
                 .permitAll())
         // logout config
         .logout(
@@ -84,7 +82,7 @@ public class WebSecurityConfig {
         // CustomOAuth2User oauthUser = (CustomOAuth2User)
         // authentication.getPrincipal();
         // userService.processOAuthPostLogin(oauthUser.getEmail());
-        response.sendRedirect("/profile");
+        response.sendRedirect("/home");
       }
     };
   }

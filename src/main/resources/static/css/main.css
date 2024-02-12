@@ -335,28 +335,17 @@ login-form input {
   align-items: center;
 }
 
-/* Home page nav search */
-#navSearch .form-control {
-  padding: 3px 30px 3px 10px;
-  &:focus {
-    border-color: #f0f0f0;
-    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
-      rgba(17, 17, 26, 0.1) 0px 0px 8px;
-  }
-}
-
-#navSearch .form-control::-webkit-search-cancel-button {
+/* HOME PAGE */
+.suggest-search .form-control::-webkit-search-cancel-button {
   display: none;
 }
-
-#navSearch button {
+.suggest-search button {
   position: absolute;
   right: 11px;
   top: 2px;
   bottom: 0;
 }
-
-#navSearch .suggestions-list {
+.suggest-search .suggestions-list {
   position: absolute;
   left: 0;
   top: 100%;
@@ -368,24 +357,111 @@ login-form input {
   z-index: 10;
   display: none;
 }
-
-#navSearch .suggestions-list ul {
+.suggest-search .suggestions-list ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
-#navSearch .suggestions-list li {
+.suggest-search .suggestions-list li {
   padding: 10px;
   cursor: pointer;
+  &:hover {
+    background-color: #f2f2f2;
+  }
+}
+/* Homepage nav */
+#navSearch .form-control {
+  padding: 3px 30px 3px 10px;
+  &:focus {
+    border-color: #f0f0f0;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
+      rgba(17, 17, 26, 0.1) 0px 0px 8px;
+  }
+}
+#libraryDropdown a {
+  color: #8854c0;
+  &:hover {
+    background-color: #f1edf6;
+  }
 }
 
-#navSearch .suggestions-list li:hover {
-  background-color: #f2f2f2;
+/* Homepage Top */
+#top-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 415px;
+}
+.left-center {
+  border-radius: 10px;
+  border: solid 2px #0000001a;
+}
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+.portada {
+  width: 100%;
+  height: 100%;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  background-color: rgba(246, 211, 101, 1);
+  background-position: bottom center;
+  background-size: cover;
+}
+.actions button {
+  border: none;
+  background: none;
+  font-size: 24px;
+  color: #8bc34a;
+  cursor: pointer;
+  transition: 0.5s;
+  box-shadow: #000;
+
+  &:hover {
+    color: #4caf50;
+    transform: rotate(4deg);
+  }
 }
 
-#search-input:focus + .suggestions-list {
-  display: block;
+/* Homepage content */
+.content .btn-purple {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 800;
+  transition: all 0.2s;
+}
+.card.btn {
+  max-width: 333px;
+  img {
+    width: 100%;
+    object-fit: cover;
+    max-height: 159px;
+    margin: 0;
+    padding: 0;
+  }
+  .quiz-tag {
+    font-variant: small-caps;
+  }
+  .card-body {
+    width: 100%;
+  }
+  .card-title {
+    margin: 0;
+  }
+  .card-text {
+    font-weight: 100;
+  }
+  .card-footer {
+    font-size: 12px;
+    font-weight: 100;
+    opacity: 0.5;
+  }
+  &:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* Box shadow customize */

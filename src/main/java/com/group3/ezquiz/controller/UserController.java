@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.User;
@@ -27,7 +26,9 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/home")
-  public String getLearnerHomepage() {
+  public String getHomePage(HttpServletRequest http, Model model) {
+    User userRequesting = userService.getUserRequesting(http);
+    model.addAttribute("user", userRequesting);
     return "home";
   }
 
@@ -40,11 +41,11 @@ public class UserController {
 
   @GetMapping("/admin/list")
   public String userManagement(HttpServletRequest http, Model model,
-                               @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(required = false, defaultValue = "", name = "email") String email,
-                               @RequestParam(required = false, defaultValue = "all", name = "status") String statusReq) {
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "", name = "email") String email,
+      @RequestParam(required = false, defaultValue = "all", name = "status") String statusReq) {
     Boolean status = Objects.equals(statusReq, "all") ? null : Boolean.valueOf(statusReq);
-    Page<User> userList = userService.getListUser(http, email, status, PageRequest.of(page, 3 ));
+    Page<User> userList = userService.getListUser(http, email, status, PageRequest.of(page, 3));
     model.addAttribute("userList", userList);
     model.addAttribute("items", userList.getContent());
     model.addAttribute("currentPage", page);
@@ -62,18 +63,18 @@ public class UserController {
 
   @PostMapping("/admin/create")
   public String createUser(HttpServletRequest http, Model model,
-                           @Valid @ModelAttribute("user") UserDto userDto,
-                           BindingResult bindingResult) {
+      @Valid @ModelAttribute("user") UserDto userDto,
+      BindingResult bindingResult) {
     // process the form data
     if (bindingResult.hasErrors()) {
       model.addAttribute("user", userDto);
       return "/admin/user-create-form";
     }
     User checkUser = userService.getUserByEmail(userDto.getEmail());
-    if(checkUser != null) {
+    if (checkUser != null) {
       model.addAttribute("user", userDto);
       FieldError error = new FieldError("user", "email",
-              "Email duplicate.");
+          "Email duplicate.");
       bindingResult.addError(error);
       return "/admin/user-create-form";
     }
@@ -84,7 +85,7 @@ public class UserController {
 
   @GetMapping("/admin/edit/{id}")
   public String getUserUpdate(Model model,
-                              @PathVariable Long id) {
+      @PathVariable Long id) {
     User user = userService.getUserById(id);
     model.addAttribute("user", user);
     return "/admin/user-editing";
@@ -92,18 +93,18 @@ public class UserController {
 
   @PostMapping("/admin/update/{id}")
   public String update(HttpServletRequest http, Model model, RedirectAttributes redirectAttributes,
-                       @Valid @ModelAttribute("user") UserDto user,
-                       BindingResult bindingResult,
-                       @PathVariable Long id) {
+      @Valid @ModelAttribute("user") UserDto user,
+      BindingResult bindingResult,
+      @PathVariable Long id) {
     if (bindingResult.hasErrors()) {
       model.addAttribute("user", user);
       return "/admin/user-editing";
     }
     User checkUser = userService.getUserByEmail(user.getEmail());
-    if(checkUser != null) {
+    if (checkUser != null) {
       model.addAttribute("user", user);
       FieldError error = new FieldError("user", "email",
-              "Email duplicate.");
+          "Email duplicate.");
       bindingResult.addError(error);
       return "/admin/user-editing";
     }
@@ -113,7 +114,7 @@ public class UserController {
 
   @GetMapping("/admin/delete/{id}")
   public String delete(
-          @PathVariable(name = "id") Long id) {
+      @PathVariable(name = "id") Long id) {
     userService.delete(id);
     return "redirect:/admin/list";
   }

@@ -10,14 +10,14 @@
   window.onscroll = () => {
     if (window.scrollY > 0) {
       navbar.classList.add("fixed-top", "shadow-sm");
-      body.style.paddingTop = navbar.offsetHeight + "px";
-      scrollTop.style.visibility = "visible";
-      scrollTop.style.opacity = 1;
+      // body.style.paddingTop = navbar.offsetHeight + "px";
+      // scrollTop.style.visibility = "visible";
+      // scrollTop.style.opacity = 1;
     } else {
       navbar.classList.remove("fixed-top", "shadow-sm");
-      body.style.paddingTop = "0px";
-      scrollTop.style.visibility = "hidden";
-      scrollTop.style.opacity = 0;
+      // body.style.paddingTop = "0px";
+      // scrollTop.style.visibility = "hidden";
+      // scrollTop.style.opacity = 0;
     }
   };
 
