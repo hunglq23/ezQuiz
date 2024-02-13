@@ -100,6 +100,7 @@
                   class="btn dropdown-toggle btn-sm btn-purple px-2"
                   id="libraryDropdown"
                   role="button"
+                  th:href="@{/library}"
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
@@ -329,7 +330,7 @@
 
                 <div class="card-body p-1 px-2 mb-3">
                   <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end quiz-tag">
+                    <div class="bg-light px-1 rounded-2 text-end item-tag">
                       quiz
                     </div>
                   </div>
@@ -355,7 +356,7 @@
 
                 <div class="card-body p-1 px-2 mb-3">
                   <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end quiz-tag">
+                    <div class="bg-light px-1 rounded-2 text-end item-tag">
                       exam
                     </div>
                   </div>
@@ -381,9 +382,7 @@
 
                 <div class="card-body p-1 px-2 mb-3">
                   <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end quiz-tag">
-                      quiz
-                    </div>
+                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
                   </div>
                   <h5 class="card-title p-0 d-flex">Card title</h5>
                   <p class="card-text d-none d-md-flex">
@@ -411,21 +410,6 @@
     ></script>
 
     <script>
-      const navSearchInput = document.getElementById("navSearchInput");
-      const navSuggestionList = document.querySelector(".suggestions-list");
-
-      navSearchInput.addEventListener("input", () => {
-        // Cập nhật danh sách gợi ý dựa trên nội dung nhập của người dùng
-        // ...
-
-        navSuggestionList.style.display = "block";
-      });
-      document.addEventListener("click", (event) => {
-        if (!event.target.closest(".suggestions-list")) {
-          navSuggestionList.style.display = "none";
-        }
-      });
-
       const topSearch = document.getElementById("topSearch");
       const topSuggestions = document.getElementById("topSuggestions");
       topSearch.addEventListener("input", () => {
