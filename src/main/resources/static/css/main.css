@@ -384,6 +384,25 @@ login-form input {
     background-color: #f1edf6;
   }
 }
+.dropdown.no-arrow .dropdown-toggle::after {
+  display: none;
+}
+.dropdown-menu {
+  right: 0;
+  display: none;
+  float: left;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 0.85rem;
+  color: #858796;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #e3e6f0;
+  border-radius: 0.35rem;
+}
 
 /* Homepage Top */
 #top-left {
@@ -442,9 +461,6 @@ login-form input {
     margin: 0;
     padding: 0;
   }
-  .quiz-tag {
-    font-variant: small-caps;
-  }
   .card-body {
     width: 100%;
   }
@@ -462,6 +478,25 @@ login-form input {
   &:hover {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   }
+}
+/* END HOMEPAGE */
+
+/* LIBRARY ---------------- */
+.square-33-center-item {
+  display: flex;
+  min-width: 33px;
+  height: 33px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+}
+/* END LIBRARY ------------ */
+
+/* Quiz tag (QUIZ or EXAM) */
+.item-tag {
+  font-variant: small-caps;
+  font-weight: 700;
+  font-size: 12px;
 }
 
 /* Box shadow customize */

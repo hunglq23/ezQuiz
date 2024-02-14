@@ -98,3 +98,19 @@ function togglePasswordVisibility(passwordFieldId) {
     passwordToggleIcon.classList.add("fa-eye");
   }
 }
+
+// Suggestion for Nav Search
+const navSearchInput = document.getElementById("navSearchInput");
+const navSuggestionList = document.querySelector(".suggestions-list");
+
+navSearchInput.addEventListener("input", () => {
+  // Cập nhật danh sách gợi ý dựa trên nội dung nhập của người dùng
+  // ...
+
+  navSuggestionList.style.display = "block";
+});
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".suggestions-list")) {
+    navSuggestionList.style.display = "none";
+  }
+});

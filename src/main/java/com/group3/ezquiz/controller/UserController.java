@@ -32,12 +32,17 @@ public class UserController {
     return "home";
   }
 
-  @GetMapping("/profile")
-  public String getProfile(HttpServletRequest http, Model model) {
-    User userRequesting = userService.getUserRequesting(http);
-    model.addAttribute("user", userRequesting);
-    return "profile";
+  @GetMapping("/library")
+  public String getLibraryPage() {
+    return "library";
   }
+
+  // @GetMapping("/profile")
+  // public String getProfile(HttpServletRequest http, Model model) {
+  // User userRequesting = userService.getUserRequesting(http);
+  // model.addAttribute("user", userRequesting);
+  // return "profile";
+  // }
 
   @GetMapping("/admin/list")
   public String userManagement(HttpServletRequest http, Model model,
