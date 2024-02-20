@@ -405,7 +405,8 @@ login-form input {
 }
 
 /* Homepage Top */
-#top-left {
+#top-left,
+.centered {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -494,7 +495,7 @@ login-form input {
 
 /* Quiz tag (QUIZ or EXAM) */
 .item-tag {
-  font-variant: small-caps;
+  text-transform: uppercase;
   font-weight: 700;
   font-size: 12px;
 }
