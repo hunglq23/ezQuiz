@@ -2,6 +2,8 @@ package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
+import com.group3.ezquiz.payload.ExcelFileDto;
+import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -191,5 +194,15 @@ public class QuizController {
     public String toggleQuestionStatus(@PathVariable Integer id) {
         quizService.toggleQuizStatus(id);
         return "redirect:/quiz";
+    }
+
+    @PostMapping("{id}/import")
+    public ResponseEntity<?> importData(HttpServletRequest request,
+            @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto) throws BindException {
+        quizService.importQuizDataFromExcel(request, fileDto.getExcelFile(), id);
+
+        return new ResponseEntity<>(
+                new MessageResponse("HI"),
+                HttpStatus.OK);
     }
 }

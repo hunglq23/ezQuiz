@@ -1,6 +1,7 @@
 package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.exception.ResourceNotFoundException;
+import com.group3.ezquiz.model.Answer;
 import com.group3.ezquiz.model.Quest;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
@@ -15,9 +16,16 @@ import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IQuestService;
 import com.group3.ezquiz.service.IQuizService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,12 +34,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -78,7 +94,7 @@ public class QuizServiceImpl implements IQuizService {
             QuizDetailsDto dto) {
         User userRequesting = getUserRequesting(request);
         QuizUUID quiz = quizUUIDRepo.findByIdAndCreator(id, userRequesting);
-        Set<Quest> questions = quiz.getQuestions();
+        List<Quest> questions = quiz.getQuestions();
         questions.add(questionRepo.findById(3L).get());
         questions.add(questionRepo.findById(4L).get());
         quizUUIDRepo.save(quiz);
@@ -207,6 +223,100 @@ public class QuizServiceImpl implements IQuizService {
             log.error("Cannot parse ID " + stringId + " to Integer");
         }
         return null;
+    }
+
+    @Transactional
+    @Override
+    public void importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id) {
+        try (InputStream inputStream = file.getInputStream()) {
+            Workbook workbook = WorkbookFactory.create(inputStream);
+            Sheet sheet = workbook.getSheetAt(0); // Assuming the quiz data is in the first sheet
+            Iterator<Row> rowIterator = sheet.iterator();
+
+            // Check if there is at least one row
+            if (rowIterator.hasNext()) {
+                Row firstRow = rowIterator.next();
+                String quizTitle = getCellValue(firstRow.getCell(0)).trim();
+
+                QuizUUID quiz = getQuizByRequestAndUUID(request, id);
+                quiz.setTitle(quizTitle);
+
+                List<Quest> questions = quiz.getQuestions();
+
+                // Iterate over each row in the sheet starting from the second row
+                while (rowIterator.hasNext()) {
+                    Row row = rowIterator.next();
+                    Iterator<Cell> cellIterator = row.cellIterator();
+
+                    Quest question = new Quest();
+                    question.setQuiz(quiz);
+
+                    // Parse question text from the first cell of the row
+                    Cell questionCell = cellIterator.next();
+                    String questionText = getCellValue(questionCell).trim();
+                    question.setText(questionText);
+
+                    // Parse question type from the second cell of the row
+                    Cell typeCell = cellIterator.next();
+                    String questionType = getCellValue(typeCell).trim();
+                    question.setType(questionType);
+
+                    List<Answer> Answers = new ArrayList<>();
+
+                    cellIterator.next(); // Skipping the answer cell
+
+                    // Parse Answers from the subsequent cells until the end of the row
+                    while (cellIterator.hasNext()) {
+                        Cell AnswerCell = cellIterator.next();
+                        String AnswerText = getCellValue(AnswerCell).trim();
+
+                        Answer Answer = new Answer(AnswerText);
+                        Answer.setQuestion(question);
+                        Answers.add(Answer);
+                    }
+
+                    // Find the matching Answer for the correct answer and mark it as correct
+                    String answerText = getCellValue(row.getCell(2)).trim();
+                    for (Answer Answer : Answers) {
+                        if (Answer.getText().equalsIgnoreCase(answerText)) {
+                            Answer.setIsCorrect(true);
+                        } else {
+                            Answer.setIsCorrect(false);
+                        }
+                    }
+
+                    question.setAnswers(Answers);
+                    questions.add(question);
+                }
+
+                quiz.setQuestions(questions);
+
+                // Save the quiz object without saving the correct answer as a Answer
+                quizUUIDRepo.save(quiz);
+            }
+        } catch (IOException | EncryptedDocumentException e) {
+            log.error(null, e);
+        }
+    }
+
+    // Method to get the cell value as a string, handling both string and numeric
+    // cell types
+    private String getCellValue(Cell cell) {
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                // Convert numeric value to string
+                return String.valueOf(cell.getNumericCellValue());
+            default:
+                return ""; // Return empty string for other cell types
+        }
+    }
+
+    public QuizUUID getQuizById(UUID id) {
+        // Implement the logic to get quiz by its UUID from the repository
+        // For example:
+        return quizUUIDRepo.findById(id).orElse(null);
     }
 
 }

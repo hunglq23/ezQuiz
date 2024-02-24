@@ -116,3 +116,43 @@ if (navSearchInput !== null) {
     }
   });
 }
+
+function handleFormSubmitByIdAndMethod(formId, method = "post") {
+  const form = $("#" + formId);
+  if (form === null) {
+    console.error("Form is null!");
+  } else {
+    console.log("Handling submit...");
+    console.log(form);
+    const formData = new FormData(form[0]);
+
+    $.ajax({
+      url: form.attr("action"),
+      method: method,
+      data: formData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      dataType: "json",
+      success: (resp) => {
+        console.log("success");
+        location.reload();
+      },
+      error: (xhr, status, err) => {
+        if (xhr.status === 400) {
+          console.error("showing 400...");
+          const errors = JSON.parse(xhr.responseText).errors;
+          Object.entries(errors).forEach(([key, value]) => {
+            console.log(`${key}: ${value}`);
+            var errorId = "#" + key;
+            $(errorId + "Msg").text(value);
+            $(errorId).removeClass("d-none");
+          });
+        } else {
+          console.error("Other error, not 400...");
+          console.log(xhr.status);
+        }
+      },
+    });
+  }
+}

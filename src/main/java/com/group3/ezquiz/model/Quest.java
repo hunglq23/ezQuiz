@@ -35,10 +35,10 @@ public class Quest {
   @Column(nullable = false)
   private String text;
 
-  @Column(nullable = false)
+  @Column
   private Boolean isActive;
 
-  @Column(nullable = false)
+  @Column
   private Boolean isPublic;
 
   @ManyToOne
@@ -55,5 +55,8 @@ public class Quest {
 
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Answer> answers;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  private QuizUUID quiz;
 
 }
