@@ -20,7 +20,6 @@ import com.group3.ezquiz.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
 public class ClassroomController {
@@ -78,23 +77,22 @@ public class ClassroomController {
     }
 
     @PreAuthorize("hasRole('ROLE_LEARNER')")
-    @GetMapping("/classroom/join_class")
+    @GetMapping("/classroom/joined-list")
     public String joinClassroomForm(Model model) {
         model.addAttribute("classroom", new CodeFormDto());
-        return "classroom/join_classroom";
+        return "classroom/joined-list";
     }
 
     @PreAuthorize("hasRole('ROLE_LEARNER')")
-    @PostMapping("/classroom/join_class")
+    @PostMapping("/classroom/join")
     public String joinClassroomForm(HttpServletRequest request,
-        @RequestParam String code, Model model) {
+            @RequestParam String code, Model model) {
         boolean success = classroomService.joinClassroom(request, code);
-        
         if (success) {
-            model.addAttribute("classrooms", userService.getUserRequesting(request).getClassrooms());      
-            return "classroom/join_classroom"; 
+            model.addAttribute("classrooms", userService.getUserRequesting(request).getClassrooms());
+            return "classroom/joined-list";
         }
-        return "";
+        return "error";
     }
-
 }
+
