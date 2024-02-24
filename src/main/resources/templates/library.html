@@ -146,13 +146,17 @@
               </li>
               <li class="nav-item dropdown no-arrow">
                 <a
-                  class="btn dropdown-toggle btn-sm btn-purple px-2"
+                  class="btn dropdown-toggle btn-sm px-2"
                   id="libraryDropdown"
                   role="button"
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  style="margin-right: 25px"
+                  style="
+                    margin-right: 25px;
+                    background-color: #8854c0;
+                    color: #fff;
+                  "
                 >
                   Create<i class="fas fa-plus" style="margin-left: 5px"></i
                 ></a>
@@ -165,8 +169,8 @@
                 >
                   <a
                     class="dropdown-item btn btn-sm p-1"
-                    href="#"
-                    th:href="@{/quiz/list}"
+                    href="quiz/quiz-editing.html"
+                    th:href="@{/quiz/new}"
                   >
                     Quiz </a
                   ><a
@@ -302,7 +306,7 @@
                 <li class="nav-item dropdown">
                   <a
                     class="btn dropdown-toggle btn-sm bg-white p-0"
-                    id="libraryDropdown"
+                    id="filterDropdown"
                     role="button"
                     data-toggle="dropdown"
                     aria-haspopup="true"

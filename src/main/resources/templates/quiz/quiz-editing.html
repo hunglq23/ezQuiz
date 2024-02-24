@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quiz Editting Page</title>
+    <title>Quiz Edit</title>
     <link
       rel="icon"
       type="image/x-icon"
-      th:href="@{../../images/favicon.ico}"
+      href="../../static/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
     />
 
     <link
@@ -36,29 +37,210 @@
     <link
       href="../../static/vendor/bootstrap/bootstrap.min.css"
       th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+     
       rel="stylesheet"
     />
     <link
-      href="../../static/css/main.css"
+      href="../css/main.css"
       th:href="@{../../css/main.css}"
       rel="stylesheet"
     />
 
     <style>
+      body {
+        overflow: hidden;
+      }
+
       .page-content {
-        padding-left: 5%;
-        padding-right: 3%;
-        min-height: 90vh;
+        padding: 88px;
+        padding-bottom: 23px;
+        height: 100vh;
       }
 
-      #left-content {
-        min-width: 300px;
-        max-width: 345px;
+      .ml15-mr3 {
+        margin-left: 15px;
+        margin-right: 3px;
       }
 
-      #right-content {
-        max-width: 789px;
+      .form-control::-webkit-search-cancel-button {
+        display: none;
       }
+
+      .arrow-right-style {
+        position: absolute;
+        right: 11px;
+        top: 2px;
+        bottom: 0;
+        &:focus {
+          box-shadow: none;
+        }
+      }
+
+      .data {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        width: 100%;
+        gap: 8px;
+      }
+
+      /* SEARCH OFFCANVAS */
+      .offcanvas .search-bar {
+        display: flex;
+        width: 66%;
+        max-width: 456px;
+        position: relative;
+        align-items: center;
+      }
+
+      .offcanvas .search-bar input {
+        box-shadow: 0 0 0 1px rgba(205, 205, 204, 0.25);
+        padding-right: 111px;
+        &:focus {
+          box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
+            rgba(17, 17, 26, 0.1) 0px 0px 8px;
+        }
+      }
+
+      .offcanvas .search-btn {
+        position: absolute;
+        padding: 3.33px 23px;
+        right: 3px;
+        border: none;
+        margin: 0;
+        &:focus {
+          box-shadow: none;
+        }
+      }
+
+      .offcanvas-header .dropdown-toggle {
+        color: #b7b7b7;
+        font-weight: 600;
+        &:hover {
+          color: #333;
+        }
+      }
+      .offcanvas-header .dropdown-toggle span {
+        font-weight: 500;
+      }
+
+      .offcanvas-body {
+        border: solid 1px #f4f6f8;
+        display: flex;
+        padding: 0;
+      }
+      .offcanvas-body .opa-33-fsz-14-w-100 {
+        opacity: 0.33;
+        font-size: 14px;
+        width: 100%;
+        margin-bottom: 0;
+      }
+      .offcanvas-body .data .item-tag {
+        text-align: center;
+        background-color: #e8e8e8;
+        padding: 3px 5px;
+        opacity: 0.66;
+        font-size: 8px;
+        line-height: 1;
+        margin: 3px 0;
+        border-radius: 33px;
+      }
+      .data::-webkit-scrollbar {
+        width: 10px;
+      }
+      .data::-webkit-scrollbar-track {
+        background: #e8e8e8;
+        border-radius: 5px;
+      }
+      .data::-webkit-scrollbar-thumb {
+        background: #cacaca;
+        border-radius: 5px;
+      }
+      .offcanvas-body .data-left {
+        width: 100%;
+        margin-top: 5px;
+      }
+      .offcanvas-body .data-left .data-item {
+        height: fit-content;
+        border: solid 1px #e8e8e8;
+        border-radius: 5px;
+        align-items: center;
+        display: flex;
+        text-decoration: none;
+        cursor: pointer;
+        margin-right: 11px;
+      }
+      .data-left .data-item .item-detail {
+        flex-grow: 1;
+        padding: 0 5px;
+        height: fit-content;
+        line-height: 1.69;
+        font-size: 13px;
+        .detail-header {
+          display: flex;
+          position: relative;
+          margin-bottom: 5px;
+          strong {
+            font-size: 15px;
+          }
+        }
+        .item-tag {
+          position: absolute;
+          right: 0;
+          top: 5px;
+        }
+        ul {
+          padding-left: 8px;
+          height: fit-content;
+          margin-left: 10px;
+          margin-bottom: 0;
+          li {
+            display: flex;
+            font-size: 10px;
+          }
+          .fa-list {
+            font-size: 9px;
+            color: #a3a3a3;
+          }
+          .fa-user {
+            font-size: 9px;
+            color: #cacaca;
+          }
+        }
+      }
+      .data-left .data-item .item-image {
+        max-height: 80px;
+        padding: 3px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        img {
+          border-radius: 3px;
+          height: 69px;
+          width: auto;
+        }
+      }
+
+      .offcanvas-body .data-right {
+        border-radius: 5px;
+        margin-top: 23px;
+        gap: 11px;
+        .data-item {
+          border-radius: 5px;
+          .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 5px;
+          }
+        }
+      }
+      .data-right .item-header .btn:hover {
+        background-color: #cacaca !important;
+        color: #000 !important;
+      }
+
+      /* END SEARCH OFFCANVAS */
 
       .border {
         border-color: rgba(229, 229, 229, 1) !important;
@@ -98,13 +280,30 @@
   <body>
     <header class="bg-light">
       <nav
-        class="navbar navbar-expand-sm p-0 navbar-light bg-white"
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
         id="header-nav"
         role="navigation"
       >
         <div class="container-fluid mx-2">
-          <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
-          <a class="btn btn-sm mx-2 px-3 bd-left" href="">Quiz Title</a>
+          <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
+            >ezQuiz</a
+          >
+
+          <a
+            th:if="${quiz.title == null}"
+            class="btn btn-sm mx-2 px-3 bd-left"
+            data-bs-toggle="modal"
+            data-bs-target="#quizInfo"
+            style="opacity: 0.33"
+            >Untitled Quiz</a
+          >
+          <a
+            th:unless="${quiz.title == null}"
+            class="btn btn-sm mx-2 px-3 bd-left"
+            data-bs-toggle="modal"
+            data-bs-target="#quizInfo"
+            th:text="${quiz.title}"
+          ></a>
 
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto me-2">
@@ -113,7 +312,12 @@
                 <a class="nav-link" href="#about">About</a>
               </li> -->
             </ul>
-            <a class="btn btn-sm btn-primary px-2"
+            <a th:if="${quiz.title == null}" class="btn btn-sm btn-primary px-2"
+              ><i class="fas fa-save me-1"></i> SAVE</a
+            >
+            <a
+              th:unless="${quiz.title == null}"
+              class="btn btn-sm btn-primary px-2"
               ><i class="fas fa-save me-1"></i> SAVE</a
             >
           </div>
@@ -121,36 +325,44 @@
       </nav>
     </header>
 
-    <div class="page-content bg-light py-3">
-      <div class="container-fluid" id="content">
-        <div class="row">
+    <div class="page-content bg-light d-flex">
+      <div class="container px-lg-5">
+        <div class="h-100 d-flex justify-content-center gap-3 gap-lg-5">
           <!-- <left content> -->
           <div
-            id="left-content"
-            class="col-md-5 col-lg-4 d-sm-none d-md-block px-2"
-            style="height: fit-content"
+            class="col-4 border border-1 rounded-1"
+            th:classappend="${quiz.questions.size() == 0} ? h-75 : h-100"
           >
-            <div class="border border-1 rounded-1 px-1">
-              <div class="container p-1 pt-2">
-                <div id="quiz-image" class="bg-light">
-                  <button
-                    class="border border-1 rounded-1 w-100 py-4 glitter-button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#quizInfo"
-                  >
-                    <span class="d-md-block rounded-full"
-                      ><i class="fas fa-image" style="font-size: 28px"> </i>
-                    </span>
-                    <span>Upload quiz image here</span>
-                  </button>
-                </div>
-                <div id="quiz-detail" class="my-2">
+            <div class="container p-1 d-flex flex-column h-100">
+              <div id="quiz-image" class="bg-light">
+                <button
+                  class="border border-1 rounded-1 w-100 py-4 glitter-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#quizInfo"
+                >
+                  <span class="d-md-block rounded-full"
+                    ><i class="fas fa-image" style="font-size: 28px"> </i>
+                  </span>
+                  <span>Upload quiz image here</span>
+                </button>
+              </div>
+              <div class="flex-fill d-flex flex-column mt-1">
+                <div id="quiz-detail" class="flex-fill">
                   <a
                     class="btn btn-sm d-flex justify-content-between align-items-center glitter-button"
                     data-bs-toggle="modal"
                     data-bs-target="#quizInfo"
                   >
                     <h4
+                      th:if="${quiz.title == null}"
+                      id="quiz-title"
+                      class="m-0"
+                      style="opacity: 0.33; font-weight: 300"
+                    >
+                      Untitled Quiz
+                    </h4>
+                    <h4
+                      th:unless="${quiz.title == null}"
                       id="quiz-title"
                       class="m-0"
                       th:text="${quiz.title}"
@@ -167,7 +379,38 @@
                       <i class="fas fa-pencil mx-2"></i>
                     </div>
                   </a>
-                  <p class="m-1" th:text="${quiz.description}"></p>
+                  <div th:if="${quiz.questions.size() == 0}">
+                    <i class="fas fa-list" style="margin: 0 3px"></i>
+                    <span>0 question</span>
+                  </div>
+                  <p class="m-1" th:text="${quiz.description}">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                  </p>
+                </div>
+
+                <div th:if="${quiz.questions.size() > 0}">
+                  <div class="divider left-content-divider mt-2"></div>
+                  <div class="mx-1 d-flex flex-column gap-1">
+                    <div class="w-100" style="font-weight: 900; color: #8854c0">
+                      <strong>Create manually:</strong>
+                    </div>
+                    <a
+                      class="btn btn-sm btn-purple w-75"
+                      style="color: #8854c0"
+                      th:href="@{./edit/create-question
+                      (type='single-choice', trigger='quiz-edit')}
+                      "
+                      >Single choice</a
+                    >
+                    <a
+                      class="btn btn-sm btn-purple w-75"
+                      style="color: #8854c0"
+                      th:href="@{./edit/create-question
+                      (type='multiple-choice', trigger='quiz-edit')}
+                      "
+                      >Multiple choice</a
+                    >
+                  </div>
                 </div>
 
                 <div class="divider left-content-divider"></div>
@@ -179,7 +422,7 @@
                   <!-- Excel input trigger button -->
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-secondary w-50 my-1 border-1"
+                    class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
                     data-bs-toggle="modal"
                     data-bs-target="#excelImport"
                   >
@@ -192,103 +435,536 @@
           <!-- </left content> -->
 
           <!-- <right content> -->
-          <div id="right-content" class="col-md-7 col-lg-8">
-            <div class="container-fluid">
-              <div class="section d-flex justify-content-between">
-                <strong class="p-1">
-                  <i class="fas fa-list-check mx-1"></i>
-                  999 Questions
-                </strong>
-
-                <a
-                  class="btn btn-sm rounded-1 mx-2 p-1 text-secondary glitter-button"
-                  style="background-color: buttonface"
-                  href=""
-                >
-                  <i class="fas fa-plus mx-1"></i>
-                  Add
-                  <span class="d-md-none d-lg-inline"> more question</span
-                  >&nbsp;&nbsp;
-                </a>
-              </div>
-              <div class="section">
-                <div class="card text-left mt-2">
-                  <div
-                    class="card-header bg-white d-flex justify-content-between py-1 px-0"
-                  >
-                    <!-- question number to the left-->
-                    <div class="qcard-number mx-2">
-                      <i class="far fa-check-square mx-1"></i>
-                      Question 1
-                    </div>
-                    <!-- edit, delete,... to the right -->
-                    <div class="d-flex">
-                      <a class="btn btn-sm p-0 px-2 qcard-tool"
-                        ><i class="fas fa-edit mx-1"></i> Edit
-                        <span class="d-md-none d-lg-inline">this question</span>
-                      </a>
-                      <a class="btn btn-sm p-0 px-2 qcard-tool bd-left"
-                        ><i class="fas fa-trash mx-1"></i
-                      ></a>
-                    </div>
+          <div
+            class="right-content col-8"
+            th:if="${quiz.questions.size() == 0}"
+          >
+            <div class="d-flex" style="height: 400px">
+              <div class="border-1 rounded-1 custom-box-shadow centered w-100">
+                <div class="border-0 left-center" style="width: 69%">
+                  <h5 style="font-weight: 900">
+                    Add a question from the Library
+                  </h5>
+                  <div class="position-relative w-100">
+                    <input
+                      type="button"
+                      onclick="handleClickSearchButton()"
+                      class="form-control border-0 custom-box-shadow text-start"
+                      style="font-size: 18px; padding-right: 33px"
+                      value="Search in Library"
+                      data-bs-toggle="offcanvas"
+                      data-bs-target="#offcanvasRight"
+                      aria-controls="offcanvasRight"
+                    />
+                    <button
+                      class="btn p-0 border-0 rounded-2 arrow-right-style"
+                      data-bs-toggle="offcanvas"
+                      data-bs-target="#offcanvasRight"
+                      aria-controls="offcanvasRight"
+                    >
+                      <i class="fas fa-arrow-right"></i>
+                    </button>
                   </div>
-                  <div class="card-body px-3 pb-1 pt-2">
-                    <h6 class="card-title">
-                      Fill in the blank to make a completed lyric : <br />
+                  <div class="divider my-2">or</div>
+                  <h5 style="font-weight: 900; color: #8854c0">
+                    Create a question manually
+                  </h5>
+                  <div class="d-flex justify-content-between">
+                    <a
+                      class="btn btn-sm btn-purple"
+                      style="color: #8854c0; width: 48%"
+                      th:href="@{./edit/create-question
+                            (type='single-choice', trigger='quiz-edit')}
+                            "
+                      >Single choice</a
+                    >
+                    <a
+                      class="btn btn-sm btn-purple"
+                      style="color: #8854c0; width: 48%"
+                      th:href="@{./edit/create-question
+                            (type='multiple-choice', trigger='quiz-edit')}
+                            "
+                      >Multiple choice</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="overflow: hidden"
+            class="right-content col-8 d-flex flex-column gap-1"
+            th:if="${quiz.questions.size() > 0}"
+          >
+            <div class="section d-flex justify-content-between align-items-end">
+              <strong class="p-1 pt-0">
+                <i class="fas fa-list-check mx-1"></i>
+                <span th:text="${quiz.questions.size()}">0</span>
+                question<span th:if="${quiz.questions.size() > 1}">s</span>
+              </strong>
+
+              <a
+                class="btn btn-sm bg-white h-75 rounded-1 mx-2 p-0 border-0 d-flex"
+                style="align-items: center"
+                href=""
+              >
+                <i class="fas fa-plus mx-1"></i>
+                Add&nbsp;
+                <span class="d-md-none d-lg-inline"> more question</span>
+              </a>
+            </div>
+
+            <div class="flex-fill d-flex flex-column gap-2 data">
+              <div
+                th:each="question, iStat : ${quiz.questions}"
+                th:id="${question.id}"
+                class="card mt-0"
+              >
+                <div
+                  class="card-header bg-white d-flex justify-content-between px-0 py-1"
+                >
+                  <!-- question number to the left-->
+                  <div class="qcard-number mx-2">
+                    <i class="far fa-check-square mx-1"></i>
+                    Question <span th:text="${iStat.index + 1}">1</span>
+                  </div>
+                  <!-- edit, delete,... to the right -->
+                  <div class="d-flex">
+                    <a class="btn btn-sm p-0 px-2 qcard-tool"
+                      ><i class="fas fa-edit mx-1"></i> Edit
+                      <span class="d-md-none d-lg-inline">this question</span>
+                    </a>
+                    <a class="btn btn-sm p-0 px-2 qcard-tool bd-left"
+                      ><i class="fas fa-trash mx-1"></i
+                    ></a>
+                  </div>
+                </div>
+                <div class="card-body px-3 pb-1 pt-2">
+                  <div style="min-height: 123px">
+                    <h6
+                      th:if="${question.type.equals('single-choice')}"
+                      class="card-title"
+                    >
+                      Select a correct answer for the following question:
+                      (Single Choice)
                     </h6>
-                    <p class="card-text mx-2">
-                      "Mừng ngày Tết trên khắp quê tôi <br />
-                      ....................... khoe sắc xinh tươi <br />
-                      Đàn em thơ................... <br />
-                      Chạy tung tăng vui pháo hoa"
-                    </p>
+                    <h6
+                      th:if="${question.type.equals('multiple-choice')}"
+                      class="card-title"
+                    >
+                      Select all correct answers for the following question:
+                      (Multiple Choice)
+                    </h6>
+                    <p th:text="${question.text}" class="card-text mx-2"></p>
+                  </div>
 
-                    <div class="divider answer-divider mb-1">answer</div>
+                  <div class="divider answer-divider mb-1">answers</div>
 
-                    <div class="row">
-                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
-                        <div class="px-0 d-flex align-items-start">
-                          <div class="badge bg-danger me-2 rounded-full">
-                            <i class="fas fa-x"></i>
-                          </div>
-                          <div class="text-secondary fw-bold">
-                            Ngàn em thơ / mua sắm tết
-                          </div>
+                  <div class="row">
+                    <div
+                      th:each="answer : ${question.answers}"
+                      class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1"
+                    >
+                      <div class="px-0 d-flex align-items-start">
+                        <div
+                          th:if="${answer.isCorrect}"
+                          class="badge bg-success me-2"
+                        >
+                          <i class="fas fa-check"></i>
                         </div>
-                      </div>
-                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
-                        <div class="px-0 d-flex align-items-start">
-                          <div class="badge bg-danger me-2">
-                            <i class="fas fa-x"></i>
-                          </div>
-                          <div class="text-secondary fw-bold">
-                            Người nông dân / mau phát tài
-                          </div>
+                        <div
+                          th:unless="${answer.isCorrect}"
+                          class="badge bg-danger me-2 rounded-full"
+                        >
+                          <i class="fas fa-x"></i>
                         </div>
-                      </div>
-                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
-                        <div class="px-0 d-flex align-items-start">
-                          <div class="badge bg-success me-2">
-                            <i class="fas fa-check"></i>
-                          </div>
-                          <div class="text-secondary fw-bold">
-                            Ngàn hoa thơm / khoe áo mới
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
-                        <div class="px-0 d-flex align-items-start">
-                          <div class="badge bg-danger me-2">
-                            <i class="fas fa-x"></i>
-                          </div>
-                          <div class="text-secondary fw-bold">
-                            Người đi thăm / mua sắm tết
-                          </div>
-                        </div>
+                        <div
+                          th:text="${answer.text}"
+                          class="text-secondary fw-bold"
+                        ></div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="offcanvas offcanvas-end p-1"
+      style="width: 69%; min-width: 678px"
+      tabindex="-1"
+      id="offcanvasRight"
+      aria-labelledby="offcanvasRightLabel"
+    >
+      <form
+        class="offcanvas-header d-flex flex-column gap-1 position-relative p-1"
+      >
+        <div class="w-100 d-flex gap-2 align-items-center">
+          <div class="search-bar">
+            <input
+              id="searchQuizInput"
+              type="text"
+              class="form-control border-0 rounded-1"
+              placeholder="Search in Library"
+              required
+            />
+            <button type="submit" class="btn btn-sm btn-purple search-btn">
+              Search
+            </button>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 w-100 px-3" style="align-items: center">
+          <div style="color: #a3a3a3">
+            <i class="fas fa-filter"></i>
+            <span>Filter by:</span>
+          </div>
+          <ul class="navbar-nav d-flex flex-row gap-2">
+            <li class="nav-item dropdown">
+              <a
+                class="btn dropdown-toggle btn-sm bg-light"
+                style="padding: 0 23px"
+                id="quizOriginDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span>All</span>
+              </a>
+              <div
+                class="dropdown-menu position-absolute shadow animated--grow-in p-0"
+                aria-labelledby="quizOriginDropdown"
+                style="min-width: 0; width: 123px"
+              >
+                <a class="dropdown-item btn btn-sm p-1"> Created by me </a>
+                <a class="dropdown-item btn btn-sm p-1"> The others </a>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="btn dropdown-toggle btn-sm bg-light"
+                style="padding: 0 12px"
+                id="quizTagDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span>Quiz Tag</span>
+              </a>
+              <div
+                class="dropdown-menu position-absolute shadow animated--grow-in p-0"
+                aria-labelledby="quizTagDropdown"
+                style="min-width: 0; width: 99px"
+              >
+                <a class="dropdown-item btn btn-sm p-1 px-2"> Quiz </a>
+                <a class="dropdown-item btn btn-sm p-1 px-2"> Exam </a>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="btn dropdown-toggle btn-sm bg-light"
+                style="padding: 0 12px"
+                id="questNumDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span>Number of questions</span>
+              </a>
+              <div
+                class="dropdown-menu position-absolute shadow animated--grow-in p-0"
+                aria-labelledby="questNumDropdown"
+                style="min-width: 0"
+              >
+                <a class="dropdown-item btn btn-sm p-1">
+                  Less than 5 questions
+                </a>
+                <a class="dropdown-item btn btn-sm p-1"> 5 - 10 questions </a>
+                <a class="dropdown-item btn btn-sm p-1"> 10+ questions </a>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close text-reset bg-light position-absolute"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+          style="top: 15px; right: 23px; padding: 11px"
+        ></button>
+      </form>
+      <div class="offcanvas-body bg-white rounded-1">
+        <div class="col-5 bg-white p-1 d-flex flex-column">
+          <div class="opa-33-fsz-14-w-100">
+            Display the result for
+            <strong>"<span>search</span>"</strong>:
+          </div>
+          <div class="data data-left">
+            <a class="data-item">
+              <div class="item-detail">
+                <div class="detail-header flex-grow-1">
+                  <strong>Quiz Title</strong>
+                  <div class="item-tag">Exam</div>
+                </div>
+                <ul class="fa-ul">
+                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
+                  <li>
+                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
+                    >Creator name
+                  </li>
+                </ul>
+              </div>
+              <div class="item-image">
+                <img
+                  class="bg-success"
+                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
+                  alt="Quiz Image"
+                />
+              </div>
+            </a>
+            <a class="data-item">
+              <div class="item-detail">
+                <div class="detail-header flex-grow-1">
+                  <strong>Quiz Title</strong>
+                  <div class="item-tag">Quiz</div>
+                </div>
+                <ul class="fa-ul">
+                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
+                  <li>
+                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
+                    >Creator name
+                  </li>
+                </ul>
+              </div>
+              <div class="item-image">
+                <img
+                  class="bg-info"
+                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
+                  alt="Quiz Image"
+                />
+              </div>
+            </a>
+            <a class="data-item">
+              <div class="item-detail">
+                <div class="detail-header flex-grow-1">
+                  <strong>Quiz Title</strong>
+                  <div class="item-tag">Quiz</div>
+                </div>
+                <ul class="fa-ul">
+                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
+                  <li>
+                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
+                    >Creator name
+                  </li>
+                </ul>
+              </div>
+              <div class="item-image">
+                <img
+                  class="bg-info"
+                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
+                  alt="Quiz Image"
+                />
+              </div>
+            </a>
+            <a class="data-item">
+              <div class="item-detail">
+                <div class="detail-header flex-grow-1">
+                  <strong>Quiz Title</strong>
+                  <div class="item-tag">Quiz</div>
+                </div>
+                <ul class="fa-ul">
+                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
+                  <li>
+                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
+                    >Creator name
+                  </li>
+                </ul>
+              </div>
+              <div class="item-image">
+                <img
+                  class="bg-info"
+                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
+                  alt="Quiz Image"
+                />
+              </div>
+            </a>
+            <a class="data-item">
+              <div class="item-detail">
+                <div class="detail-header flex-grow-1">
+                  <strong>Quiz Title</strong>
+                  <div class="item-tag">Quiz</div>
+                </div>
+                <ul class="fa-ul">
+                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
+                  <li>
+                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
+                    >Creator name
+                  </li>
+                </ul>
+              </div>
+              <div class="item-image">
+                <img
+                  class="bg-info"
+                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
+                  alt="Quiz Image"
+                />
+              </div>
+            </a>
+            <a class="data-item">
+              <div class="item-detail">
+                <div class="detail-header flex-grow-1">
+                  <strong>Quiz Title</strong>
+                  <div class="item-tag">Quiz</div>
+                </div>
+                <ul class="fa-ul">
+                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
+                  <li>
+                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
+                    >Creator name
+                  </li>
+                </ul>
+              </div>
+              <div class="item-image">
+                <img
+                  class="bg-info"
+                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
+                  alt="Quiz Image"
+                />
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="bg-light flex-fill d-flex flex-column"
+          style="padding: 20px"
+        >
+          <div class="w-100 bg-white rounded-2">
+            <div
+              class="d-flex justify-content-between align-items-center"
+              style="padding: 3px 8px"
+            >
+              <div class="d-flex gap-1 align-items-center">
+                <img
+                  class="rounded-1"
+                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                  alt="Quiz Image"
+                  style="height: 33px; width: auto"
+                />
+                <div
+                  class="d-flex flex-column justify-content-center"
+                  style="line-height: 1.23"
+                >
+                  <strong>Biology</strong>
+                  <small class="fw-lighter">10 questions</small>
+                </div>
+              </div>
+              <a
+                class="btn btn-sm bg-light glitter-button"
+                style="padding: 3px 8px"
+                >Add all <span>3</span> question(s)</a
+              >
+            </div>
+          </div>
+          <div class="data data-right">
+            <div class="bg-white data-item d-flex flex-column">
+              <div class="item-header">
+                <div class="item-tag">single-choice</div>
+                <a
+                  class="btn btn-sm bg-light"
+                  style="
+                    font-size: 12px;
+                    color: #a3a3a3;
+                    border: solid 1px #e8e8e8;
+                    padding: 3px 5px;
+                  "
+                  title="Add this question"
+                  >Add <span><i class="fas fa-plus"></i></span
+                ></a>
+              </div>
+              <div class="item-detail flex-fill p-1 pt-0">
+                <h6 style="margin-bottom: 5px">
+                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
+                </h6>
+                <ul
+                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"
+                  style="list-style-type: none"
+                >
+                  <li class="col p-0">
+                    <span style="color: green">&#10003;</span>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Enim sint nulla corporis rerum odit?
+                  </li>
+                  <li class="col p-0">
+                    <span style="color: red">&#x2715;</span>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Consequatur esse ipsum, nemo quia laudantium harum aliquam
+                    nostrum accusantium odio! Placeat eveniet voluptatum alias
+                    commodi maiores vitae veniam fugiat fugit dicta.
+                  </li>
+                  <li class="col p-0">
+                    <span style="color: green">&#10003;</span>
+                    List icons can
+                  </li>
+                  <li class="col p-0">
+                    <span style="color: red">&#x2715;</span>
+                    be used to
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="bg-white data-item d-flex flex-column">
+              <div class="item-header">
+                <div class="item-tag">single-choice</div>
+                <a
+                  class="btn btn-sm bg-light"
+                  style="
+                    font-size: 12px;
+                    color: #a3a3a3;
+                    border: solid 1px #e8e8e8;
+                    padding: 3px 5px;
+                  "
+                  title="Add this question"
+                  >Add <span><i class="fas fa-plus"></i></span
+                ></a>
+              </div>
+              <div class="item-detail flex-fill p-1 pt-0">
+                <h6 style="margin-bottom: 5px">
+                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
+                </h6>
+                <ul
+                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"
+                  style="list-style-type: none"
+                >
+                  <li class="col p-0">
+                    <span style="color: green">&#10003;</span>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Enim sint nulla corporis rerum odit?
+                  </li>
+                  <li class="col p-0">
+                    <span style="color: red">&#x2715;</span>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Consequatur esse ipsum, nemo quia laudantium harum aliquam
+                    nostrum accusantium odio! Placeat eveniet voluptatum alias
+                    commodi maiores vitae veniam fugiat fugit dicta.
+                  </li>
+                  <li class="col p-0">
+                    <span style="color: green">&#10003;</span>
+                    List icons can
+                  </li>
+                  <li class="col p-0">
+                    <span style="color: red">&#x2715;</span>
+                    be used to
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -309,7 +985,7 @@
           <div class="modal-header p-2 align-items-start">
             <div class="text-center mx-2">
               <h4 class="modal-title" id="quizInfoLabel">
-                <i class="fas fa-pencil"></i>&nbsp;&nbsp;Edit quiz
+                <i class="fas fas fab fa-react"></i>&nbsp;&nbsp;Edit quiz
                 <span class="marker marker-center">details</span>
               </h4>
             </div>
@@ -320,41 +996,98 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body p-0">
+          <div class="modal-body p-0 my-1">
             <div class="row justify-content-center">
               <div class="px-3">
                 <form
+                  class="d-flex flex-column gap-2"
                   th:object="${quiz}"
-                  th:action="@{quiz/{id}/edit(id=${quiz.id})}"
+                  th:action="@{/quiz/{id}/edit(id=${quiz.id})}"
                   method="post"
                   role="form"
-                  id="quizEditForm"
+                  id="editForm"
+                  enctype="multipart/form-data"
                 >
-                  <div class="form-group my-2">
+                  <!-- <div class="form-group">
                     <label for="quizImage" class="form-label fw-bolder m-0 mx-2"
                       >Upload Image</label
                     >
                     <input
                       type="file"
                       class="form-control"
-                      name="file"
+                      name="imageFile"
                       id="quizImage"
                     />
+                  </div> -->
+
+                  <div>
+                    <div class="input-group">
+                      <span class="input-group-text" id="basic-addon1">
+                        <label class="fas fa-link" for="imageURL"></label>
+                      </span>
+                      <input
+                        id="imageURL"
+                        type="text"
+                        name="imageUrl"
+                        class="form-control"
+                        placeholder="Paste the image URL here"
+                        aria-label="imageURL"
+                        aria-describedby="basic-addon1"
+                      />
+                    </div>
+                    <div id="imageUrlError" class="text-danger d-none">
+                      <i class="fas fas fa-exclamation-circle ml15-mr3"></i>
+                      <span id="imageUrlErrorMsg"></span>
+                    </div>
                   </div>
-                  <div class="form-group my-2">
-                    <label for="quizTitle" class="form-label fw-bolder m-0 mx-2"
-                      >Title</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="quizTitle"
-                      id="quizTitle"
-                      placeholder="Type the quiz's title here"
-                      required
-                    />
+
+                  <div class="row">
+                    <div class="form-group col-8">
+                      <label
+                        for="quizTitle"
+                        class="form-label fw-bolder m-0 mx-2"
+                        >* Title</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="title"
+                        id="quizTitle"
+                        placeholder="Untitled Quiz"
+                      />
+                      <div id="titleError" class="text-danger d-none">
+                        <i class="fas fas fa-exclamation-circle ml15-mr3"></i>
+                        <span id="titleErrorMsg"></span>
+                      </div>
+                    </div>
+
+                    <div class="form-group col-4 p-0 px-1">
+                      <label
+                        class="form-label fw-bolder m-0 mx-2"
+                        for="examOnly"
+                      >
+                        Quiz Type:
+                      </label>
+                      <div
+                        class="form-control form-switch my-0 bg-light rounded-2"
+                        style="display: flex; justify-content: center; gap: 8px"
+                      >
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          name="isExam"
+                          value="true"
+                          id="examOnly"
+                        />
+                        <input type="hidden" name="isExam" value="false" />
+                        <label class="form-check-label" for="examOnly"
+                          >Exam Only</label
+                        >
+                      </div>
+                    </div>
                   </div>
-                  <div class="form-group my-2">
+
+                  <div class="form-group">
                     <label
                       for="description"
                       class="form-label fw-bolder m-0 mx-2"
@@ -364,10 +1097,13 @@
                       class="form-control"
                       name="description"
                       id="description"
-                      rows="4"
-                      required
+                      rows="3"
                       placeholder="Type something here..."
                     ></textarea>
+                    <div id="descriptionError" class="text-danger d-none">
+                      <i class="fas fas fa-exclamation-circle ml15-mr3"></i>
+                      <span id="descriptionErrorMsg"></span>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -376,9 +1112,9 @@
           <div class="modal-footer p-0 px-2 pb-2 text-end">
             <button
               class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
-              onclick="document.getElementById('quizEditForm').submit()"
+              onclick="handleSubmitForm()"
             >
-              Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+              Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
             </button>
           </div>
         </div>
@@ -433,14 +1169,108 @@
       </div>
     </div>
 
+    <!-- <Alert updating message> -->
+    <svg xmlns="http://www.w3.org/2000/svg" display="none">
+      <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+      </symbol>
+      <symbol
+        id="exclamation-triangle-fill"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+        />
+      </symbol>
+    </svg>
+    <div
+      id="alert"
+      class="d-none"
+      style="position: fixed; left: 1.11rem; bottom: 0.11rem; z-index: 1000"
+    >
+      <div class="d-flex align-items-center alert" role="alert">
+        <svg
+          class="bi flex-shrink-0 me-1"
+          role="img"
+          aria-label="Success:"
+          width="20"
+          height="20"
+        >
+          <use xlink:href="#check-circle-fill" />
+        </svg>
+        <svg
+          class="bi flex-shrink-0 me-1"
+          width="20"
+          height="20"
+          role="img"
+          aria-label="Fail:"
+        >
+          <use xlink:href="#exclamation-triangle-fill" />
+        </svg>
+        <div>
+          <span id="alertMessage">Updated successfully!</span>
+          (<span id="success-countdown">5</span>)
+        </div>
+      </div>
+    </div>
+    <!-- </Alert updating message> -->
+
     <script
-      src="../js/bootstrap.bundle.min.js"
-      th:src="@{../../js/bootstrap.bundle.min.js}"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
     ></script>
-    <script src="../js/main.js" th:src="@{../../js/main.js}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script
       src="https://kit.fontawesome.com/b16b259998.js"
       crossorigin="anonymous"
     ></script>
+
+    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
+
+    <script>
+      function handleClickSearchButton() {
+        document.getElementById("searchQuizInput").focus();
+      }
+
+      function handleSubmitForm() {
+        console.log("handling submit...");
+
+        const editForm = $("#editForm");
+        const formData = new FormData(editForm[0]);
+
+        $.ajax({
+          url: editForm.attr("action"),
+          method: "PUT",
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false,
+          dataType: "json",
+          success: (resp) => {
+            console.log(resp);
+          },
+          error: (xhr, status, err) => {
+            if (xhr.status === 400) {
+              console.error("showing 400...");
+              const errors = JSON.parse(xhr.responseText).errors;
+              Object.entries(errors).forEach(([key, value]) => {
+                console.log(`${key}: ${value}`);
+                var errorId = "#" + key;
+                $(errorId + "Msg").text(value);
+                $(errorId).removeClass("d-none");
+              });
+            } else {
+              console.error("Other error, not 400...");
+            }
+          },
+        });
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Question</title>
+
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../static/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
+    />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <!-- Customize CSS -->
+    <link
+      href="../../static/css/main.css"
+      th:href="@{/css/main.css}"
+      rel="stylesheet"
+    />
+
+    <style>
+      #questionTypes .nav-item .active {
+        background-color: #f4f6f8 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .answer-input-end {
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
+            >ezQuiz</a
+          >
+          <div
+            class="mx-2 px-3"
+            style="
+              opacity: 0.69;
+              text-align: left;
+              border-left: 1px solid rgba(0, 0, 0, 0.1);
+            "
+          >
+            New question
+          </div>
+          <a
+            th:unless="${quiz.title == null}"
+            class="btn btn-sm mx-2 px-3 bd-left"
+            data-bs-toggle="modal"
+            data-bs-target="#quizInfo"
+            th:text="${quiz.title}"
+          ></a>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto me-2">
+              <!-- <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#about">About</a>
+              </li> -->
+            </ul>
+            <button
+              type="submit"
+              form="questCreating"
+              class="btn btn-sm btn-primary px-2"
+              style="text-transform: uppercase"
+            >
+              <i class="fas fa-save me-1"></i> save question
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div
+      class="content pt-3 bg-light min-vh-100 d-flex flex-column align-items-center"
+    >
+      <div
+        class="container-fluid bg-white rounded-3 p-3 flex-fill"
+        style="max-width: 999px"
+      >
+        <div
+          class="text-center rounded-2 mb-3 d-flex position-relative justify-content-center"
+        >
+          <a
+            class="btn btn-sm bg-light position-absolute"
+            style="left: 0; padding: 3px 10px"
+            title="Back to quiz edit"
+            ><i class="fa fa-angle-left"></i
+          ></a>
+          <h2 class="marker marker-center mt-1">Create new question</h2>
+        </div>
+        <div class="bg-light custom-box-shadow rounded-3">
+          <div class="form-group">
+            <ul
+              class="nav nav-tabs nav-fill border-0"
+              role="tablist"
+              style="gap: 1px; padding: 1px"
+              id="questionTypes"
+            >
+              <li class="nav-item">
+                <a
+                  id="singleChoice"
+                  class="nav-link p-1 rounded-3 bg-white"
+                  th:classappend="${qType.equals('single-choice') ? 'active' : ''}"
+                  href="./create-question?type=single-choice&trigger=quiz-edit"
+                  style="border: 1px solid #eee"
+                >
+                  <span class="badge bg-secondary me-1">1</span> Single Choice
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  id="multipleChoice"
+                  class="nav-link p-1 rounded-3 bg-white"
+                  th:classappend="${qType.equals('multiple-choice') ? 'active' : ''}"
+                  href="./create-question?type=multiple-choice&trigger=quiz-edit"
+                  style="border: 1px solid #eee"
+                >
+                  <span class="badge bg-secondary me-1">2</span> Multiple Choice
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <form
+            id="questCreating"
+            class="bg-light d-md-flex p-3 gap-3"
+            th:action="@{../add-question(type=${qType}, trigger=${trigger})}"
+            method="post"
+            style="
+              border-bottom-left-radius: 0.3rem;
+              border-bottom-right-radius: 0.3rem;
+            "
+          >
+            <div
+              class="form-group col-12 col-md-6 flex-fill d-flex flex-column"
+            >
+              <label
+                for="qText"
+                class="form-label fw-bolder"
+                style="margin: 15px 15px 0 15px"
+                >Question Text</label
+              >
+              <textarea
+                class="form-control flex-fill"
+                style="margin-top: 3px"
+                name="qText"
+                id="qText"
+                required
+                placeholder="Enter the question text here"
+              ></textarea>
+            </div>
+
+            <div class="form-group col-12 col-md-6">
+              <div class="d-flex flex-row-reverse" style="margin: 8px 0">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary m-0 p-0 px-1"
+                  onclick="addAnswer()"
+                >
+                  Add Answer
+                </button>
+              </div>
+
+              <div id="answers" class="d-flex flex-column gap-1"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- <script src="../../static/js/main.js" th:src="@{../../js/main.js}"></script> -->
+
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      let MIN_ANS_NUM = 2;
+      let MAX_ANS_NUM = 6;
+
+      let questionType = /*[[${qType}]]*/ "single-choice";
+      let ansNum = 0;
+      let i = 0;
+      let inputType = "";
+      let nameProp = "";
+      let hiddenFalseInput = "";
+
+      (function initAnswer() {
+        addAnswer();
+        addAnswer();
+        addAnswer();
+      })();
+
+      function addAnswer() {
+        if (questionType === "single-choice") {
+          inputType = "radio";
+          nameProp = "ansValue";
+          hiddenFalseInput = "";
+        } else if (questionType === "multiple-choice") {
+          inputType = "checkbox";
+          nameProp = `ans${i}Value`;
+          hiddenFalseInput = `<input type="hidden" name="ans${i}Value" value="false" />`;
+        }
+
+        if (ansNum < MAX_ANS_NUM) {
+          var answers = $("#answers");
+          var newAnswer = `
+                    <div class="input-group" id="answer-${i}">
+                      <div class="input-group-text">
+                        <input
+                          class="form-check-input mt-0"
+                          type="${inputType}"
+                          name="${nameProp}"
+                          value="true"
+                          aria-label="Checkbox for following text input"
+                        />
+                        ${hiddenFalseInput}
+                      </div>
+                      <input
+                        class="form-control rounded-end"
+                        type="text"
+                        name="ans${i}Text"
+                        placeholder="Enter the answer here"
+                        required
+                        style="padding-right: 45px"
+                      />
+                      <div class="answer-input-end">
+                        <span
+                          class="btn-delete"
+                          onclick="removeAns('#answer-${i}')"
+                        >
+                          <i
+                            id="passwordConfirm-toggle-icon"
+                            class="fas fa-trash"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                      </div>
+                    </div>
+          `;
+          answers.append(newAnswer);
+          i++;
+          ansNum++;
+        }
+      }
+
+      function removeAns(ansIdSelector) {
+        if (ansNum > MIN_ANS_NUM) {
+          $(ansIdSelector).remove();
+          ansNum--;
+        }
+      }
+      /*]]>*/
+    </script>
+  </body>
+</html>

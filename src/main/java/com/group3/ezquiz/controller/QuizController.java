@@ -1,10 +1,17 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizUUID;
+import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -12,11 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @PreAuthorize("hasAnyRole('LEARNER', 'TEACHER')")
@@ -24,49 +29,100 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/quiz")
 public class QuizController {
 
+    private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
+    private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
+
     private final IQuizService quizService;
 
-    @GetMapping("/search?code=23847da234asf")
-    public String search() {
-        return null;
-    }
+    // @GetMapping("/search?code=23847da234asf")
+    // public String search() {
+    // return null;
+    // }
 
-    @PreAuthorize("hasRole('ROLE_LEARNER')")
-    @GetMapping("/assigned-list")
-    public String assigned() {
-        return null;
-    }
+    // @PreAuthorize(LEARNER_AUTHORITY)
+    // @GetMapping("/assigned-list")
+    // public String assigned() {
+    // return null;
+    // }
 
-    @PreAuthorize("hasRole('ROLE_LEARNER')")
-    @GetMapping("/taken-list")
-    public String joinedList() {
-        return null;
-    }
+    // @PreAuthorize(LEARNER_AUTHORITY)
+    // @GetMapping("/taken-list")
+    // public String joinedList() {
+    // return null;
+    // }
 
-    @PreAuthorize("hasRole('ROLE_LEARNER')")
+    @PreAuthorize(LEARNER_AUTHORITY)
     @GetMapping("/{id}/start/{quiz-taking-id}?exam=0")
     public String takeAQuiz() {
         return null;
     }
 
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/new")
+    public String handleQuizCreatingRequest(HttpServletRequest request) {
+        QuizUUID quiz = quizService.saveAndGetDraftQuiz(request);
+        return "redirect:" + "/quiz" + '/' + quiz.getId() + "/edit";
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/{id}/edit")
     public String getQuizEditPage(
             HttpServletRequest request,
-            @PathVariable String id,
+            @PathVariable UUID id,
             Model model) {
-        Quiz quiz = quizService.getQuizById(id);
+        QuizUUID quiz = quizService.getQuizByRequestAndUUID(request, id);
         model.addAttribute("quiz", quiz);
         return "quiz/quiz-editing";
     }
 
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @GetMapping("/assignable-list")
-    public String getAssignableQuiz() {
-        return null;
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @PutMapping("/{id}/edit")
+    public ResponseEntity<?> updateQuizDetails(
+            HttpServletRequest request,
+            @PathVariable UUID id,
+            @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
+
+        return quizService.handleQuizUpdatingRequest(request, id, dto);
     }
 
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/{id}/edit/create-question")
+    public String getQuestionCreatingForm(
+            HttpServletRequest request,
+            @PathVariable UUID id,
+            @RequestParam(required = false, defaultValue = "") String type,
+            @RequestParam String trigger,
+            Model model) {
+        QuizUUID quiz = quizService.getQuizByRequestAndUUID(request, id);
+        if (!QuizUUID.AVAILABLE_TYPES.contains(type)) {
+            return "redirect:/quiz/" + id + "/edit/create-question?type=single-choice";
+        }
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("qType", type);
+        model.addAttribute("trigger", trigger);
+        return "quest/question-creating";
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @PostMapping("/{id}/add-question")
+    public String submitQuestionCreatingInQuiz(
+            HttpServletRequest request,
+            @PathVariable UUID id,
+            @RequestParam String type,
+            @RequestParam(name = "qText") String questionText,
+            @RequestParam Map<String, String> params) {
+
+        QuizUUID quiz = quizService.getQuizByRequestAndUUID(request, id);
+        return quizService.handleQuestionCreatingInQuiz(request, quiz, type, questionText, params);
+    }
+
+    // @PreAuthorize(TEACHER_AUTHORITY)
+    // @GetMapping("/assignable-list")
+    // public String getAssignableQuiz() {
+    // return null;
+    // }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("")
     public String showQuizList(
             HttpServletRequest http,
