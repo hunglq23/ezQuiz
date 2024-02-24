@@ -69,9 +69,6 @@ public class User {
   private List<Quiz> quizCreated;
 
   @ManyToMany
-  @JoinTable(
-      name = "classroom_joining",
-      joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "classroom_id"))
+  @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
   private Set<Classroom> classrooms;
 }
