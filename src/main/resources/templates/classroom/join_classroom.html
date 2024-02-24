@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ezQuiz Home Page</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../static/images/favicon.ico"
+      th:href="@{../../images/favicon.ico}"
+    />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/main.css"
+      th:href="@{../../css/main.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/profile-menu.css"
+      th:href="@{css/profile-menu.css}"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Include your main.js at the end -->
+    <script
+      src="../../js/bootstrap.bundle.min.js"
+      th:src="@{../../js/bootstrap.bundle.min.js}"
+    ></script>
+    <script src="../../js/main.js" th:src="@{../../js/main.js}"></script>
+    <style>
+      #join_class {
+        background-color: #efeeeed7;
+      }
+      .container {
+        position: relative;
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        min-height: 100vh; /* Chiều cao tối thiểu của màn hình */
+      }
+      .join {
+        position: absolute;
+        top: 0; /* Đặt phần tử ở trên cùng của màn hình */
+        right: 0; /* Đặt phần tử ở bên phải của màn hình */
+        margin: 20px; /* Khoảng cách với viền màn hình */
+      }
+    </style>
+  </head>
+  <body id="join_class">
+    <header class="bg-light">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="link-dark navbar-brand site-title mb-0" href="./home"
+              >ezQuiz</a
+            >
+            <div id="navSearch" class="position-relative mx-2 suggest-search">
+              <input
+                type="search"
+                id="navSearchInput"
+                class="form-control"
+                placeholder="Search in Library"
+              />
+              <button
+                id="navSearchButton"
+                type="button"
+                class="btn p-0 h-100 border-0 rounded-2"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+              <div class="suggestions-list">
+                <ul>
+                  <li>Gợi ý 1</li>
+                  <li>Gợi ý 2</li>
+                  <li>Gợi ý 3</li>
+                </ul>
+              </div>
+            </div>
+            <ul class="navbar-nav align-items-center ms-auto">
+              <li class="nav-item">
+                <a
+                  class="btn btn-sm bg-light mx-1 px-2 bd-left"
+                  style="min-width: 111px"
+                  th:href="@{/home}"
+                >
+                  Home&nbsp;&nbsp;<i class="fas fa-home"></i>
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purple px-2"
+                  id="libraryDropdown"
+                  role="button"
+                  th:href="@{/library}"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="margin-right: 25px"
+                  >Library</a
+                >
+                <!-- Library dropdown -->
+                <div
+                  id="libraryDropdown"
+                  class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                  aria-labelledby="libraryDropdown"
+                  style="min-width: 0; width: 100px; right: 25px"
+                >
+                  <a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/quiz/list}"
+                  >
+                    Quiz </a
+                  ><a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/question/list}"
+                  aria-labelledby="userDropdown"
+                >
+                  <a class="dropdown-item" th:href="@{/profile}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Settings
+                  </a>
+                  <a class="dropdown-item" th:href="@{/admin/list}">
+                    <i
+                      class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"
+                    ></i>
+                    User Management
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" th:href="@{/logout}">
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+
+    <div class="content">
+      <div class="container">
+        <div class="join">
+          <button
+            class="btn btn-purple"
+            data-bs-toggle="modal"
+            data-bs-target="#joinClass"
+          >
+            Join a Class
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- join-class modal -->
+    <div
+      class="modal fade"
+      id="joinClass"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <form
+        th:action="@{/classroom/join_class}"
+        th:object="${classroom}"
+        method="POST"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Join a Class</h5>
+              
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{code}"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success" name="join">
+                Continue
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                name="cancel"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

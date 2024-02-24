@@ -245,7 +245,9 @@
       </div>
       <div class="row justify-content-between">
         <div class="col-4">
-          <div class="card" style="width: 20rem">
+          
+          <div class="card" style="width: 20rem" th:object="${classroom}">
+            <input type="hidden"  th:field="*{id}" />
             <div class="card-header">
               <img
                 src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
@@ -254,16 +256,19 @@
               />
             </div>
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+              <h5 class="card-title"></h5>
+              <p class="card-text" th:text="*{classroom.description}">
+               
               </p>
 
               <div class="edit-class">
-                <a class="btn btn-sm btn-purple">
+                <button
+                  class="btn btn-sm btn-purple"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editClass"
+                >
                   <i class="fa-regular fa-pen-to-square"></i>
-                </a>
+                </button>
               </div>
             </div>
             <div class="mx-1">
@@ -282,13 +287,19 @@
               </button>
             </div>
           </div>
+         
         </div>
-
+        <!-- Table Student in Class -->
         <div class="col-8">
           <div class="add-student">
-            <a class="btn btn-sm btn-purple">
+            <button
+              type="button"
+              class="btn btn-purple"
+              data-bs-toggle="modal"
+              data-bs-target="#addStudent"
+            >
               <i class="fa-solid fa-user-plus"> Add Student </i>
-            </a>
+            </button>
           </div>
           <div class="card" style="width: 60rem">
             <table class="table-light align-middle">
@@ -300,7 +311,7 @@
                         class="form-check-input"
                         type="checkbox"
                         value=""
-                        id="flexCheckDefault"
+                        
                       />
                     </div>
                   </th>
@@ -318,7 +329,7 @@
                       class="form-check-input"
                       type="checkbox"
                       value=""
-                      id="flexCheckDefault"
+                      
                     />
                   </th>
                   <th scope="row">1</th>
@@ -336,7 +347,7 @@
                       class="form-check-input"
                       type="checkbox"
                       value=""
-                      id="flexCheckDefault"
+                      
                     />
                   </th>
                   <th scope="row">2</th>
@@ -354,5 +365,75 @@
         </div>
       </div>
     </div>
+
+    <!-- Add Student -->
+ 
+    <div
+    class="modal fade"
+    id="showCode"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <form
+      
+      th:object="${classroom}"
+      method="POST"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label"
+                >Classroom Name:</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="recipient-name"
+                th:field="*{className}"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label"
+                >Description:</label
+              >
+              <textarea
+                class="form-control"
+                id="message-text"
+                rows="3"
+                th:field="*{description}"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-success" name="save">
+              Save
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              name="close"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <!-- Chỉnh sửa -->
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+   
   </body>
 </html>

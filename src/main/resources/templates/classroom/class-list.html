@@ -11,9 +11,9 @@
       th:href="@{../../images/favicon.ico}"
     />
     <script
-    src="../../js/bootstrap.min.js"
-    th:src="@{../../js/bootstrap.min.js}"
-  ></script>
+      src="../../js/bootstrap.min.js"
+      th:src="@{../../js/bootstrap.min.js}"
+    ></script>
     <link
       rel="preconnect"
       href="https://fonts.gstatic.com"
@@ -47,8 +47,8 @@
       rel="stylesheet"
     />
     <link
-      href="../../static/css/profile-menu.css"
-      th:href="@{css/profile-menu.css}"
+      href="../../css/user-profile.css"
+      th:href="@{../css/user-profile.css}"
       rel="stylesheet"
     />
 
@@ -60,11 +60,11 @@
 
     <!-- Include your main.js at the end -->
     <script
-    src="../../js/bootstrap.bundle.min.js"
-    th:src="@{../../js/bootstrap.bundle.min.js}"
-  ></script>
-  <script src="../../js/main.js" th:src="@{../../js/main.js}"></script>
-  
+      src="../../js/bootstrap.bundle.min.js"
+      th:src="@{../../js/bootstrap.bundle.min.js}"
+    ></script>
+    <script src="../../js/main.js" th:src="@{../../js/main.js}"></script>
+
     <style>
       .classpage {
         margin-right: 50px;
@@ -74,27 +74,50 @@
         margin-right: 20px;
       }
       #top {
-        background-color: #f5f2f2;
+        background-color: #cac6c677;
         width: 100%;
-        overflow-x: hidden; 
-      } 
+        overflow-x: hidden;
+      }
       .card-body {
         display: flex;
         align-items: center; /* Đảm bảo các phần tử bên trong được căn giữa theo chiều dọc */
-}
+        text-decoration: none;
+      }
 
-       .content {
-         flex: 1; /* Chiếm hết không gian còn lại */
-       }
+      .content {
+        flex: 1; /* Chiếm hết không gian còn lại */
+      }
 
-       .action {
-         display: flex; /* Sử dụng flex để sắp xếp icon và class name ngang hàng */
-         align-items: center; /* Căn các phần tử theo chiều dọc */
-       }
+      .action {
+        display: flex; /* Sử dụng flex để sắp xếp icon và class name ngang hàng */
+        align-items: center; /* Căn các phần tử theo chiều dọc */
+      }
 
-       .action i {
-         margin: auto; /* Khoảng cách giữa icon và class name */
-       }
+      .action i {
+        margin: auto; /* Khoảng cách giữa icon và class name */
+      }
+      .content {
+        position: relative;
+      }
+      .action {
+        position: absolute;
+        top: 25px;
+        right: 30px;
+      }
+
+      .dropdown-item {
+        font-size: 14px; /* Điều chỉnh kích thước chữ */
+      }
+
+      .dropdown-item i {
+        font-size: 12px; /* Điều chỉnh kích thước của icon */
+        margin-right: 5px; /* Tạo khoảng cách giữa icon và chữ */
+      }
+
+      .card:hover {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+      }
     </style>
   </head>
 
@@ -173,7 +196,7 @@
                   </a>
                   <a
                     class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/classrooms/created}"  
+                    th:href="@{/classrooms/created}"
                   >
                     Classroom
                   </a>
@@ -229,8 +252,10 @@
         </div>
       </nav>
     </header>
-    <div class="container">
-      <div class="row d-flex justify-content-between text-right">
+
+    <div class="container" sec:authorize="hasRole('ROLE_TEACHER')">
+      <div
+        class="row d-flex justify-content-between text-right">
         <div class="col-sm-4">
           <form th:action="@{/classrooms/created}" class="d-flex">
             <input
@@ -246,38 +271,67 @@
           </form>
         </div>
         <div class="col-md-4 offset-md-4">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createClass" >
-            Create a class
+          <button
+            type="button"
+            class="btn btn-purple"
+            data-bs-toggle="modal"
+            data-bs-target="#createClass"
+          >
+            <i class="fa-solid fa-plus"> Create a class </i>
           </button>
         </div>
       </div>
-      
-        <div class="row">
-          <div class="col-sm-6" th:each="classroom : ${classroom}">
-            <div class="card mb-3" style="max-width: 540px">
-              <div class="row g-0">
-                <div class="col-md-4">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="img-fluid rounded-start"
-                    alt="Quiz Image"
-                  />
-                </div>
-                <div class="col-md-8">
-                  <div class="card-body">
+
+      <!-- Card Class -->
+      <div class="row">
+        <div class="col-sm-6" th:each="classrooms : ${classrooms}">
+          <div class="card mb-3" style="max-width: 540px">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img
+                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                  class="img-thumbnail rounded-start"
+                  style="width: 150px; height: auto"
+                  alt="Quiz Image"
+                />
+              </div>
+
+              <div class="col-md-8">
+                <div class="card-body">
+                  <a th:href="@{'/classroom/update/' + ${classrooms.id}}">
                     <div class="content">
                       <h6
                         class="card-title mb-2"
-                        th:text="${classroom.className}"
-                      >ClassName</h6>
+                        th:text="${classrooms.className}"
+                      ></h6>
                       <p
                         class="card-text mb-2"
-                        th:text="${classroom.description}"
-                      >desscription</p>
+                        th:text="${classrooms.description}"
+                      ></p>
                     </div>
-                    <div class="action">
-                      <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </div>
+                  </a>
+                  <div class="action dropdown">
+                    <i
+                      class="fa-solid fa-ellipsis-vertical btn"
+                      data-bs-toggle="dropdown"
+                      id="dropdownMenu2"
+                    ></i>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                      <li>
+                        <button class="dropdown-item" type="button">
+                          <i class="fa-regular fa-pen-to-square"> Edit Class</i>
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="dropdown-item">
+                          <a
+                            th:href="@{/classroom/delete/{id}(id=${classrooms.id})}"
+                          >
+                            <i class="fa-solid fa-trash"> Delete Class</i>
+                          </a>
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -285,6 +339,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Pagination -->
       <br />
       <div>
         <ul class="pagination justify-content-end classpage">
@@ -343,35 +399,75 @@
         </ul>
       </div>
     </div>
-     
 
-    <div class="modal fade" id="createClass" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <form>
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            
-              <div class="mb-3">  
-                <label for="recipient-name" class="col-form-label">Classroom Name:</label>
-                <input type="text" class="form-control" id="recipient-name">
+    <!-- Modal create -->
+    <div
+      class="modal fade"
+      id="createClass"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <form
+        th:action="@{/classrooms/created}"
+        th:object="${classroom}"
+        method="POST"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Classroom Name:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{className}"
+                  required
+                />
               </div>
               <div class="mb-3">
-                <label for="message-text" class="col-form-label">Description:</label>
-                <textarea class="form-control" id="message-text"></textarea>
+                <label for="message-text" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  class="form-control"
+                  id="message-text"
+                  rows="3"
+                  th:field="*{description}"
+                ></textarea>
               </div>
-           
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save</button>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-outline-success" name="save">
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                name="close"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- Chỉnh sửa -->
+            </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
     </div>
+
+    <script></script>
   </body>
 </html>

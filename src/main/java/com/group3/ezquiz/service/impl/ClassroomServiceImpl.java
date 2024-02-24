@@ -3,9 +3,9 @@ package com.group3.ezquiz.service.impl;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,6 @@ public class ClassroomServiceImpl implements ClassroomService {
     private ClassroomRepo classroomRepo;
     @Autowired
     private UserRepo userRepo;
-
- 
-   
 
     @Override
     public void deleteClassroomById(Long id) {
@@ -67,35 +64,64 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public void createClass(HttpServletRequest request, ClassroomDto dto) {
-         Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
-              String code = generateClassCode(); //Fix cung code "CODE123456"
+        Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
+        String code = generateClassCode(); // Fix cung code "CODE123456"
 
-              
-            // Tiếp tục xử lý khi có người dùng xác thực
-            classroomRepo.save(
-                    Classroom.builder()
-                            .className(dto.getClassName())
-                            .description(dto.getDescription())
-                            .code(code)
-                            .isEnable(true)
-                            .creator(getUserRequesting(request))
-                            .build());
-        }
-
- @Override
- public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
-     
-     return classroomRepo.getAllClassroom(searchName, PageRequest.of(page, 5));  
+        // Tiếp tục xử lý khi có người dùng xác thực
+        classroomRepo.save(
+                Classroom.builder()
+                        .className(dto.getClassName())
+                        .description(dto.getDescription())
+                        .code(code)
+                        .isEnable(true)
+                        .creator(getUserRequesting(request))
+                        .build());
     }
 
-    private User getUserRequesting(HttpServletRequest http){
+    @Override
+    public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
+
+        return classroomRepo.getAllClassroom(searchName, PageRequest.of(page, 5));
+    }
+
+    private User getUserRequesting(HttpServletRequest http) {
         Principal userPrincipal = http.getUserPrincipal();
         String requestingUserByEmail = userPrincipal.getName();
-        User requestingUser = userRepo.findByEmail(requestingUserByEmail) ;
+        User requestingUser = userRepo.findByEmail(requestingUserByEmail);
         return requestingUser;
-    } 
-
-    private String generateClassCode () {
-        return "CODE123456";
     }
+
+    private String generateClassCode() {
+        UUID codeUUID = UUID.randomUUID();
+        String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
+        return codeClass;
+    }
+
+    @Override
+    public Classroom findByCode(String code) {
+        return classroomRepo.findByCode(code);
+    }
+
+    @Override
+    public void saveClass(Classroom classroom) {
+        classroomRepo.save(classroom);
+    }
+
+    @Override
+    public boolean joinClassroom(HttpServletRequest request, String code) {
+        User learner = getUserRequesting(request);
+        Classroom classroom = classroomRepo.findByCode(code);
+        if (classroom != null && learner != null) {
+            classroom.getMembers().add(learner);
+            classroomRepo.save(classroom);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<Classroom> getAllClassroom() {
+        return classroomRepo.findAll();
+    }
+
 }

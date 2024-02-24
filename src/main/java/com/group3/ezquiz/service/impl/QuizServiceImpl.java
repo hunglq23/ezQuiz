@@ -1,7 +1,6 @@
 package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.exception.ResourceNotFoundException;
-import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.QuizDto;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 

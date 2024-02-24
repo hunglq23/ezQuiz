@@ -15,4 +15,6 @@ public interface ClassroomRepo extends JpaRepository<Classroom, Long> {
         "(:sName is null or c.className Like %:sName%)")
 
         Page<Classroom> getAllClassroom(String sName, Pageable page);
+        
+        Classroom findByCode(String code);
 }
