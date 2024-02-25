@@ -6,8 +6,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Classroom;
@@ -39,8 +41,9 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<Classroom> getClassroomById(Long id) {
-        return classroomRepo.findById(id);
+    public Optional<Classroom> getClassroomByRequestAndId(HttpServletRequest request, Long id) {
+        User creator = getUserRequesting(request);
+        return classroomRepo.findByIdAndCreator(id, creator);
     }
 
     @Override
@@ -65,7 +68,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public void createClass(HttpServletRequest request, ClassroomDto dto) {
         Principal principal = request.getUserPrincipal(); // chua thong tin user hien tai
-        String code = generateClassCode(); // Fix cung code "CODE123456"
+        String code = generateClassCode();
 
         // Tiếp tục xử lý khi có người dùng xác thực
         classroomRepo.save(
@@ -79,16 +82,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
+    public Page<Classroom> getCreatedClassListByPageAndSearchName(HttpServletRequest request, Integer page, String searchName) {
+        User creator = getUserRequesting(request);
 
         return classroomRepo.getAllClassroom(searchName, PageRequest.of(page, 5));
-    }
-
-    private User getUserRequesting(HttpServletRequest http) {
-        Principal userPrincipal = http.getUserPrincipal();
-        String requestingUserByEmail = userPrincipal.getName();
-        User requestingUser = userRepo.findByEmail(requestingUserByEmail);
-        return requestingUser;
     }
 
     private String generateClassCode() {
@@ -114,14 +111,55 @@ public class ClassroomServiceImpl implements ClassroomService {
         if (classroom != null && learner != null) {
             classroom.getMembers().add(learner);
             classroomRepo.save(classroom);
+            learner.getClassrooms().add(classroom);
+            userRepo.save(learner);
             return true;
         }
         return false;
     }
 
     @Override
-    public List<Classroom> getAllClassroom() {
-        return classroomRepo.findAll();
+    public User getUserRequesting(HttpServletRequest request) {
+        Principal userPrincipal = request.getUserPrincipal(); 
+        String requestingUserByEmail = userPrincipal.getName();
+        User requestingUser = userRepo.findByEmail(requestingUserByEmail);
+        return requestingUser;
     }
 
+    @Override
+    public void removeMemberFromClassroom(Long classId, Long memberId, User requestingUser) {
+        Classroom classroom = classroomRepo.findById(classId)
+                .orElseThrow(() -> new EntityNotFoundException("Classroom not found with id: " + classId));
+
+        if (!classroom.getCreator().getId().equals(requestingUser.getId())) {
+            throw new AccessDeniedException("Only the teacher in charge can remove members from the classroom.");
+        }
+
+        User memberToRemove = userRepo.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + memberId));
+
+        if (classroom.getMembers().remove(memberToRemove)) {
+            classroomRepo.save(classroom);
+            memberToRemove.getClassrooms().remove(classroom);
+            userRepo.save(memberToRemove);
+        }
+    }
+
+    @Override
+    public List<Classroom> getCreatedClassrooms(HttpServletRequest request) {
+        User creator = getUserRequesting(request);
+        return classroomRepo.findByCreator(creator);
+    }
+
+    @Override
+    public Classroom removeMemberFromClassroomByMemberId(Classroom classroom, Long memberId) {
+       User member = userRepo.findUserById(memberId);
+       member.getClassrooms().remove(classroom);
+       userRepo.save(member);
+       classroom.getMembers().remove(member);
+        return classroomRepo.save(classroom);
+
+    }
+ 
+    
 }
