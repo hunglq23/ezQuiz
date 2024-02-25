@@ -33,7 +33,7 @@ public class UserController {
   }
 
   @GetMapping("/library")
-  public String getLibraryPage() {
+  public String getLibraryPage() {  
     return "library";
   }
 
