@@ -394,126 +394,127 @@
         </div>
       </form>
     </div>
-    
 
     <!-- Update Modal -->
 
     <div
-    class="modal fade"
-    id="editClass"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <form
-      th:action="@{/classroom/update/{id}(id=${classroom.id})}"
-      th:object="${classroom}"
-      method="POST"
+      class="modal fade"
+      id="editClass"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
     >
-    <input type="hidden"  th:field="*{id}" />
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
+      <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
+      </div>
+      <form
+        th:action="@{/classroom/update/{id}(id=${classroom.id})}"
+        th:object="${classroom}"
+        method="POST"
+      >
+        <input type="hidden" th:field="*{id}" />
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Classroom Name:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{className}"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  class="form-control"
+                  id="message-text"
+                  rows="3"
+                  th:field="*{description}"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-outline-success" name="save">
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                name="close"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- Chỉnh sửa -->
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Add student in excel file -->
+    <div
+      class="modal fade"
+      id="excelImport"
+      tabindex="-1"
+      aria-labelledby="excelImportLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog mt-5">
+        <div class="modal-content border-0">
+          <div class="modal-header p-2 align-items-start">
+            <div>
+              <h5 class="modal-title" id="excelImportLabel">
+                Import questions from excel file
+              </h5>
+              <p class="fw-lighter fst-italic m-0" style="font-size: small">
+                Please upload questions according to the template below
+              </p>
+            </div>
             <button
               type="button"
-              class="btn-close"
+              class="btn-sm btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
             ></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3">
-              <label for="recipient-name" class="col-form-label"
-                >Classroom Name:</label
-              >
+            <div class="input-group mb-3">
               <input
-                type="text"
+                type="file"
                 class="form-control"
-                id="recipient-name"
-                th:field="*{className}"
-                required
+                name="excel-file"
+                id="inputExcelFile"
               />
             </div>
-            <div class="mb-3">
-              <label for="message-text" class="col-form-label"
-                >Description:</label
-              >
-              <textarea
-                class="form-control"
-                id="message-text"
-                rows="3"
-                th:field="*{description}"
-              ></textarea>
-            </div>
           </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-outline-success" name="save">
-              Save
+          <div class="modal-footer p-1 d-flex justify-content-between">
+            <button class="btn btn-sm bg-light px-2 glitter-button">
+              <i class="fas fa-download me-1"></i>Download template
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              name="close"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <!-- Chỉnh sửa -->
+            <a class="btn btn-sm btn-secondary px-2 glitter-button"
+              >Load & View&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </a>
           </div>
-        </div>
-      </div>
-    </form>
-  </div>
-
-
-    <!-- Add student in excel file -->
-    <div
-    class="modal fade"
-    id="excelImport"
-    tabindex="-1"
-    aria-labelledby="excelImportLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog mt-5">
-      <div class="modal-content border-0">
-        <div class="modal-header p-2 align-items-start">
-          <div>
-            <h5 class="modal-title" id="excelImportLabel">
-              Import questions from excel file
-            </h5>
-            <p class="fw-lighter fst-italic m-0" style="font-size: small">
-              Please upload questions according to the template below
-            </p>
-          </div>
-          <button
-            type="button"
-            class="btn-sm btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div class="input-group mb-3">
-            <input
-              type="file"
-              class="form-control"
-              name="excel-file"
-              id="inputExcelFile"
-            />
-          </div>
-        </div>
-        <div class="modal-footer p-1 d-flex justify-content-between">
-          <button class="btn btn-sm bg-light px-2 glitter-button">
-            <i class="fas fa-download me-1"></i>Download template
-          </button>
-          <a class="btn btn-sm btn-secondary px-2 glitter-button"
-            >Load & View&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
-          </a>
         </div>
       </div>
     </div>
-  </div>
 
     <script>
       function removeMember(event) {
@@ -539,8 +540,8 @@
               }
             }
           };
-          xhr.send(JSON.stringify({memberId:memberId}));
-        }else{
+          xhr.send(JSON.stringify({ memberId: memberId }));
+        } else {
           event.preventDefault();
         }
       }
