@@ -20,12 +20,18 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -36,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
@@ -317,6 +324,59 @@ public class QuizServiceImpl implements IQuizService {
         // Implement the logic to get quiz by its UUID from the repository
         // For example:
         return quizUUIDRepo.findById(id).orElse(null);
+    }
+
+    @Override
+    public ByteArrayInputStream getDataDownloaded(QuizUUID quiz) throws IOException {
+        String[] columns = { "Question", "Type", "Correct Answer", "Choice 1", "Choice 2", "Choice 3", "Choice 4",
+                "Choice 5", "Choice 6" };
+
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Quiz Data");
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setColor(IndexedColors.BLUE.getIndex());
+
+            CellStyle headerCellStyle = workbook.createCellStyle();
+            headerCellStyle.setFont(headerFont);
+
+            // Create the header row
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerCellStyle);
+            }
+
+            // Fill data rows
+            int rowNum = 1;
+            for (Quest question : quiz.getQuestions()) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(question.getText());
+                row.createCell(1).setCellValue(question.getType());
+
+                List<Answer> answers = question.getAnswers();
+                int answerNum = 2;
+                for (Answer answer : answers) {
+                    Cell answerCell = row.createCell(answerNum++);
+                    answerCell.setCellValue(answer.getText());
+                    if (answer.getIsCorrect()) {
+                        CellStyle correctCellStyle = workbook.createCellStyle();
+                        correctCellStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+                        correctCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                        answerCell.setCellStyle(correctCellStyle);
+                    }
+                }
+
+                // Fill remaining cells with empty strings
+                for (int i = answerNum; i < columns.length; i++) {
+                    row.createCell(i).setCellValue("");
+                }
+            }
+
+            workbook.write(out);
+            return new ByteArrayInputStream(out.toByteArray());
+        }
     }
 
 }

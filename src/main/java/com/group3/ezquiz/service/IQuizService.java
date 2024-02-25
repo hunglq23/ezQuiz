@@ -6,6 +6,8 @@ import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,5 +51,7 @@ public interface IQuizService {
         QuizUUID getQuizById(UUID id);
 
         void importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id);
+
+        ByteArrayInputStream getDataDownloaded(QuizUUID quiz) throws IOException;
 
 }

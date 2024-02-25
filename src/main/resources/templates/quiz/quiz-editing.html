@@ -868,9 +868,9 @@
           </form>
         </div>
         <div class="modal-footer p-1 d-flex justify-content-between">
-          <button class="btn btn-sm bg-light px-2 glitter-button">
+          <a th:href="@{/quiz/download}" download="Book3.xlsx" class="btn btn-sm bg-light px-2 glitter-button">
             <i class="fas fa-download me-1"></i>Download template
-          </button>
+          </a>
           <button class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
             onclick="handleFormSubmitByIdAndMethod('excelImportForm')">
             Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
