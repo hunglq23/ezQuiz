@@ -32,6 +32,9 @@ public class UserController {
   public String getHomePage(HttpServletRequest http, Model model) {
     User userRequesting = userService.getUserRequesting(http);
     model.addAttribute("user", userRequesting);
+    List<QuizUUID> quizList = quizService.getListQuizUUID(http);
+//    quizList.getContent()
+    model.addAttribute("quizList", quizList);
 
     return "home";
   }

@@ -595,4 +595,10 @@ public class QuizServiceImpl implements IQuizService {
     List<Quiz> data = quizRepo.findQuizUUID();
     return data;
   }
+
+    @Override
+    public List<QuizUUID> getListQuizUUID(HttpServletRequest request) {
+        List<QuizUUID> data = quizUUIDRepo.findQuizUUID();
+        return data;
+    }
 }

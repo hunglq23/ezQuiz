@@ -57,4 +57,5 @@ public interface IQuizService {
 
   QuizResult findLastFinishAttemptResult(HttpServletRequest request, UUID quizId);
 
+    List<QuizUUID> getListQuizUUID(HttpServletRequest request);
 }
