@@ -23,6 +23,7 @@ import com.group3.ezquiz.service.ClassroomService;
 import com.group3.ezquiz.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
@@ -39,16 +40,17 @@ public class ClassroomController {
     // @PreAuthorize("hasRole('ROLE_TEACHER')")
     // @GetMapping("/classrooms/created")
     // public String getCreatedClassrooms(HttpServletRequest request, Model model,
-    //         @RequestParam(defaultValue = "0") Integer page,
-    //         @RequestParam(required = false, defaultValue = "") String name) {
-    //     Page<Classroom> classrooms = classroomService.getCreatedClassListByPageAndSearchName(request, page, name);
+    // @RequestParam(defaultValue = "0") Integer page,
+    // @RequestParam(required = false, defaultValue = "") String name) {
+    // Page<Classroom> classrooms =
+    // classroomService.getCreatedClassListByPageAndSearchName(request, page, name);
 
-    //     model.addAttribute("classrooms", classrooms.getContent());
-    //     model.addAttribute("currentPage", page);
-    //     model.addAttribute("totalPages", classrooms.getTotalPages());
-    //     model.addAttribute("search", name);
-    //     model.addAttribute("classroom", new ClassroomDto());
-    //     return "classroom/class-list";
+    // model.addAttribute("classrooms", classrooms.getContent());
+    // model.addAttribute("currentPage", page);
+    // model.addAttribute("totalPages", classrooms.getTotalPages());
+    // model.addAttribute("search", name);
+    // model.addAttribute("classroom", new ClassroomDto());
+    // return "classroom/class-list";
     // }
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
@@ -62,7 +64,7 @@ public class ClassroomController {
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @PostMapping("/classrooms/create")
-    public String ClassCreating( HttpServletRequest hRequest,
+    public String ClassCreating(HttpServletRequest hRequest,
             @ModelAttribute("classroom") ClassroomDto classroomDto) {
         classroomService.createClass(hRequest, classroomDto);
         return "redirect:/classrooms/created-list"; // den dia chi
@@ -82,10 +84,13 @@ public class ClassroomController {
     }
 
     @PostMapping("/classroom/update/{id}")
-    public String ClassroomUpdating(@PathVariable(value = "id") Long id,
-            @ModelAttribute("classroom") Classroom updatedClassroom) {
+    public String ClassroomUpdating(
+            @PathVariable(value = "id") Long id,
+            @ModelAttribute("classroom") Classroom updatedClassroom,
+            RedirectAttributes redirectAttributes) {
         classroomService.updateClassroom(id, updatedClassroom);
-        return "classroom/classroom-update";
+        redirectAttributes.addFlashAttribute("successMessage", "Classroom updated successfully!");
+        return "redirect:/classroom/" + id;
 
     }
 
