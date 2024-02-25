@@ -97,6 +97,10 @@
         right: 10px;
         bottom: 10px;
       }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
     </style>
   </head>
 
@@ -177,7 +181,7 @@
                   </a>
                   <a
                     class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/classrooms/created}"
+                    th:href="@{/classrooms/created-list}"
                   >
                     Classroom
                   </a>
@@ -238,16 +242,19 @@
     <div class="container">
       <div class="back-to-list">
         <i class="fa-solid fa-arrow-left">
-          <a th:href="@{/classrooms/created}">
-            <span>Back to all classes</span>
+          <a th:href="@{/classrooms/created-list}">
+            <span> Back to all classes</span>
           </a>
         </i>
       </div>
       <div class="row justify-content-between">
         <div class="col-4">
-          
-          <div class="card" style="width: 20rem" th:object="${classroom}">
-            <input type="hidden"  th:field="*{id}" />
+          <div
+            class="card"
+            style="width: 20rem"
+            th:each="classroom: ${classroom}"
+            th:id="${classroom.id}"
+          >
             <div class="card-header">
               <img
                 src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
@@ -256,10 +263,8 @@
               />
             </div>
             <div class="card-body">
-              <h5 class="card-title"></h5>
-              <p class="card-text" th:text="*{classroom.description}">
-               
-              </p>
+              <h5 class="card-title" th:text="${classroom.className}"></h5>
+              <p class="card-text" th:text="${classroom.description}"></p>
 
               <div class="edit-class">
                 <button
@@ -287,7 +292,6 @@
               </button>
             </div>
           </div>
-         
         </div>
         <!-- Table Student in Class -->
         <div class="col-8">
@@ -305,58 +309,31 @@
             <table class="table-light align-middle">
               <thead>
                 <tr>
-                  <th scope="col">
-                    <div class="form-check">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        value=""
-                        
-                      />
-                    </div>
-                  </th>
-                  <th scope="col">ID</th>
+                  <th scope="col">No</th>
                   <th scope="col">Student Name</th>
                   <th scope="col">Student Email</th>
                   <th scope="col">Phone</th>
                   <th scope="col"></th>
                 </tr>
               </thead>
-              <tbody>
+              <div th:if="${classroom.members.size() == 0}">Hi No Student</div>
+              <tbody
+                th:unless="${classroom.members.size() == 0}"
+                th:each="member, iStat: ${classroom.members}"
+              >
                 <tr>
-                  <th scope="row">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      
-                    />
-                  </th>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>123456799</td>
+                  <!-- <div class="d-none" th:text="${member.id}"></div> -->
+                  <th scope="row" th:text="${iStat.index + 1}">1</th>
+                  <td th:text="${member.fullName}">Mark</td>
+                  <td th:text="${member.email}">Otto</td>
+                  <td th:text="${member.phone}">123456799</td>
                   <td class="action">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                    <i class="fa-solid fa-trash"></i>
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      
-                    />
-                  </th>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>454554645</td>
-                  <td class="action">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                    <i class="fa-solid fa-trash"></i>
+                    <a
+                      class="btn btn-sm bg-light"
+                      th:href="@{./{id}/remove-member(id=${classroom.id}, memberId=${member.id})}"
+                      onclick="removeMember(event)"
+                      ><i class="fa-solid fa-trash"></i
+                    ></a>
                   </td>
                 </tr>
               </tbody>
@@ -367,73 +344,86 @@
     </div>
 
     <!-- Add Student -->
- 
+
     <div
-    class="modal fade"
-    id="showCode"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <form
-      
-      th:object="${classroom}"
-      method="POST"
+      class="modal fade"
+      id="addStudent"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+      th:each="classroom: ${classroom}"
     >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="recipient-name" class="col-form-label"
-                >Classroom Name:</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="recipient-name"
-                th:field="*{className}"
-                required
-              />
+      <form action="#">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Share this Class code with your students
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
-            <div class="mb-3">
-              <label for="message-text" class="col-form-label"
-                >Description:</label
-              >
-              <textarea
-                class="form-control"
-                id="message-text"
-                rows="3"
-                th:field="*{description}"
-              ></textarea>
+            <div class="modal-body">
+              <div class="mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{classroom.code}"
+                  readonly
+                  style="background-color: rgb(245, 217, 221)"
+                />
+              </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-outline-success" name="save">
-              Save
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              name="close"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <!-- Chỉnh sửa -->
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                name="close"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- Chỉnh sửa -->
+            </div>
           </div>
         </div>
-      </div>
-    </form>
-  </div>
-   
+      </form>
+    </div>
+
+    <script>
+      function removeMember(event) {
+        if (confirm("Are you sure want to remove this student?")) {
+          var row = event.target.closest("tr");
+          var memberId = row
+            .querySelector("[member.id]")
+            .getAttribute("member.id");
+
+          var xhr = new XMLHttpRequest();
+          xhr.open(
+            "POST",
+            "http://localhost:8080/classroom/{id}/remove-member(id=${classroom.id}, memberId={member.id})",
+            true
+          );
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                row.remove();
+              } else {
+                console.error("Error while remove members");
+              }
+            }
+          };
+          xhr.send(JSON.stringify({memberId:memberId}));
+        }else{
+          event.preventDefault();
+        }
+      }
+    </script>
   </body>
 </html>
