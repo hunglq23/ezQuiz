@@ -71,6 +71,12 @@
       }
       .join-list{
       margin-top: 30px;
+      position: relative;
+      }
+      .card{
+        position: absolute;
+        
+        top: 170px;
       }
     </style>
   </head>
@@ -193,6 +199,21 @@
           </button>
         </div>
          
+        <div class="row">
+          <div class="col-sm-6" 
+           >
+           <div th:if="${classrooms.size() == 0}">No Classroom</div>
+           <div th:each="classroom: ${classrooms}">
+             <div class="card mb-3" style="max-width: 540px" >
+               <div class="card-body" >
+                 <h5 class="card-title" th:text="${classroom.className}"></h5>
+                 <p class="card-text"></p>
+               </div>
+             </div>
+           </div>
+          </div>
+          </div>
+
         
         
       </div>
