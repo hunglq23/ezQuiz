@@ -1,6 +1,9 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.payload.UserDto;
+import com.group3.ezquiz.service.impl.QuizServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -24,11 +28,15 @@ import java.util.Objects;
 public class UserController {
 
   private final UserService userService;
+  private final QuizServiceImpl quizService;
 
   @GetMapping("/home")
   public String getHomePage(HttpServletRequest http, Model model) {
     User userRequesting = userService.getUserRequesting(http);
     model.addAttribute("user", userRequesting);
+    List<QuizUUID> quizList = quizService.getListQuizUUID(http);
+//    quizList.getContent()
+    model.addAttribute("quizList", quizList);
     return "home";
   }
 

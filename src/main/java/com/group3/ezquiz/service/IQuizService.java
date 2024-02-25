@@ -6,6 +6,7 @@ import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,6 +35,8 @@ public interface IQuizService {
         QuizUUID saveAndGetDraftQuiz(HttpServletRequest http);
 
         QuizUUID getQuizByRequestAndUUID(HttpServletRequest request, UUID id);
+
+        List<QuizUUID> getListQuizUUID(HttpServletRequest request);
 
         ResponseEntity<?> handleQuizUpdatingRequest(
                         HttpServletRequest request, UUID id, QuizDetailsDto dto);

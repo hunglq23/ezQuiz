@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +66,12 @@ public class QuizServiceImpl implements IQuizService {
             return byIdAndCreator;
         }
         throw new ResourceNotFoundException("Not found your quiz with ID " + id);
+    }
+
+    @Override
+    public List<QuizUUID> getListQuizUUID(HttpServletRequest request) {
+        List<QuizUUID> data = quizUUIDRepo.findQuizUUID();
+        return data;
     }
 
     @Override
