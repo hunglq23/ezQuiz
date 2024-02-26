@@ -2,10 +2,13 @@ package com.group3.ezquiz.repository;
 
 import com.group3.ezquiz.model.Quiz;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.group3.ezquiz.model.User;
 
@@ -18,4 +21,10 @@ public interface QuizRepo extends JpaRepository<Quiz, UUID> {
   // "(:code IS NULL OR q.code LIKE %:code%) OR " +
   // "(:title IS NULL OR q.title LIKE %:title%)")
   // Page<Quiz> getAllQuiz(String code, String title, Pageable page);
+
+  @Query(value = "select q from Quiz q order by q.updatedAt DESC limit 3")
+  List<Quiz> findQuizUUID();
+
+  @Query(value = "select q from Quiz q where q.title like %:search%")
+  List<Quiz> searchQuizUUID(@Param(value = "search") String search);
 }
