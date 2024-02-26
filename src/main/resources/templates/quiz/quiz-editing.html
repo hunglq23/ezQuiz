@@ -610,6 +610,7 @@
               class="form-control border-0 rounded-1"
               placeholder="Search in Library"
               required
+              onkeyup="delayedSearch()"
             />
             <button type="submit" class="btn btn-sm btn-purple search-btn">
               Search
@@ -704,141 +705,31 @@
         <div class="col-5 bg-white p-1 d-flex flex-column">
           <div class="opa-33-fsz-14-w-100">
             Display the result for
-            <strong>"<span>search</span>"</strong>:
+            <strong>"<span id="data-search"></span>"</strong>:
           </div>
-          <div class="data data-left">
-            <a class="data-item">
-              <div class="item-detail">
-                <div class="detail-header flex-grow-1">
-                  <strong>Quiz Title</strong>
-                  <div class="item-tag">Exam</div>
-                </div>
-                <ul class="fa-ul">
-                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
-                  <li>
-                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
-                    >Creator name
-                  </li>
-                </ul>
-              </div>
-              <div class="item-image">
-                <img
-                  class="bg-success"
-                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                  alt="Quiz Image"
-                />
-              </div>
-            </a>
-            <a class="data-item">
-              <div class="item-detail">
-                <div class="detail-header flex-grow-1">
-                  <strong>Quiz Title</strong>
-                  <div class="item-tag">Quiz</div>
-                </div>
-                <ul class="fa-ul">
-                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
-                  <li>
-                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
-                    >Creator name
-                  </li>
-                </ul>
-              </div>
-              <div class="item-image">
-                <img
-                  class="bg-info"
-                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                  alt="Quiz Image"
-                />
-              </div>
-            </a>
-            <a class="data-item">
-              <div class="item-detail">
-                <div class="detail-header flex-grow-1">
-                  <strong>Quiz Title</strong>
-                  <div class="item-tag">Quiz</div>
-                </div>
-                <ul class="fa-ul">
-                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
-                  <li>
-                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
-                    >Creator name
-                  </li>
-                </ul>
-              </div>
-              <div class="item-image">
-                <img
-                  class="bg-info"
-                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                  alt="Quiz Image"
-                />
-              </div>
-            </a>
-            <a class="data-item">
-              <div class="item-detail">
-                <div class="detail-header flex-grow-1">
-                  <strong>Quiz Title</strong>
-                  <div class="item-tag">Quiz</div>
-                </div>
-                <ul class="fa-ul">
-                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
-                  <li>
-                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
-                    >Creator name
-                  </li>
-                </ul>
-              </div>
-              <div class="item-image">
-                <img
-                  class="bg-info"
-                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                  alt="Quiz Image"
-                />
-              </div>
-            </a>
-            <a class="data-item">
-              <div class="item-detail">
-                <div class="detail-header flex-grow-1">
-                  <strong>Quiz Title</strong>
-                  <div class="item-tag">Quiz</div>
-                </div>
-                <ul class="fa-ul">
-                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
-                  <li>
-                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
-                    >Creator name
-                  </li>
-                </ul>
-              </div>
-              <div class="item-image">
-                <img
-                  class="bg-info"
-                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                  alt="Quiz Image"
-                />
-              </div>
-            </a>
-            <a class="data-item">
-              <div class="item-detail">
-                <div class="detail-header flex-grow-1">
-                  <strong>Quiz Title</strong>
-                  <div class="item-tag">Quiz</div>
-                </div>
-                <ul class="fa-ul">
-                  <li><i class="fa-li fa fa-list"></i>30 questions</li>
-                  <li>
-                    <i class="fa-li fa fa-user" style="color: #cacaca"></i
-                    >Creator name
-                  </li>
-                </ul>
-              </div>
-              <div class="item-image">
-                <img
-                  class="bg-info"
-                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                  alt="Quiz Image"
-                />
-              </div>
-            </a>
+          <div class="data data-left" id="searchResults">
+<!--            <a class="data-item">-->
+<!--              <div class="item-detail">-->
+<!--                <div class="detail-header flex-grow-1">-->
+<!--                  <strong>Quiz Title</strong>-->
+<!--                  <div class="item-tag">Exam</div>-->
+<!--                </div>-->
+<!--                <ul class="fa-ul">-->
+<!--                  <li><i class="fa-li fa fa-list"></i>30 questions</li>-->
+<!--                  <li>-->
+<!--                    <i class="fa-li fa fa-user" style="color: #cacaca"></i-->
+<!--                    >Creator name-->
+<!--                  </li>-->
+<!--                </ul>-->
+<!--              </div>-->
+<!--              <div class="item-image">-->
+<!--                <img-->
+<!--                  class="bg-success"-->
+<!--                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"-->
+<!--                  alt="Quiz Image"-->
+<!--                />-->
+<!--              </div>-->
+<!--            </a>-->
           </div>
         </div>
 
@@ -1268,6 +1159,68 @@
               console.error("Other error, not 400...");
             }
           },
+        });
+      }
+
+      $(document).ready(function () {
+        // Gọi hàm khi trang được tải
+        delayedSearch();
+      });
+      // search
+      var delayTimer;
+
+      function delayedSearch() {
+        clearTimeout(delayTimer);
+        delayTimer = setTimeout(function () {
+          search();
+        }, 100);
+      }
+      function search() {
+        var searchTerm = $('#searchQuizInput').val();
+        $('#data-search').text(searchTerm);
+        $.ajax({
+          type: 'GET',
+          url: '/rest-quiz/search?search=' + searchTerm.trim(),
+          success: function (data) {
+            displayResults(data);
+          },
+          error: function (error) {
+            console.error('Error during search:', error);
+          }
+        });
+      }
+
+      function displayResults(results) {
+        var resultsContainer = $('#searchResults');
+        resultsContainer.empty();
+        results.forEach(function (result) {
+          var dataItem = $('<a>', { class: 'data-item' });
+          var itemDetail = $('<div>', { class: 'item-detail' });
+          var detailHeader = $('<div>', { class: 'detail-header flex-grow-1' });
+          var title = $('<strong>', { text: result.title });
+          detailHeader.append(title);
+          var itemTag = $('<div>', { class: 'item-tag', text: result.tag });
+          detailHeader.append(itemTag);
+          itemDetail.append(detailHeader);
+          var ul = $('<ul>', { class: 'fa-ul' });
+          var questionsLi = $('<li>', { html: '<i class="fa-li fa fa-list"></i>' + result.questions + ' questions' });
+          ul.append(questionsLi);
+          var creatorLi = $('<li>', {
+            html: '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' + result.creator.fullName
+          });
+          ul.append(creatorLi);
+          itemDetail.append(ul);
+          var itemImage = $('<div>', { class: 'item-image' });
+
+          var image = $('<img>', {
+            class: 'bg-success',
+            src: result.quizImageUrl,
+            alt: 'Quiz Image'
+          });
+          itemImage.append(image);
+          dataItem.append(itemDetail);
+          dataItem.append(itemImage);
+          resultsContainer.append(dataItem);
         });
       }
     </script>

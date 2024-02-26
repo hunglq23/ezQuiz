@@ -75,6 +75,12 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
+    public List<QuizUUID> searchQuizUUID(HttpServletRequest request, String search) {
+        List<QuizUUID> data = quizUUIDRepo.searchQuizUUID(search);
+        return data;
+    }
+
+    @Override
     public ResponseEntity<?> handleQuizUpdatingRequest(
             HttpServletRequest request,
             UUID id,

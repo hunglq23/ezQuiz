@@ -37,6 +37,7 @@ public interface IQuizService {
         QuizUUID getQuizByRequestAndUUID(HttpServletRequest request, UUID id);
 
         List<QuizUUID> getListQuizUUID(HttpServletRequest request);
+        List<QuizUUID> searchQuizUUID(HttpServletRequest request, String search);
 
         ResponseEntity<?> handleQuizUpdatingRequest(
                         HttpServletRequest request, UUID id, QuizDetailsDto dto);
