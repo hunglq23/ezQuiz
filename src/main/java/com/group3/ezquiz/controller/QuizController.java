@@ -53,6 +53,11 @@ public class QuizController {
     // return null;
     // }
 
+    @GetMapping("/take")
+    public String takeQuiz(){
+        return "quiz/quiz-taking";
+    }
+
     @PreAuthorize(LEARNER_AUTHORITY)
     @GetMapping("/{id}/start/{quiz-taking-id}?exam=0")
     public String takeAQuiz() {
