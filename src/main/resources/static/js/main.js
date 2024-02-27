@@ -75,29 +75,13 @@
   // Add your javascript here
 })();
 
-/**
- * Function to toggle password visibility
- * @param {string} passwordFieldId - The ID of the password input field
- */
-function togglePasswordVisibility(passwordFieldId) {
-  const passwordField = document.getElementById(passwordFieldId);
-  const passwordToggleIcon = document.getElementById(
-    `${passwordFieldId}-toggle-icon`
-  );
-
-  if (
-    passwordField.type === "password" ||
-    passwordField.type === "passwordConfirm"
-  ) {
-    passwordField.type = "text";
-    passwordToggleIcon.classList.remove("fa-eye");
-    passwordToggleIcon.classList.add("fa-eye-slash");
-  } else {
-    passwordField.type = "password";
-    passwordToggleIcon.classList.remove("fa-eye-slash");
-    passwordToggleIcon.classList.add("fa-eye");
-  }
-}
+// Active the tooltips
+const tooltipTriggerList = document.querySelectorAll(
+  '[data-bs-toggle="tooltip"]'
+);
+const tooltipList = [...tooltipTriggerList].map(
+  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+);
 
 // Suggestion for Nav Search
 const navSearchInput = document.getElementById("navSearchInput");
@@ -115,4 +99,50 @@ if (navSearchInput !== null) {
       navSuggestionList.style.display = "none";
     }
   });
+}
+
+function handleFormSubmitByIdAndMethod(formId, method = "post") {
+  const form = $("#" + formId);
+  if (form === null) {
+    console.error("Form is null!");
+  } else {
+    console.log("Handling submit...");
+    const formData = new FormData(form[0]);
+
+    $.ajax({
+      url: form.attr("action"),
+      method: method,
+      data: formData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      dataType: "json",
+      success: (resp) => {
+        console.log("Success");
+        location.reload();
+      },
+      error: (xhr, status, err) => {
+        if (xhr.status === 400) {
+          console.error("showing 400...");
+          const errors = JSON.parse(xhr.responseText).errors;
+          Object.entries(errors).forEach(([key, value]) => {
+            console.log(`${key}: ${value}`);
+
+            $("." + key).each(function () {
+              $(this).text(value);
+              $(this).removeClass("d-none");
+            });
+
+            $("." + key.replace("Error", "Input")).each(function () {
+              $(this).addClass("is-invalid");
+            });
+          });
+        } else {
+          console.error("Other error, not 400...");
+          console.error(status);
+          console.error(err);
+        }
+      },
+    });
+  }
 }
