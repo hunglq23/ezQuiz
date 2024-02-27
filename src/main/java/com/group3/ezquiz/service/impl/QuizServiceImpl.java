@@ -244,10 +244,10 @@ public class QuizServiceImpl implements IQuizService {
             // Check if there is at least one row
             if (rowIterator.hasNext()) {
                 Row firstRow = rowIterator.next();
-                String quizTitle = getCellValue(firstRow.getCell(0)).trim();
+                // String quizTitle = getCellValue(firstRow.getCell(0)).trim();
 
                 QuizUUID quiz = getQuizByRequestAndUUID(request, id);
-                quiz.setTitle(quizTitle);
+                // quiz.setTitle(quizTitle);
 
                 List<Quest> questions = quiz.getQuestions();
 
