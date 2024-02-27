@@ -22,6 +22,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @PreAuthorize("hasAnyRole('LEARNER', 'TEACHER')")
@@ -65,6 +67,12 @@ public class QuizController {
     }
 
     @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/{id}")
+    public String getQuizDetailsPage() {
+        return "quiz/quiz-details";
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/{id}/edit")
     public String getQuizEditPage(
             HttpServletRequest request,
@@ -91,7 +99,7 @@ public class QuizController {
             HttpServletRequest request,
             @PathVariable UUID id,
             @RequestParam(required = false, defaultValue = "") String type,
-            @RequestParam String trigger,
+            @RequestParam(required = false, defaultValue = "") String trigger,
             Model model) {
         QuizUUID quiz = quizService.getQuizByRequestAndUUID(request, id);
         if (!QuizUUID.AVAILABLE_TYPES.contains(type)) {

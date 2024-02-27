@@ -37,10 +37,10 @@ public class QuizUUID {
   public static final List<String> AVAILABLE_TYPES = List.of(
       "single-choice",
       "multiple-choice");
-  public static final int MIN_TITLE_LENGTH = 4;
+  public static final int MIN_TITLE_LENGTH = 3;
   public static final int MAX_TITLE_LENGTH = 16;
-  public static final int MAX_DESCRIPTION_LENGTH = 32;
-  public static final int MAX_IMAGE_URL_LENGTH = 500;
+  public static final int MAX_DESCRIPTION_LENGTH = 88;
+  public static final int MAX_IMAGE_URL_LENGTH = 256;
 
   @Id
   @GeneratedValue
@@ -59,7 +59,7 @@ public class QuizUUID {
   private Boolean isExam;
 
   @Column(length = MAX_IMAGE_URL_LENGTH)
-  private String quizImageUrl;
+  private String imageUrl;
 
   @Column(length = MAX_DESCRIPTION_LENGTH)
   private String description;

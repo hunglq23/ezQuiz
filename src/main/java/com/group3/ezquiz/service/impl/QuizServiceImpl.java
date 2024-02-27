@@ -2,10 +2,10 @@ package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Quest;
-import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.repository.IQuestRepo;
@@ -23,9 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import java.security.Principal;
 import java.util.Map;
@@ -78,12 +80,22 @@ public class QuizServiceImpl implements IQuizService {
             QuizDetailsDto dto) {
         User userRequesting = getUserRequesting(request);
         QuizUUID quiz = quizUUIDRepo.findByIdAndCreator(id, userRequesting);
-        Set<Quest> questions = quiz.getQuestions();
-        questions.add(questionRepo.findById(3L).get());
-        questions.add(questionRepo.findById(4L).get());
+
+        if (quiz.getQuestions().size() == 0) {
+            return new ResponseEntity<>(
+                    new MessageResponse("The number of questions must be greater than 0!"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        quiz.setImageUrl(dto.getImageUrl());
+        quiz.setTitle(dto.getTitle());
+        quiz.setIsExam(dto.getIsExam());
+        quiz.setDescription(dto.getDescription());
+        quiz.setIsDraft(false);
+
         quizUUIDRepo.save(quiz);
 
-        return null;
+        return ResponseEntity.ok(new MessageResponse("Successfull!!!"));
     }
 
     @Override
@@ -96,7 +108,7 @@ public class QuizServiceImpl implements IQuizService {
         Quest newQuestion = questionService.createNewQuestion(request, type, questionText, params);
         quiz.getQuestions().add(newQuestion);
         quizUUIDRepo.save(quiz);
-        return "redirect:/quiz/" + quiz.getId() + "/edit#" + newQuestion.getId();
+        return "redirect:/quiz/" + quiz.getId() + "/edit";
     }
 
     @Override
