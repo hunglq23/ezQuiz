@@ -1,6 +1,5 @@
 package com.group3.ezquiz.payload;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

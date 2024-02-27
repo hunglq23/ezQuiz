@@ -1,9 +1,9 @@
 package com.group3.ezquiz.payload;
 
-import lombok.Setter;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
