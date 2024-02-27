@@ -1219,7 +1219,7 @@
       aria-labelledby="excelImportLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog mt-5">
         <div class="modal-content border-0">
           <div class="modal-header p-2 align-items-start">
             <div>
@@ -1238,29 +1238,38 @@
             ></button>
           </div>
           <div class="modal-body">
-            <form id="excelInputForm" method="post" class="input-group mb-3">
+            <form
+              id="excelImportForm"
+              th:action="@{/quiz/{id}/import(id=${quiz.id})}"
+              enctype="multipart/form-data"
+              class="input-group mb-3"
+            >
               <input
                 type="file"
                 class="form-control"
-                name="excel-file"
+                name="excelFile"
                 id="inputExcelFile"
               />
             </form>
           </div>
           <div class="modal-footer p-1 d-flex justify-content-between">
-            <button class="btn btn-sm bg-light px-2 glitter-button">
-              <i class="fas fa-download me-1"></i>Download template
-            </button>
             <a
-              class="btn btn-sm btn-secondary px-2 glitter-button"
-              type="submit"
+              th:href="@{/quiz/download}"
+              download="Book3.xlsx"
+              class="btn btn-sm bg-light px-2 glitter-button"
             >
-              Load & View&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+              <i class="fas fa-download me-1"></i>Download template
             </a>
+            <button
+              class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
+              onclick="handleFormSubmitByIdAndMethod('excelImportForm')"
+            >
+              Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </button>
           </div>
         </div>
+        `
       </div>
-      `
     </div>
 
     <!-- <Alert updating message> -->
