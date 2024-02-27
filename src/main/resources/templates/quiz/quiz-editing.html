@@ -475,7 +475,11 @@
                     Description Error!
                   </span>
 
-                  <div th:if="${quiz.questions.size() == 0}" class="p-1">
+                  <div
+                    th:if="${quiz.questions.size() == 0}"
+                    style="margin-top: 10px"
+                    class="p-1"
+                  >
                     <i class="fas fa-list" style="margin: 0 3px"></i>
                     <span>0 question</span>
                   </div>
