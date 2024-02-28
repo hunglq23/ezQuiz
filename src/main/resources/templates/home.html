@@ -121,8 +121,16 @@
                     Question
                   </a>
                   <a
+                    sec:authorize="hasRole('ROLE_TEACHER')"
                     class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/classroom/list}"
+                    th:href="@{/classrooms/created-list}"
+                  >
+                    Classroom
+                  </a>
+                  <a
+                    sec:authorize="hasRole('ROLE_LEARNER')"
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/classroom/joined-list}"
                   >
                     Classroom
                   </a>

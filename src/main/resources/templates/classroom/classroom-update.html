@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ezQuiz Home Page</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../static/images/favicon.ico"
+      th:href="@{../../images/favicon.ico}"
+    />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/main.css"
+      th:href="@{../../css/main.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/profile-menu.css"
+      th:href="@{css/profile-menu.css}"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Include your main.js at the end -->
+    <script
+      src="../../js/bootstrap.bundle.min.js"
+      th:src="@{../../js/bootstrap.bundle.min.js}"
+    ></script>
+    <script src="../../js/main.js" th:src="@{../../js/main.js}"></script>
+
+    <style>
+      body {
+        background-color: #f1eeee;
+      }
+      .back-to-list {
+        font-size: 10px;
+        margin: 50px;
+      }
+      .card {
+        box-shadow: 2px 2px 1px #c4c4c4;
+      }
+      .add-student {
+        float: right;
+        margin-bottom: 20px;
+      }
+      .action {
+        margin-right: 20px;
+      }
+      .table-light {
+        margin: 30px;
+      }
+      button#excelImport {
+        display: inline-block; /* Hiển thị inline-block để nút nằm trên cùng một dòng với div */
+        vertical-align: middle; /* Canh chỉnh theo chiều dọc với div */
+      }
+
+      .card-body {
+        position: relative;
+      }
+
+      .edit-class {
+        position: absolute;
+        top: 20px;
+        right: 10px;
+        bottom: 10px;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="bg-light">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="link-dark navbar-brand site-title mb-0" href="./home"
+              >ezQuiz</a
+            >
+            <div id="navSearch" class="position-relative mx-2 suggest-search">
+              <input
+                type="search"
+                id="navSearchInput"
+                class="form-control"
+                placeholder="Search in Library"
+              />
+              <button
+                id="navSearchButton"
+                type="button"
+                class="btn p-0 h-100 border-0 rounded-2"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+              <div class="suggestions-list">
+                <ul>
+                  <li>Gợi ý 1</li>
+                  <li>Gợi ý 2</li>
+                  <li>Gợi ý 3</li>
+                </ul>
+              </div>
+            </div>
+            <ul class="navbar-nav align-items-center ms-auto">
+              <li class="nav-item">
+                <a
+                  class="btn btn-sm bg-light mx-1 px-2 bd-left"
+                  style="min-width: 111px"
+                  th:href="@{/home}"
+                >
+                  Home&nbsp;&nbsp;<i class="fas fa-home"></i>
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purple px-2"
+                  id="libraryDropdown"
+                  role="button"
+                  th:href="@{/library}"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="margin-right: 25px"
+                  >Library</a
+                >
+                <!-- Library dropdown -->
+                <div
+                  id="libraryDropdown"
+                  class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                  aria-labelledby="libraryDropdown"
+                  style="min-width: 0; width: 100px; right: 25px"
+                >
+                  <a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/quiz/list}"
+                  >
+                    Quiz </a
+                  ><a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/question/list}"
+                  >
+                    Question
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/classrooms/created-list}"
+                  >
+                    Classroom
+                  </a>
+                </div>
+              </li>
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle bg-light rounded-full rounded-circle"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="padding: 6px 12px"
+                >
+                  <i class="fas fa-bars"></i>
+                </a>
+
+                <!-- Dropdown - User Information -->
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="userDropdown"
+                >
+                  <a class="dropdown-item" th:href="@{/profile}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Settings
+                  </a>
+                  <a class="dropdown-item" th:href="@{/admin/list}">
+                    <i
+                      class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"
+                    ></i>
+                    User Management
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" th:href="@{/logout}">
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Content  -->
+    <div class="container">
+      <div class="back-to-list">
+        <i class="fa-solid fa-arrow-left">
+          <a th:href="@{/classrooms/created-list}">
+            <span> Back to all classes</span>
+          </a>
+        </i>
+      </div>
+      <div class="row justify-content-between">
+        <div class="col-4">
+          <div
+            class="card"
+            style="width: 20rem"
+            th:each="classroom: ${classroom}"
+            th:id="${classroom.id}"
+          >
+            <div class="card-header">
+              <img
+                src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                class="card-img-top"
+                alt="..."
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title" th:text="${classroom.className}"></h5>
+              <p class="card-text" th:text="${classroom.description}"></p>
+
+              <div class="edit-class">
+                <button
+                  class="btn btn-sm btn-purple"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editClass"
+                >
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mx-1">
+              <div class="w-100">
+                <strong>Import from:</strong>
+              </div>
+
+              <!-- Excel input trigger button -->
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary w-50 my-1 border-1"
+                data-bs-toggle="modal"
+                data-bs-target="#excelImport"
+              >
+                <i class="fas fa-file-excel me-1"></i> Excel file
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Table Student in Class -->
+        <div class="col-8">
+          <div class="add-student">
+            <button
+              type="button"
+              class="btn btn-purple"
+              data-bs-toggle="modal"
+              data-bs-target="#addStudent"
+            >
+              <i class="fa-solid fa-user-plus"> Add Student </i>
+            </button>
+          </div>
+          <div class="card" style="width: 60rem">
+            <table class="table-light align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Student Name</th>
+                  <th scope="col">Student Email</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <div th:if="${classroom.members.size() == 0}">Hi No Student</div>
+              <tbody
+                th:unless="${classroom.members.size() == 0}"
+                th:each="member, iStat: ${classroom.members}"
+              >
+                <tr>
+                  <!-- <div class="d-none" th:text="${member.id}"></div> -->
+                  <th scope="row" th:text="${iStat.index + 1}">1</th>
+                  <td th:text="${member.fullName}">Mark</td>
+                  <td th:text="${member.email}">Otto</td>
+                  <td th:text="${member.phone}">123456799</td>
+                  <td class="action">
+                    <a
+                      class="btn btn-sm bg-light"
+                      th:href="@{./{id}/remove-member(id=${classroom.id}, memberId=${member.id})}"
+                      onclick="removeMember(event)"
+                      ><i class="fa-solid fa-trash"></i
+                    ></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Student -->
+
+    <div
+      class="modal fade"
+      id="addStudent"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+      th:each="classroom: ${classroom}"
+    >
+      <form action="#">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Share this Class code with your students
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{classroom.code}"
+                  readonly
+                  style="background-color: rgb(245, 217, 221)"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                name="close"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- Chỉnh sửa -->
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Update Modal -->
+
+    <div
+      class="modal fade"
+      id="editClass"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
+      </div>
+      <form
+        th:action="@{/classroom/update/{id}(id=${classroom.id})}"
+        th:object="${classroom}"
+        method="POST"
+      >
+        <input type="hidden" th:field="*{id}" />
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Classroom Name:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{className}"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  class="form-control"
+                  id="message-text"
+                  rows="3"
+                  th:field="*{description}"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-outline-success" name="save">
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                name="close"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- Chỉnh sửa -->
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Add student in excel file -->
+    <div
+      class="modal fade"
+      id="excelImport"
+      tabindex="-1"
+      aria-labelledby="excelImportLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog mt-5">
+        <div class="modal-content border-0">
+          <div class="modal-header p-2 align-items-start">
+            <div>
+              <h5 class="modal-title" id="excelImportLabel">
+                Import questions from excel file
+              </h5>
+              <p class="fw-lighter fst-italic m-0" style="font-size: small">
+                Please upload questions according to the template below
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn-sm btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input
+                type="file"
+                class="form-control"
+                name="excel-file"
+                id="inputExcelFile"
+              />
+            </div>
+          </div>
+          <div class="modal-footer p-1 d-flex justify-content-between">
+            <button class="btn btn-sm bg-light px-2 glitter-button">
+              <i class="fas fa-download me-1"></i>Download template
+            </button>
+            <a class="btn btn-sm btn-secondary px-2 glitter-button"
+              >Load & View&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function removeMember(event) {
+        if (confirm("Are you sure want to remove this student?")) {
+          var row = event.target.closest("tr");
+          var memberId = row
+            .querySelector("[member.id]")
+            .getAttribute("member.id");
+
+          var xhr = new XMLHttpRequest();
+          xhr.open(
+            "POST",
+            "http://localhost:8080/classroom/{id}/remove-member(id=${classroom.id}, memberId={member.id})",
+            true
+          );
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                row.remove();
+              } else {
+                console.error("Error while remove members");
+              }
+            }
+          };
+          xhr.send(JSON.stringify({ memberId: memberId }));
+        } else {
+          event.preventDefault();
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -87,18 +87,18 @@ const tooltipList = [...tooltipTriggerList].map(
 const navSearchInput = document.getElementById("navSearchInput");
 const navSuggestionList = document.querySelector(".suggestions-list");
 
-if (navSearchInput !== null) {
+  if (navSearchInput !== null) {
   navSearchInput.addEventListener("input", () => {
-    // Cập nhật danh sách gợi ý dựa trên nội dung nhập của người dùng
-    // ...
+      // Cập nhật danh sách gợi ý dựa trên nội dung nhập của người dùng
+      // ...
 
-    navSuggestionList.style.display = "block";
-  });
-  document.addEventListener("click", (event) => {
-    if (!event.target.closest(".suggestions-list")) {
-      navSuggestionList.style.display = "none";
-    }
-  });
+      navSuggestionList.style.display = "block";
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".suggestions-list")) {
+        navSuggestionList.style.display = "none";
+      }
+    });
 }
 
 function handleFormSubmitByIdAndMethod(formId, method = "post") {
