@@ -151,6 +151,41 @@
                   ><a
                     class="dropdown-item btn btn-sm p-1"
                     th:href="@{/question/list}"
+                  >
+                    Question
+                  </a>
+                  <a
+                    sec:authorize="hasRole('ROLE_TEACHER')"
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/classrooms/created-list}"
+                  >
+                    Classroom
+                  </a>
+                  <a
+                    sec:authorize="hasRole('ROLE_LEARNER')"
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/classroom/joined-list}"
+                  >
+                    Classroom
+                  </a>
+                </div>
+              </li>
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle bg-light rounded-full rounded-circle"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="padding: 6px 12px"
+                >
+                  <i class="fas fa-bars"></i>
+                </a>
+
+                <!-- Dropdown - User Information -->
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                   aria-labelledby="userDropdown"
                 >
                   <a class="dropdown-item" th:href="@{/profile}">
@@ -191,7 +226,7 @@
       <div class="container">
         <div class="join">
           <button
-            class="btn btn-purple"
+            class="btn btn-sm btn-primary p-1"
             data-bs-toggle="modal"
             data-bs-target="#joinClass"
           >

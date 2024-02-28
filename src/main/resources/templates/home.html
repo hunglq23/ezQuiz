@@ -188,7 +188,11 @@
     </header>
 
     <div class="page-content bg-light py-1">
-      <div id="top-content" class="d-none d-md-block my-2">
+      <div
+        id="top-content"
+        class="d-flex flex-column justify-content-center my-2"
+        style="max-width: 1234px; margin: 0 auto"
+      >
         <!-- Learner -->
         <div
           sec:authorize="hasRole('ROLE_LEARNER')"
@@ -252,6 +256,7 @@
         <div
           sec:authorize="hasRole('ROLE_TEACHER')"
           class="d-flex position-relative justify-content-center my-3"
+          style="max-width: 1234px"
         >
           <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
             <div class="border-0 left-center p-2">
