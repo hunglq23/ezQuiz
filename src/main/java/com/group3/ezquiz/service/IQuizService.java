@@ -1,5 +1,6 @@
 package com.group3.ezquiz.service;
 
+import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.payload.QuizDetailsDto;
@@ -7,6 +8,7 @@ import com.group3.ezquiz.payload.QuizDto;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -44,4 +46,6 @@ public interface IQuizService {
                         String type,
                         String questionText,
                         Map<String, String> params);
+
+        QuizUUID getQuizForQuizTaking(UUID id);
 }

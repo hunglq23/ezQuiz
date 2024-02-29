@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -51,8 +52,13 @@ public class QuizController {
     // return null;
     // }
 
-    @GetMapping("/take")
-    public String takeQuiz(){
+    @GetMapping("/{id}/quiz-taking")
+    public String takeQuiz(
+            @PathVariable UUID id,
+            Model model
+    ){
+        QuizUUID quiz = quizService.getQuizForQuizTaking(id);
+        model.addAttribute("quiz", quiz);
         return "quiz/quiz-taking";
     }
 

@@ -2,7 +2,6 @@ package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Quest;
-import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.model.User;
@@ -15,17 +14,14 @@ import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IQuestService;
 import com.group3.ezquiz.service.IQuizService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.Map;
@@ -58,6 +54,14 @@ public class QuizServiceImpl implements IQuizService {
         QuizUUID saved = quizUUIDRepo.save(quizUUID);
         return saved;
 
+    }
+
+    @Override
+    public QuizUUID getQuizForQuizTaking(UUID id) {
+        QuizUUID quizById = quizUUIDRepo.findQuizUUIDById(id);
+        if(quizById != null){
+            return quizById;
+        } throw new ResourceNotFoundException("Cannot find quiz with ID: "+id);
     }
 
     @Override
@@ -98,6 +102,8 @@ public class QuizServiceImpl implements IQuizService {
         quizUUIDRepo.save(quiz);
         return "redirect:/quiz/" + quiz.getId() + "/edit#" + newQuestion.getId();
     }
+
+
 
     @Override
     public Page<Quiz> listAll(HttpServletRequest http, String searchTerm, Pageable pageable) {
