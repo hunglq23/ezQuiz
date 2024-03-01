@@ -37,11 +37,10 @@
     <link
       href="../../static/vendor/bootstrap/bootstrap.min.css"
       th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
-     
       rel="stylesheet"
     />
     <link
-      href="../css/main.css"
+      href="../../static/css/main.css"
       th:href="@{../../css/main.css}"
       rel="stylesheet"
     />
@@ -95,12 +94,16 @@
         }
       }
 
+      .quiz-detail.more-than-0-question {
+        height: 123px !important;
+      }
+
       .quiz-detail {
         padding-left: 8px;
         .detail-title {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: start;
         }
 
         h3 {
@@ -410,48 +413,52 @@
                 </button>
               </div>
               <div class="d-flex flex-column mt-1">
-                <div class="quiz-detail">
+                <div
+                  class="quiz-detail"
+                  th:classappend="${quiz.questions.size() > 0 ? 'more-than-0-question' : ''}"
+                >
                   <div
-                    class="detail-title glitter-button mt-1"
+                    class="detail-title glitter-button"
                     data-bs-toggle="tooltip"
                     data-bs-placement="right"
                     data-bs-trigger="hover"
                     data-bs-title="Edit title"
                   >
-                    <input
-                      id="titleInput1"
-                      th:value="${quiz.title}"
-                      class="h3 hidden-input m-0 p-0 titleInput"
-                      type="text"
-                      placeholder="Untitled Quiz"
-                      autocomplete="off"
-                      maxlength="16"
-                    />
-
-                    <h3 id="quizTitle" class="m-0">
+                    <div class="d-flex flex-column" style="padding-top: 5px">
+                      <input
+                        id="titleInput1"
+                        th:value="${quiz.title}"
+                        class="h3 hidden-input m-0 p-0 titleInput"
+                        type="text"
+                        placeholder="Untitled Quiz"
+                        autocomplete="off"
+                        maxlength="16"
+                      />
+                      <h3 id="quizTitle" class="m-0">
+                        <span
+                          th:if="${quiz.title == null}"
+                          class="fw-light"
+                          style="opacity: 0.68"
+                          >Untitled Quiz</span
+                        >
+                        <span
+                          th:unless="${quiz.title == null}"
+                          th:text="${quiz.title}"
+                        ></span>
+                      </h3>
                       <span
-                        th:if="${quiz.title == null}"
-                        class="fw-light"
-                        style="opacity: 0.68"
-                        >Untitled Quiz</span
+                        class="error-icon text-danger d-none titleError titleInput1Error"
+                        style="font-size: 14px"
                       >
-                      <span
-                        th:unless="${quiz.title == null}"
-                        th:text="${quiz.title}"
-                      ></span>
-                    </h3>
-
-                    <label for="titleInput1" class="rounded-1">
-                      <i class="fas fa-pencil mx-2"></i>
-                    </label>
+                        Title Error!
+                      </span>
+                    </div>
+                    <div>
+                      <label for="titleInput1" class="rounded-1">
+                        <i class="fas fa-pencil mx-2"></i>
+                      </label>
+                    </div>
                   </div>
-
-                  <span
-                    class="error-icon text-danger d-none titleError titleInput1Error"
-                    style="font-size: 15px"
-                  >
-                    Title Error!
-                  </span>
 
                   <p
                     class="detail-description m-0 mt-1 d-flex flex-column"
@@ -488,7 +495,7 @@
 
                 <div th:if="${quiz.questions.size() > 0}">
                   <div class="divider left-content-divider mt-2"></div>
-                  <div class="mx-1 d-flex flex-column gap-1">
+                  <div class="m-1 d-flex flex-column gap-1">
                     <div class="w-100" style="font-weight: 900; color: #8854c0">
                       <strong>Create manually:</strong>
                     </div>
@@ -512,7 +519,7 @@
                 </div>
 
                 <div class="divider left-content-divider"></div>
-                <div class="mx-1">
+                <div class="mx-1 pt-1">
                   <div class="w-100">
                     <strong>Import from:</strong>
                   </div>
@@ -601,15 +608,19 @@
                 question<span th:if="${quiz.questions.size() > 1}">s</span>
               </strong>
 
-              <a
-                class="btn btn-sm bg-white h-75 rounded-1 mx-2 p-0 border-0 d-flex"
-                style="align-items: center"
-                href=""
+              <button
+                type="button"
+                class="btn btn-sm btn-purple rounded-1 border-0"
+                style="margin-right: 3px; padding: 8px 12px; box-shadow: none"
+                onclick="handleClickSearchButton()"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasRight"
+                aria-controls="offcanvasRight"
               >
-                <i class="fas fa-plus mx-1"></i>
-                Add&nbsp;
+                <i class="fas fa-plus" style="margin-right: 5px"></i>
+                Add
                 <span class="d-md-none d-lg-inline"> more question</span>
-              </a>
+              </button>
             </div>
 
             <div class="flex-fill d-flex flex-column gap-2 data">
@@ -639,21 +650,15 @@
                 </div>
                 <div class="card-body px-3 pb-1 pt-2">
                   <div style="min-height: 123px">
-                    <h6
-                      th:if="${question.type.equals('single-choice')}"
-                      class="card-title"
-                    >
-                      Select a correct answer for the following question:
-                      (Single Choice)
-                    </h6>
-                    <h6
-                      th:if="${question.type.equals('multiple-choice')}"
-                      class="card-title"
-                    >
-                      Select all correct answers for the following question:
-                      (Multiple Choice)
-                    </h6>
                     <p th:text="${question.text}" class="card-text mx-2"></p>
+                  </div>
+                  <div>
+                    <span th:if="${question.type.equals('single-choice')}">
+                      (Single Choice)
+                    </span>
+                    <span th:if="${question.type.equals('multiple-choice')}">
+                      (Multiple Choice)
+                    </span>
                   </div>
 
                   <div class="divider answer-divider mb-1">answers</div>
@@ -664,17 +669,11 @@
                       class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1"
                     >
                       <div class="px-0 d-flex align-items-start">
-                        <div
-                          th:if="${answer.isCorrect}"
-                          class="badge bg-success me-2"
-                        >
-                          <i class="fas fa-check"></i>
+                        <div th:if="${answer.isCorrect}">
+                          <span style="color: green">&#10003;</span>&nbsp;&nbsp;
                         </div>
-                        <div
-                          th:unless="${answer.isCorrect}"
-                          class="badge bg-danger me-2 rounded-full"
-                        >
-                          <i class="fas fa-x"></i>
+                        <div th:unless="${answer.isCorrect}">
+                          <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
                         </div>
                         <div
                           th:text="${answer.text}"
@@ -1346,7 +1345,14 @@
             const formInput = document.getElementById(id.replace("Input1", ""));
             formInput.value = input.value;
             if (id === "titleInput1") {
-              document.getElementById("quizTitle").textContent = input.value;
+              if (input.value === "") {
+                const quizTitle = document.getElementById("quizTitle");
+                quizTitle.textContent = "Untitled Quiz";
+                quizTitle.style.fontWeight = 300;
+                quizTitle.style.opacity = 0.68;
+              } else {
+                quizTitle.textContent = input.value;
+              }
             }
           });
         }
@@ -1382,21 +1388,6 @@
           const fieldValue = document.getElementById(id).value;
           if (fieldValue) {
             if (id === "imageUrl") {
-              // const corsImageModified = new Image();
-              // corsImageModified.crossOrigin = "Anonymous";
-              // corsImageModified.src = fieldValue + "?not-from-cache-please";
-              // fetch(corsImageModified)
-              //   .then((resp) => {
-              //     if (resp.ok) {
-              //       console.log("Valid Image URL!");
-              //     } else {
-              //       console.error("Invalid Image URL!");
-              //     }
-              //   })
-              //   .catch((err) => {
-              //     console.info("Error detail: " + err);
-              //   });
-
               const bgValue = `url(${fieldValue})`;
               const quizImage = document.getElementById("quizImage");
               quizImage.style.backgroundImage = bgValue;

@@ -77,6 +77,15 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
+    public QuizUUID getQuizForQuizTaking(UUID id) {
+        QuizUUID quizById = quizUUIDRepo.findQuizUUIDById(id);
+        if (quizById != null) {
+            return quizById;
+        }
+        throw new ResourceNotFoundException("Cannot find quiz with ID: " + id);
+    }
+
+    @Override
     public QuizUUID getQuizByRequestAndUUID(HttpServletRequest request, UUID id) {
         User userRequesting = getUserRequesting(request);
         QuizUUID byIdAndCreator = quizUUIDRepo.findByIdAndCreator(id, userRequesting);

@@ -61,9 +61,15 @@ public class QuizController {
     // return null;
     // }
 
-    @GetMapping("/take")
-    public String takeQuiz() {
-        return "quiz/quiz-taking";
+    // @PreAuthorize(LEARNER_AUTHORITY)
+    @GetMapping("/{id}/quiz-taking")
+    public String takeQuiz(
+            @PathVariable UUID id,
+            Model model) {
+        QuizUUID quiz = quizService.getQuizForQuizTaking(id);
+        model.addAttribute("quiz", quiz);
+        // model.addAttribute("answerRows", quiz.answerRows);
+        return "quiz/b";
     }
 
     @PreAuthorize(LEARNER_AUTHORITY)
