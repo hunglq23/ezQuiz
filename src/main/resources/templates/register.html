@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="www.thymeleaf.org">
+<html lang="en-US" xmlns:th="www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,177 +28,187 @@
       />
     </noscript>
 
-    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
+    />
 
     <!-- Bootstrap 5 CSS -->
-    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+    <link
+      href="../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
 
     <!-- Customize CSS -->
-    <link th:href="@{css/main.css}" rel="stylesheet" />
+    <link
+      href="../static/css/main.css"
+      th:href="@{css/main.css}"
+      rel="stylesheet"
+    />
   </head>
 
-  <body id="top">
-    <header>
-      <nav
-        class="navbar navbar-expand-lg"
-        id="header-nav"
-        role="navigation"
-        th:fragment="header-navbar"
-      >
-        <div class="container">
-          <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
+  <style>
+    .right-content {
+      height: fit-content;
+      width: 488px;
+    }
+
+    .modal-dialog .form-control {
+      border: solid 1px #ccc;
+      background-color: #f5f6f7;
+    }
+    .form-control.is-invalid {
+      border: solid 2px #e9573f !important;
+    }
+
+    .error-area {
+      min-height: 16px;
+    }
+
+    .text-danger {
+      font-size: 14px;
+    }
+  </style>
+
+  <body class="bg-light">
+    <div class="content pt-3">
+      <div class="container bg-white p-3 rounded" style="max-width: 456px">
+        <h2 class="m-0">Sign Up</h2>
+        <span class="fw-light">It's easy and quick.</span>
+        <hr class="my-3 mt-2" />
+        <form
+          id="registerForm"
+          class="d-flex flex-column gap-1"
+          action="/register"
+          th:action="@{/register}"
+          method="post"
+          role="form"
+          autocomplete="off"
+        >
+          <input
+            autocomplete="false"
+            name="hidden"
+            type="text"
+            style="display: none"
+          />
+          <div
+            class="form-group"
+            data-bs-toggle="tooltip"
+            data-bs-placement="left"
+            data-bs-title="What is your full name?"
           >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto me-2">
-              <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
-              <li class="nav-item">
-                <a class="nav-link" href="#about">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#contact">Contact</a>
-              </li>
-            </ul>
-            <a class="btn btn-primary" href="" th:href="@{/login}">SIGN IN</a>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <div class="container-fluid">
-      <div class="section px-8" id="login">
-        <div class="container-narrow">
-          <div class="row justify-content-center">
-            <div
-              class="col-8 bg-light rounded-end"
-              data-aos="zoom-in"
-              data-aos-delay="100"
-            >
-              <div class="text-center mt-2">
-                <h2 class="marker marker-center">SIGN UP</h2>
-              </div>
-              <div class="px-4 py-2">
-                <form
-                  th:action="@{/register}"
-                  th:object="${user}"
-                  method="post"
-                  role="form"
-                >
-                  <div class="form-group my-2">
-                    <label for="fullName" class="form-label fw-bolder"
-                      >Full Name</label
-                    >
-                    <div class="register-input-custom email-input">
-                      <input
-                        class="form-control"
-                        type="text"
-                        th:field="*{fullName}"
-                        id="fullName"
-                        name="fullName"
-                        placeholder="Full Name"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="email" class="form-label fw-bolder"
-                      >Email</label
-                    >
-                    <div class="register-input-custom email-input">
-                      <input
-                        class="form-control"
-                        type="text"
-                        th:field="*{email}"
-                        id="email"
-                        name="email"
-                        placeholder="Email@example"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="password" class="form-label fw-bolder"
-                      >Password
-                    </label>
-                    <div class="register-input-custom password-input">
-                      <input
-                        class="form-control"
-                        type="password"
-                        th:field="*{password}"
-                        id="password"
-                        name="password"
-                        placeholder="Password"
-                        required
-                      />
-                      <span
-                        class="btn-show-pass"
-                        onclick="togglePasswordVisibility('password')"
-                      >
-                        <i
-                          id="password-toggle-icon"
-                          class="fas fa-eye"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="passwordConfirm" class="form-label fw-bolder"
-                      >Confirm Password
-                    </label>
-                    <div class="register-input-custom password-input">
-                      <input
-                        class="form-control"
-                        type="password"
-                        th:field="*{passwordConfirm}"
-                        id="passwordConfirm"
-                        name="passwordConfirm"
-                        placeholder="Password"
-                        required
-                      />
-                      <span
-                        class="btn-show-pass"
-                        onclick="togglePasswordVisibility('passwordConfirm')"
-                      >
-                        <i
-                          id="passwordConfirm-toggle-icon"
-                          class="fas fa-eye"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="my-1 text-center">
-                    <button class="btn btn-primary" type="submit">
-                      SIGN UP
-                    </button>
-                  </div>
-
-                  <div class="divider">or</div>
-                  <div class="row mx-3">
-                    <p>
-                      Already have an account?
-                      <a class="mx-1" th:href="@{/login}">
-                        <strong>Login here!</strong>
-                      </a>
-                    </p>
-                  </div>
-                </form>
-              </div>
+            <input
+              class="form-control fullNameInput"
+              type="text"
+              id="fullName"
+              name="fullName"
+              placeholder="Full Name"
+            />
+            <div class="error-area text-danger px-1">
+              <span id="fullNameError" class="d-none fullNameError">
+                Invalid! Try again. (ex: Nguyễn Văn A)
+              </span>
             </div>
           </div>
-        </div>
+          <div
+            class="form-group"
+            data-bs-toggle="tooltip"
+            data-bs-placement="left"
+            data-bs-title="What is your email?"
+          >
+            <input
+              class="form-control emailInput"
+              type="text"
+              id="email"
+              name="email"
+              placeholder="Email@example"
+              autocomplete="off"
+            />
+            <div class="error-area text-danger px-1">
+              <span id="emailError" class="d-none emailError">
+                Email error!
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="register-input-custom password-input">
+              <input
+                class="form-control passwordInput"
+                style="background-image: none"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+              />
+              <span
+                class="btn-show-pass"
+                onclick="togglePasswordVisibility('password')"
+              >
+                <i id="passwordIcon" class="fas fa-eye" aria-hidden="true"></i>
+              </span>
+            </div>
+            <div class="error-area text-danger px-1">
+              <span
+                id="passwordError"
+                class="d-none error-icon passwordError"
+              ></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="register-input-custom password-input">
+              <input
+                class="form-control"
+                style="background-image: none"
+                type="password"
+                id="passwordConfirm"
+                placeholder="Confirm Password"
+              />
+              <span
+                class="btn-show-pass"
+                onclick="togglePasswordVisibility('passwordConfirm')"
+              >
+                <i
+                  id="passwordConfirmIcon"
+                  class="fas fa-eye"
+                  aria-hidden="true"
+                ></i>
+              </span>
+            </div>
+            <div class="error-area text-danger px-1">
+              <span id="passwordConfirmError" class="d-none error-icon">
+                Password and confirm password must be same
+              </span>
+            </div>
+          </div>
+
+          <p class="m-0 p-1" style="line-height: 1.23; font-size: 12px">
+            By clicking Sign Up, you agree to our Terms and Policy.
+          </p>
+          <div class="d-flex justify-content-center">
+            <button
+              id="registerSubmitButton"
+              type="button"
+              onclick="handleFormSubmitByIdAndMethod('registerForm')"
+              class="btn btn-sm btn-primary"
+              style="padding: 3px 23px"
+            >
+              SIGN UP
+            </button>
+          </div>
+        </form>
       </div>
     </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Include Font Awesome -->
     <script
@@ -206,6 +216,66 @@
       crossorigin="anonymous"
     ></script>
 
-    <script th:src="@{/js/main.js}"></script>
+    <script src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+
+    <script>
+      function togglePasswordVisibility(passwordFieldId) {
+        const passwordField = document.getElementById(passwordFieldId);
+        const passwordToggleIcon = document.getElementById(
+          `${passwordFieldId}Icon`
+        );
+
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          passwordToggleIcon.classList.remove("fa-eye");
+          passwordToggleIcon.classList.add("fa-eye-slash");
+        } else {
+          passwordField.type = "password";
+          passwordToggleIcon.classList.remove("fa-eye-slash");
+          passwordToggleIcon.classList.add("fa-eye");
+        }
+      }
+
+      (function compareConfirmPassToFirstPass() {
+        let firstPass = document.getElementById("password");
+        let confirmPass = document.getElementById("passwordConfirm");
+        let submitBtn = document.getElementById("registerSubmitButton");
+        let confirmPassErr = document.getElementById("passwordConfirmError");
+        firstPass.addEventListener("keyup", () => {
+          if (firstPass.value !== confirmPass.value) {
+            confirmPass.classList.add("is-invalid");
+            confirmPassErr.classList.remove("d-none");
+            submitBtn.disabled = true;
+          } else {
+            confirmPass.classList.remove("is-invalid");
+            confirmPassErr.classList.add("d-none");
+            submitBtn.disabled = false;
+          }
+        });
+        confirmPass.addEventListener("keyup", () => {
+          if (firstPass.value !== confirmPass.value) {
+            confirmPass.classList.add("is-invalid");
+            confirmPassErr.classList.remove("d-none");
+            submitBtn.disabled = true;
+          } else {
+            confirmPass.classList.remove("is-invalid");
+            confirmPassErr.classList.add("d-none");
+            submitBtn.disabled = false;
+          }
+        });
+      })();
+
+      (function handleInputError() {
+        const IDs = ["fullName", "email", "password"];
+        for (let id of IDs) {
+          let input = document.getElementById(id);
+          let inputError = document.getElementById(id + "Error");
+          input.addEventListener("keyup", () => {
+            input.classList.remove("is-invalid");
+            inputError.classList.add("d-none");
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

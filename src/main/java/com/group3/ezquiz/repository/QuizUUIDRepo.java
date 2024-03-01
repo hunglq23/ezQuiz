@@ -14,6 +14,8 @@ public interface QuizUUIDRepo extends JpaRepository<QuizUUID, UUID> {
 
   QuizUUID findByIdAndCreator(UUID id, User creator);
 
+  QuizUUID findQuizUUIDById(UUID id);
+
   @Query(value = "select q from QuizUUID q order by q.updatedAt DESC limit 4")
   List<QuizUUID> findQuizUUID();
 

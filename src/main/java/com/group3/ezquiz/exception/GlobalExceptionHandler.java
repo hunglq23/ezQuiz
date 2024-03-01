@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -43,6 +45,34 @@ public class GlobalExceptionHandler {
             .details(webRequest.getDescription(false))
             .errors(errors)
             .build());
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(
+      DataIntegrityViolationException ex,
+      WebRequest webRequest) {
+
+    return new ResponseEntity<>(
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Data Integrity Violation: " + ex.getMessage())
+            .details(webRequest.getDescription(false))
+            .build(),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(InvalidEmailException.class)
+  public ResponseEntity<ErrorDetails> handleInvalidEmailException(
+      InvalidEmailException ex,
+      WebRequest webRequest) {
+    return new ResponseEntity<>(
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Invalid Email Exception.")
+            .details(webRequest.getDescription(false))
+            .errors(Map.of("emailError", ex.getMessage()))
+            .build(),
+        HttpStatus.BAD_REQUEST);
   }
 
 }

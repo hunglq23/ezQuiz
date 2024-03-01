@@ -1,0 +1,211 @@
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ezQuiz Home Page</title>
+    <link rel="icon" type="image/x-icon" href="../../images/favicon.ico" />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="all"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/main.css"
+      th:href="@{/css/main.css}"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        width: 70%;
+        min-width: 789px;
+        max-width: 888px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 50px;
+        padding-top: 20px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .question {
+        margin-bottom: 20px;
+      }
+
+      .question h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .answers {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .answer {
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        justify-content: center;
+      }
+
+      .answer:hover {
+        background-color: #e0e0e0;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .top {
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bottom .row {
+        height: 68px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        .col-6 {
+          height: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-light p-3">
+    <header class="bg-light">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <a class="link-dark navbar-brand site-title mb-0" href="/home"
+            >ezQuiz</a
+          >
+
+          <a
+            class="btn btn-sm mx-2 px-3 bd-left"
+            data-bs-toggle="modal"
+            data-bs-target="#quizInfo"
+            style="opacity: 0.33"
+            >Hiiiiiiii</a
+          >
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto me-2">
+              <!-- <li class="nav-item"><a class="nav-link" href="./">Home</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                  </li> -->
+            </ul>
+            <a class="btn btn-sm btn-primary px-2"
+              ><i class="fas fa-save me-1"></i> FINISH</a
+            >
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div
+      id="carouselExampleControlsNoTouching"
+      class="container p-3 carousel slide"
+      data-bs-touch="false"
+      data-bs-interval="false"
+    >
+      <div th:if="${quiz.questions.size()==0}" class="carousel-inner">
+        Empty!
+      </div>
+
+      <div th:unless="${quiz.questions.size()==0}" class="carousel-inner">
+        <div
+          th:each="question, iter : ${quiz.questions}"
+          th:classappend="${iter.index == 0 ? 'active' : ''}"
+          class="carousel-item"
+        >
+          <div class="top">
+            <h2 th:text="${question.text}">1 + 1 =</h2>
+          </div>
+          <div class="bottom px-3">
+            <div class="d-flex flex-column gap-2 py-2">
+              <h6>Select all correct answers</h6>
+              <div th:each="answer, iterStat : ${question.answers}">
+                <div class="row" th:if="${iterStat.index % 2 == 0}">
+                  <div
+                    class="col-6 answer"
+                    th:text="${question.answers[iterStat.index].text}"
+                  ></div>
+                  <div
+                    th:if="${(iterStat.index + 1) < question.answers.size()}"
+                    class="col-6 answer"
+                    th:text="${question.answers[iterStat.index + 1].text}"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <button
+        class="btn btn-sm btn-primary p-4 py-1"
+        type="button"
+        data-bs-target="#carouselExampleControlsNoTouching"
+        data-bs-slide="next"
+      >
+        <span>Next</span>
+      </button>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

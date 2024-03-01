@@ -2,13 +2,12 @@ package com.group3.ezquiz.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.payload.QuestionDto;
 import com.group3.ezquiz.repository.QuestionRepo;
@@ -17,7 +16,6 @@ import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
 import java.util.Map;
 
 @Controller

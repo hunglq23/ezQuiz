@@ -2,12 +2,12 @@ package com.group3.ezquiz.model;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,10 +37,10 @@ public class QuizUUID {
   public static final List<String> AVAILABLE_TYPES = List.of(
       "single-choice",
       "multiple-choice");
-  public static final int MIN_TITLE_LENGTH = 4;
+  public static final int MIN_TITLE_LENGTH = 3;
   public static final int MAX_TITLE_LENGTH = 16;
-  public static final int MAX_DESCRIPTION_LENGTH = 32;
-  public static final int MAX_IMAGE_URL_LENGTH = 500;
+  public static final int MAX_DESCRIPTION_LENGTH = 88;
+  public static final int MAX_IMAGE_URL_LENGTH = 256;
 
   @Id
   @GeneratedValue
@@ -59,7 +59,7 @@ public class QuizUUID {
   private Boolean isExam;
 
   @Column(length = MAX_IMAGE_URL_LENGTH)
-  private String quizImageUrl;
+  private String imageUrl;
 
   @Column(length = MAX_DESCRIPTION_LENGTH)
   private String description;
@@ -68,9 +68,9 @@ public class QuizUUID {
   @JoinColumn(nullable = false, name = "created_id")
   private User creator;
 
-  @ManyToMany
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(name = "_quiz_question", joinColumns = @JoinColumn(name = "quiz_id"), inverseJoinColumns = @JoinColumn(name = "quest_id"))
-  Set<Quest> questions;
+  List<Quest> questions;
 
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp

@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -67,4 +68,7 @@ public class User {
   @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
   private List<Quiz> quizCreated;
 
+  @ManyToMany
+  @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
+  private Set<Classroom> classrooms;
 }

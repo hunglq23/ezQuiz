@@ -6,6 +6,8 @@ import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IQuizService {
 
@@ -37,6 +40,7 @@ public interface IQuizService {
         QuizUUID getQuizByRequestAndUUID(HttpServletRequest request, UUID id);
 
         List<QuizUUID> getListQuizUUID(HttpServletRequest request);
+
         List<QuizUUID> searchQuizUUID(HttpServletRequest request, String search);
 
         ResponseEntity<?> handleQuizUpdatingRequest(
@@ -48,4 +52,12 @@ public interface IQuizService {
                         String type,
                         String questionText,
                         Map<String, String> params);
+
+        QuizUUID getQuizById(UUID id);
+
+        void importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id);
+
+        ByteArrayInputStream getDataDownloaded(QuizUUID quiz) throws IOException;
+
+        QuizUUID getQuizForQuizTaking(UUID id);
 }

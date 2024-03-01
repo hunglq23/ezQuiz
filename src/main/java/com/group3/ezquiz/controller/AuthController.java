@@ -1,12 +1,16 @@
 package com.group3.ezquiz.controller;
 
+import java.net.BindException;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import com.group3.ezquiz.payload.RegisterRequest;
 import com.group3.ezquiz.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -17,23 +21,26 @@ public class AuthController {
   private final UserService userService;
 
   @GetMapping("/")
-  public String getLandingPage() {
+  public String getLandingPage(HttpServletRequest request) {
+    if (request.getUserPrincipal() != null) {
+      return "redirect:/home";
+    }
     return "index";
   }
 
   @GetMapping("/register")
-  public String getRegisterPage(HttpServletRequest request, Model model) {
+  public String getRegisterPage(HttpServletRequest request) {
     if (request.getUserPrincipal() != null) {
       return "redirect:/home";
     }
-    model.addAttribute("user", new RegisterRequest());
     return "register";
   }
 
   @PostMapping("/register")
-  public String submitRegisterForm(RegisterRequest user) {
-    userService.registerUser(user);
-    return "redirect:/login";
+  public ResponseEntity<?> submitRegisterForm(
+      @Valid RegisterRequest user) throws BindException {
+
+    return userService.registerUser(user);
   }
 
   @GetMapping("/login")
