@@ -118,6 +118,19 @@ public class UserServiceImpl implements UserService {
     userRepo.deleteById(id);
   }
 
+  @Override
+  public boolean checkEmail(String email) {
+    return userRepo.existsByEmail(email);
+  }
+
+  @Override
+  public void updatePassword(String email, String pass) {
+    String encodedPass = passwordEncoder.encode(pass);
+    User user = userRepo.findByEmail(email);
+    user.setPassword(encodedPass);
+    userRepo.save(user);
+  }
+
   public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {
       super(message);

@@ -25,4 +25,8 @@ public interface UserService {
 
   void delete(Long id);
 
+  boolean checkEmail(String email);
+
+  void updatePassword(String email, String pass);
+
 }
