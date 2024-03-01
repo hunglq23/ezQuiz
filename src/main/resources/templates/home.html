@@ -9,7 +9,7 @@
       rel="icon"
       type="image/x-icon"
       href="../static/images/favicon.ico"
-      th:href="@{../../images/favicon.ico}"
+      th:href="@{/images/favicon.ico}"
     />
 
     <link
@@ -36,12 +36,12 @@
     </noscript>
     <link
       href="../static/vendor/bootstrap/bootstrap.min.css"
-      th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
       rel="stylesheet"
     />
     <link
       href="../static/css/main.css"
-      th:href="@{../../css/main.css}"
+      th:href="@{/css/main.css}"
       rel="stylesheet"
     />
   </head>
@@ -121,8 +121,16 @@
                     Question
                   </a>
                   <a
+                    sec:authorize="hasRole('ROLE_TEACHER')"
                     class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/classroom/list}"
+                    th:href="@{/classrooms/created-list}"
+                  >
+                    Classroom
+                  </a>
+                  <a
+                    sec:authorize="hasRole('ROLE_LEARNER')"
+                    class="dropdown-item btn btn-sm p-1"
+                    th:href="@{/classroom/joined-list}"
                   >
                     Classroom
                   </a>
@@ -180,7 +188,11 @@
     </header>
 
     <div class="page-content bg-light py-1">
-      <div id="top-content" class="d-none d-md-block my-2">
+      <div
+        id="top-content"
+        class="d-flex flex-column justify-content-center my-2"
+        style="max-width: 1234px; margin: 0 auto"
+      >
         <!-- Learner -->
         <div
           sec:authorize="hasRole('ROLE_LEARNER')"
@@ -244,6 +256,7 @@
         <div
           sec:authorize="hasRole('ROLE_TEACHER')"
           class="d-flex position-relative justify-content-center my-3"
+          style="max-width: 1234px"
         >
           <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
             <div class="border-0 left-center p-2">
@@ -313,9 +326,10 @@
             </h6>
             <a href="#" class="btn btn-sm btn-purple">See more</a>
           </div>
-          <div class="row row-cols-3 g-1 g-md-2 g-lg-4">
+          <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
             <!-- Card 1 -->
-            <div class="col">
+            <div th:each="quiz : ${quizList}" class="col">
+              <!--            <div class="col">-->
               <button class="card btn w-100 p-0">
                 <img
                   src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
@@ -329,14 +343,19 @@
                       quiz
                     </div>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
+                  <h5
+                    class="card-title p-0 d-flex"
+                    th:text="${quiz.title}"
+                  ></h5>
+                  <p
+                    class="card-text d-none d-md-flex"
+                    th:text="${quiz.description}"
+                  ></p>
                 </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
+                <div
+                  class="card-footer d-flex bg-white w-100 p-0 px-3"
+                  th:text="${quiz.questions.size}"
+                ></div>
               </button>
             </div>
 
@@ -389,16 +408,45 @@
                 </div>
               </button>
             </div>
+
+            <!-- Col 4 -->
+            <div class="col d-none d-xxl-block">
+              <button class="card btn w-100 p-0">
+                <img
+                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                  class="card-img-top"
+                  alt="Quiz Image"
+                />
+
+                <div class="card-body p-1 px-2 mb-3">
+                  <div class="d-flex flex-row-reverse">
+                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                  </div>
+                  <h5 class="card-title p-0 d-flex">Card title</h5>
+                  <p class="card-text d-none d-md-flex">
+                    Some quick example text.
+                  </p>
+                </div>
+                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                  99 questions
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <script
-      src="../static/js/bootstrap.bundle.min.js"
-      th:src="@{../../js/bootstrap.bundle.min.js}"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
     ></script>
-    <script src="../static/js/main.js" th:src="@{../../js/main.js}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+
     <script
       src="https://kit.fontawesome.com/b16b259998.js"
       crossorigin="anonymous"

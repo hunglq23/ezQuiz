@@ -1,14 +1,20 @@
 package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.payload.UserDto;
+
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.group3.ezquiz.exception.InvalidEmailException;
+import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.RegisterRequest;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.UserService;
@@ -17,6 +23,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,8 +43,9 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void registerUser(RegisterRequest regUser) {
-    // Validation (include pass)
+  public ResponseEntity<?> registerUser(RegisterRequest regUser) {
+
+    validateEmail(regUser.getEmail());
 
     String encodedPass = passwordEncoder.encode(regUser.getPassword());
 
@@ -45,10 +54,32 @@ public class UserServiceImpl implements UserService {
             .email(regUser.getEmail())
             .fullName(regUser.getFullName())
             .password(encodedPass)
-            .isEnable(false)
+            .isEnable(true)
             .isVerified(false)
             .role(Role.LEARNER)
             .build());
+
+    return ResponseEntity.ok(
+        new MessageResponse("New account was created successfully!"));
+  }
+
+  private void validateEmail(String email) {
+    User byEmail = userRepo.findByEmail(email);
+    if (byEmail != null) { // email existed
+      throw new InvalidEmailException("Email existed!");
+    } else {
+      String[] permitedEmailDomains = { "@gmail.com", "@fpt.edu.vn", "@email" };
+      boolean permited = false;
+      for (String domain : permitedEmailDomains) {
+        if (email.endsWith(domain)) {
+          permited = true;
+        }
+      }
+      if (!permited) {
+        String invalidDomain = email.substring(email.indexOf('@') + 1);
+        throw new InvalidEmailException("'" + invalidDomain + "' is invalid domain!");
+      }
+    }
   }
 
   @Override
@@ -116,12 +147,6 @@ public class UserServiceImpl implements UserService {
   @Override
   public void delete(Long id) {
     userRepo.deleteById(id);
-  }
-
-  public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message) {
-      super(message);
-    }
   }
 
 }

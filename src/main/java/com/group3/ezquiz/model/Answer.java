@@ -38,4 +38,8 @@ public class Answer {
         ", isCorrect=" + isCorrect + "]";
   }
 
+  public Answer(String text) {
+    this.text = text;
+  }
+
 }

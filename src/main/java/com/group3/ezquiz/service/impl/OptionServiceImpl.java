@@ -1,12 +1,9 @@
 package com.group3.ezquiz.service.impl;
 
-import java.util.List;
+
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
-
 import com.group3.ezquiz.model.Option;
-import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.repository.OptionRepo;
 import com.group3.ezquiz.service.IOptionService;
 

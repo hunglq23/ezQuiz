@@ -1,8 +1,6 @@
 package com.group3.ezquiz.service.impl;
 
 import java.security.Principal;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +134,7 @@ public class QuestServiceImpl implements IQuestService {
                   .text(entry.getValue())
                   .isCorrect(ansValue)
                   .build());
+          ansValue = false;
         }
       }
 

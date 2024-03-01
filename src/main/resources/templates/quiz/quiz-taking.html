@@ -191,8 +191,17 @@
                         </div>
                     </div>
                 </div>
+                <div
+                  class="col-6 answer"
+                  th:each="answer, iterStat : ${question.answers}"
+                  th:text="${answer.text}"
+                  th:if="${iterStat.index % 2 != 0}"
+                ></div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
     <div class="w-100 d-flex flex-row-reverse pb-1">
         <button class="btn btn-sm btn-primary p-1 px-3">Next</button>
