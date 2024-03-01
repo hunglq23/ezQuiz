@@ -1,6 +1,5 @@
 package com.group3.ezquiz.service;
 
-import com.group3.ezquiz.model.Option;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.payload.QuizDetailsDto;
@@ -9,8 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -39,6 +38,10 @@ public interface IQuizService {
         QuizUUID saveAndGetDraftQuiz(HttpServletRequest http);
 
         QuizUUID getQuizByRequestAndUUID(HttpServletRequest request, UUID id);
+
+        List<QuizUUID> getListQuizUUID(HttpServletRequest request);
+
+        List<QuizUUID> searchQuizUUID(HttpServletRequest request, String search);
 
         ResponseEntity<?> handleQuizUpdatingRequest(
                         HttpServletRequest request, UUID id, QuizDetailsDto dto);
