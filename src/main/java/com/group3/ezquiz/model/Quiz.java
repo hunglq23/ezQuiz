@@ -1,53 +1,82 @@
 package com.group3.ezquiz.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.UUID;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "_quiz")
-@Builder
 public class Quiz {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer quizId;
 
-    @Column(name = "code", nullable = false)
-    private String code;
+  public static final List<String> AVAILABLE_TYPES = List.of(
+      "single-choice",
+      "multiple-choice");
+  public static final int MIN_TITLE_LENGTH = 3;
+  public static final int MAX_TITLE_LENGTH = 16;
+  public static final int MAX_DESCRIPTION_LENGTH = 88;
+  public static final int MAX_IMAGE_URL_LENGTH = 256;
 
-    @Column(name = "title", nullable = false, length = 50)
-    private String title;
+  @Id
+  @GeneratedValue
+  private UUID id;
 
-    @Column(name = "description", nullable = false, length = 500)
-    private String description;
+  @Column(length = MAX_TITLE_LENGTH)
+  private String title;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isActive;
+  @Column(nullable = false)
+  private Boolean isDraft;
 
-    @Column(name = "is_exam_only", nullable = false)
-    private Boolean isExamOnly;
+  @Column(nullable = false)
+  private Boolean isEnable;
 
-    @Column(nullable = true, columnDefinition = "boolean default true")
-    private Boolean isDraft;
+  @Column(nullable = false)
+  private Boolean isExam;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+  @Column(length = MAX_IMAGE_URL_LENGTH)
+  private String imageUrl;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
-    private Timestamp createdAt;
+  @Column(length = MAX_DESCRIPTION_LENGTH)
+  private String description;
 
-    private Long updatedBy;
+  @ManyToOne
+  @JoinColumn(nullable = false, name = "created_id")
+  private User creator;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
-    private Timestamp updateAt;
+  @ManyToMany(cascade = CascadeType.ALL)
+  @JoinTable(name = "_quiz_question", joinColumns = @JoinColumn(name = "quiz_id"), inverseJoinColumns = @JoinColumn(name = "quest_id"))
+  List<Question> questions;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @CreationTimestamp
+  private Timestamp createdAt;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @UpdateTimestamp
+  private Timestamp updatedAt;
 }

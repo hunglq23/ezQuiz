@@ -2,14 +2,15 @@ package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.UserDto;
-import com.group3.ezquiz.payload.RegisterRequest;
+import com.group3.ezquiz.payload.auth.RegisterRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
-public interface UserService {
-  void registerUser(RegisterRequest user);
+public interface IUserService {
+  ResponseEntity<?> registerUser(RegisterRequest user);
 
   User getUserRequesting(HttpServletRequest http);
 
@@ -21,7 +22,7 @@ public interface UserService {
 
   User getUserById(Long id);
 
-  void update(HttpServletRequest request,UserDto user, Long id);
+  void update(HttpServletRequest request, UserDto user, Long id);
 
   void delete(Long id);
 

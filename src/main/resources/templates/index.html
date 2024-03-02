@@ -5,32 +5,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ezQuiz | ByGroup3</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../static/images/favicon.ico"
+      th:href="@{images/favicon.ico}"
+    />
 
+    <!-- Bootstrap 5 CSS -->
     <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin="crossorigin"
-    />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
-    />
-    <link
+      href="../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{vendor/bootstrap/bootstrap.min.css}"
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
-      media="print"
-      onload="this.media='all'"
     />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
-      />
-    </noscript>
-    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
-    <link th:href="@{css/main.css}" rel="stylesheet" />
+
+    <!-- Customize CSS -->
+    <link
+      href="../static/css/main.css"
+      th:href="@{css/main.css}"
+      rel="stylesheet"
+    />
+
+    <!-- Font Family Nunito Sans -->
+    <link
+      href="../static/css/font.css"
+      th:href="@{css/font.css}"
+      rel="stylesheet"
+    />
   </head>
 
   <body id="top">
@@ -73,7 +74,11 @@
                 <a class="nav-link" href="#contact">Contact</a>
               </li>
             </ul>
-            <a class="btn btn-primary" th:href="@{/login}">Get Started</a>
+            <a
+              class="btn btn-sm btn-secondary glitter-button p-1 px-2"
+              th:href="@{/register}"
+              >SIGN UP</a
+            >
           </div>
         </div>
       </nav>
@@ -104,7 +109,7 @@
                       <a
                         class="btn btn-primary shadow-sm mt-1 me-2"
                         th:href="@{/login}"
-                        >Get Sarted <i class="fas fa-arrow-right ms-1"></i></a
+                        >Get Started <i class="fas fa-arrow-right ms-1"></i></a
                       ><a
                         class="btn btn-outline-secondary mt-1"
                         data-bigpicture='{"ytSrc": "aqz-KE-bpKQ"}'
@@ -1311,5 +1316,27 @@
       src="https://kit.fontawesome.com/b16b259998.js"
       crossorigin="anonymous"
     ></script>
+
+    <script>
+      /**
+       * Navbar effects and scrolltop buttons upon scrolling
+       */
+      const navbar = document.getElementById("header-nav");
+      // var body = document.getElementsByTagName("body")[0];
+      // const scrollTop = document.getElementById("scrolltop");
+      window.onscroll = () => {
+        if (window.scrollY > 0 && navbar) {
+          navbar.classList.add("fixed-top", "shadow-sm");
+          // body.style.paddingTop = navbar.offsetHeight + "px";
+          // scrollTop.style.visibility = "visible";
+          // scrollTop.style.opacity = 1;
+        } else {
+          navbar.classList.remove("fixed-top", "shadow-sm");
+          // body.style.paddingTop = "0px";
+          // scrollTop.style.visibility = "hidden";
+          // scrollTop.style.opacity = 0;
+        }
+      };
+    </script>
   </body>
 </html>

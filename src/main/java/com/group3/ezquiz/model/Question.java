@@ -1,56 +1,59 @@
 package com.group3.ezquiz.model;
 
+import java.sql.Timestamp;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
-import java.util.List;
-
-@Entity
-@Table(name = "_question")
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "_question")
 public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionId;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Option> options;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> answers;
+  @Column
+  private Boolean value;
 
-    @Column(name = "text", nullable = false, length = 500)
-    private String text;
+  @Column(nullable = false)
+  private String type;
 
-    @Column(name = "isActive", nullable = false)
-    private boolean isActive;
+  @Column(nullable = false)
+  private String text;
 
-    @ManyToOne
-    @JoinColumn(name = "createdBy")
-    private User createdBy;
+  @Column
+  private Boolean isActive;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
-    private Timestamp createdAt;
+  @Column
+  private Boolean isPublic;
 
-    @Column(name = "updatedBy")
-    private Long updatedBy;
+  @ManyToOne
+  @JoinColumn(name = "created_id")
+  private User creator;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
-    private Timestamp updateAt;
+  @Temporal(TemporalType.TIMESTAMP)
+  @CreationTimestamp
+  private Timestamp createdAt;
 
-    @Column(name = "value")
-    private String value;
+  @Temporal(TemporalType.TIMESTAMP)
+  @UpdateTimestamp
+  private Timestamp updatedAt;
+
+  @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Answer> answers;
+
 }

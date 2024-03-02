@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ClassroomDto;
-import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.ClassroomService;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -23,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ClassroomController {
     @Autowired
     private ClassroomService classroomService;
-    @Autowired
-    private UserRepo userRepo;
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping("/classrooms/created")
