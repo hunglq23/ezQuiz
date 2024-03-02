@@ -375,7 +375,8 @@ input[type="password"]::-webkit-autocomplete {
       rgba(17, 17, 26, 0.1) 0px 0px 8px;
   }
 }
-#libraryDropdown a {
+
+.nav-item:not(:last-child) .dropdown-menu a {
   color: #8854c0;
   &:hover {
     background-color: #f1edf6;
@@ -510,6 +511,15 @@ input[type="password"]::-webkit-autocomplete {
 }
 .btn-purple:hover {
   color: #ac82d8;
+}
+
+.btn-purpleee {
+  background-color: #8854c0;
+  color: #fff;
+}
+.btn-purpleee:hover {
+  background-color: #8c63b7;
+  color: #fff;
 }
 
 /* Glitter button hover effect */

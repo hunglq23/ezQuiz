@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -65,10 +64,11 @@ public class User {
   @UpdateTimestamp
   private Timestamp updatedAt;
 
-  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
-  private List<Quiz> quizCreated;
-
   @ManyToMany
   @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
   private Set<Classroom> classrooms;
+
+  public Boolean isLearner() {
+    return role == Role.LEARNER;
+  }
 }

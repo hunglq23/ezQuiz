@@ -25,7 +25,10 @@ public class UserController {
   private final IUserService userService;
 
   @GetMapping("/home")
-  public String getLearnerHomepage() {
+  public String getHomePage(HttpServletRequest http, Model model) {
+    User userRequesting = userService.getUserRequesting(http);
+    model.addAttribute("user", userRequesting);
+
     return "home";
   }
 

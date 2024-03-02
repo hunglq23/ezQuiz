@@ -52,7 +52,21 @@
     });
   });
 
-  // Add your javascript here
+  // Scrollable Navbar
+  const navbar = document.getElementById("header-nav");
+  if (navbar) {
+    var body = document.getElementsByTagName("body")[0];
+
+    window.onscroll = () => {
+      if (window.scrollY > 0 && navbar) {
+        navbar.classList.add("fixed-top", "shadow-sm");
+        body.style.paddingTop = navbar.offsetHeight + "px";
+      } else {
+        navbar.classList.remove("fixed-top", "shadow-sm");
+        body.style.paddingTop = "0px";
+      }
+    };
+  }
 })();
 
 // Active the tooltips
@@ -84,28 +98,30 @@ function togglePasswordVisibility(passwordFieldId) {
   let confirmPass = document.getElementById("passwordConfirm");
 
   let confirmPassErr = document.getElementById("passwordConfirmError");
-  firstPass.addEventListener("keyup", () => {
-    if (firstPass.value !== confirmPass.value) {
-      confirmPass.classList.add("is-invalid");
-      confirmPassErr.classList.remove("d-none");
-      signUpBtn.disabled = true;
-    } else {
-      confirmPass.classList.remove("is-invalid");
-      confirmPassErr.classList.add("d-none");
-      signUpBtn.disabled = false;
-    }
-  });
-  confirmPass.addEventListener("keyup", () => {
-    if (firstPass.value !== confirmPass.value) {
-      confirmPass.classList.add("is-invalid");
-      confirmPassErr.classList.remove("d-none");
-      signUpBtn.disabled = true;
-    } else {
-      confirmPass.classList.remove("is-invalid");
-      confirmPassErr.classList.add("d-none");
-      signUpBtn.disabled = false;
-    }
-  });
+  if (firstPass && confirmPass) {
+    firstPass.addEventListener("keyup", () => {
+      if (firstPass.value !== confirmPass.value) {
+        confirmPass.classList.add("is-invalid");
+        confirmPassErr.classList.remove("d-none");
+        signUpBtn.disabled = true;
+      } else {
+        confirmPass.classList.remove("is-invalid");
+        confirmPassErr.classList.add("d-none");
+        signUpBtn.disabled = false;
+      }
+    });
+    confirmPass.addEventListener("keyup", () => {
+      if (firstPass.value !== confirmPass.value) {
+        confirmPass.classList.add("is-invalid");
+        confirmPassErr.classList.remove("d-none");
+        signUpBtn.disabled = true;
+      } else {
+        confirmPass.classList.remove("is-invalid");
+        confirmPassErr.classList.add("d-none");
+        signUpBtn.disabled = false;
+      }
+    });
+  }
 })();
 
 (function handleInputError() {
@@ -113,10 +129,12 @@ function togglePasswordVisibility(passwordFieldId) {
   for (let id of IDs) {
     let input = document.getElementById(id);
     let inputError = document.getElementById(id + "Error");
-    input.addEventListener("keyup", () => {
-      input.classList.remove("is-invalid");
-      inputError.classList.add("d-none");
-    });
+    if (input) {
+      input.addEventListener("keyup", () => {
+        input.classList.remove("is-invalid");
+        inputError.classList.add("d-none");
+      });
+    }
   }
 })();
 
