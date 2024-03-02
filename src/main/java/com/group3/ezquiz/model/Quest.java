@@ -1,6 +1,7 @@
 package com.group3.ezquiz.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -56,7 +57,11 @@ public class Quest {
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Answer> answers;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private QuizUUID quiz;
+  @ElementCollection
+  private List<String> options;
+
+  @ManyToMany(mappedBy = "questions")
+  @Builder.Default
+  private List<QuizUUID> quiz = new ArrayList<>();
 
 }

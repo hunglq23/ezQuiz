@@ -28,7 +28,7 @@ public class Answer {
   private String text;
 
   @Column(nullable = false)
-  private Boolean isCorrect;
+  private Boolean isCorrect = false;
 
   @Override
   public String toString() {
