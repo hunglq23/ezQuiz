@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,6 +72,7 @@ public class QuizUUID {
 
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(name = "_quiz_question", joinColumns = @JoinColumn(name = "quiz_id"), inverseJoinColumns = @JoinColumn(name = "quest_id"))
+  @JsonManagedReference
   List<Quest> questions;
 
   @Temporal(TemporalType.TIMESTAMP)

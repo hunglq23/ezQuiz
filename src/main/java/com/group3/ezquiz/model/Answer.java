@@ -1,5 +1,7 @@
 package com.group3.ezquiz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +24,7 @@ public class Answer {
 
   @ManyToOne
   @JoinColumn(name = "question_id")
+  @JsonBackReference
   private Quest question;
 
   @Column(nullable = false)

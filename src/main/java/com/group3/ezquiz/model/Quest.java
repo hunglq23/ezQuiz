@@ -7,6 +7,9 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,6 +58,7 @@ public class Quest {
   private Timestamp updatedAt;
 
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
   private List<Answer> answers;
 
   @ElementCollection
@@ -62,6 +66,7 @@ public class Quest {
 
   @ManyToMany(mappedBy = "questions")
   @Builder.Default
+  @JsonBackReference
   private List<QuizUUID> quiz = new ArrayList<>();
 
 }
