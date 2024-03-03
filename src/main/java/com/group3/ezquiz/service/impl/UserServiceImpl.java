@@ -1,7 +1,12 @@
 package com.group3.ezquiz.service.impl;
 
+import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.QuizUUID;
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 
+import com.group3.ezquiz.repository.ClassroomRepo;
+import com.group3.ezquiz.repository.QuizUUIDRepo;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +28,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +43,8 @@ public class UserServiceImpl implements UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepo userRepo;
+  private final QuizUUIDRepo quizUUIDRepo;
+  private final ClassroomRepo classroomRepo;
 
   @Override
   public User getUserRequesting(HttpServletRequest http) {
@@ -149,4 +161,84 @@ public class UserServiceImpl implements UserService {
     userRepo.deleteById(id);
   }
 
+  @Override
+  public List<ObjectDto> getQuizAndClassroomByUser(HttpServletRequest request, Boolean sortTime) {
+    User userRequesting = getUserRequesting(request);
+    List<QuizUUID> quizByUser = quizUUIDRepo.findByCreator(userRequesting);
+    List<Classroom> classroomByUser = classroomRepo.findByCreator(userRequesting);
+
+    List<ObjectDto> objectDtoList = Stream.concat(
+                    quizByUser.stream().map(this::createQuizObjectDto),
+                    classroomByUser.stream().map(this::createClassroomObjectDto))
+            .collect(Collectors.toList());
+
+    Comparator<ObjectDto> comparator = Comparator.comparing(ObjectDto::getTimeString);
+    if (sortTime) {
+      comparator = comparator.reversed();
+    }
+    objectDtoList.sort(comparator);
+
+    objectDtoList.forEach(objectDto -> objectDto.setTimeString(
+            calculateTimeElapsed(
+                    convertStringToTimestamp(objectDto.getTimeString(), "yyyy-MM-dd HH:mm:ss.SSSSSS"))));
+
+    return objectDtoList;
+  }
+
+  private ObjectDto createQuizObjectDto(QuizUUID quiz) {
+    return ObjectDto.builder()
+            .type("Quiz")
+            .name(quiz.getTitle())
+            .description(quiz.getDescription())
+            .image(quiz.getImageUrl())
+            .isDraft(quiz.getIsDraft())
+            .itemNumber(quiz.getQuestions().size())
+            .timeString(quiz.getCreatedAt().toString())
+            .build();
+  }
+
+  private ObjectDto createClassroomObjectDto(Classroom classroom) {
+    return ObjectDto.builder()
+            .type("Classroom")
+            .name(classroom.getClassName())
+            .description(classroom.getDescription())
+            .image(classroom.getImageURL())
+            .isDraft(classroom.getIsDraft())
+            .itemNumber(classroom.getMembers().size())
+            .timeString(classroom.getCreatedAt().toString())
+            .build();
+  }
+
+
+  public static Timestamp convertStringToTimestamp(String dateString, String pattern) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+    LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
+    return Timestamp.valueOf(dateTime);
+  }
+  public static String calculateTimeElapsed(Timestamp creationTime) {
+    Instant instant = creationTime.toInstant();
+    Instant currentInstant = Instant.now();
+    Duration duration = Duration.between(instant, currentInstant);
+
+    long seconds = duration.getSeconds();
+
+    long days = seconds / (24 * 3600);
+    seconds = seconds % (24 * 3600);
+    long hours = seconds / 3600;
+    seconds %= 3600;
+    long minutes = seconds / 60;
+    seconds %= 60;
+
+    StringBuilder timeElapsedStringBuilder = new StringBuilder();
+    if (days > 0) {
+      return days + " day(s) ago";
+    }
+    if (hours > 0) {
+      return hours + " hour(s) ago";
+    }
+    if (minutes > 0) {
+      return minutes + " minute(s) ago";
+    }
+    return seconds + " second(s) ago";
+  }
 }

@@ -21,4 +21,6 @@ public interface QuizUUIDRepo extends JpaRepository<QuizUUID, UUID> {
 
   @Query(value = "select q from QuizUUID q where q.title like %:search%")
   List<QuizUUID> searchQuizUUID(@Param(value = "search") String search);
+
+  List<QuizUUID> findByCreator(User creator);
 }

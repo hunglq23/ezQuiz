@@ -51,6 +51,10 @@ public class Classroom {
 
     private Date startDate;
 
+    private String imageURL;
+
+    private Boolean isDraft;
+
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Timestamp createdAt;

@@ -2,6 +2,7 @@ package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,4 +61,5 @@ public interface IQuizService {
         ByteArrayInputStream getDataDownloaded(QuizUUID quiz) throws IOException;
 
         QuizUUID getQuizForQuizTaking(UUID id);
+
 }
