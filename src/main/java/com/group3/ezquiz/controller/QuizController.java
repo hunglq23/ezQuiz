@@ -2,17 +2,17 @@ package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
-import com.group3.ezquiz.payload.ExcelFileDto;
-import com.group3.ezquiz.payload.MessageResponse;
-import com.group3.ezquiz.payload.QuizDetailsDto;
-import com.group3.ezquiz.payload.QuizDto;
+import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.*;
 import com.group3.ezquiz.service.IQuizService;
+import com.group3.ezquiz.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,7 +43,7 @@ public class QuizController {
     private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
 
     private final IQuizService quizService;
-
+    private final UserService userService;
     // @GetMapping("/search?code=23847da234asf")
     // public String search() {
     // return null;
@@ -154,16 +154,19 @@ public class QuizController {
     public String showQuizList(
             HttpServletRequest http,
             Model model,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "", name = "searchTerm") String searchTerm) {
-        Page<Quiz> quizList = quizService.listAll(http, searchTerm, PageRequest.of(page, 5));
-        model.addAttribute("quizList", quizList);
-        model.addAttribute("items", quizList.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", quizList.getTotalPages());
-        model.addAttribute("search", searchTerm);
-        // List<Quiz> quizList = quizService.listAll();
-        // model.addAttribute("listQuiz", quizList);
+            @RequestParam(required = false, defaultValue = "latest") String sortOrder) {
+        List<QuizDto> quizDtoList;
+        // check for sortOrder is latest or oldlest
+        if ("latest".equals(sortOrder)) {
+            quizDtoList = quizService.getQuizByCreator(http, true);
+        } else if ("oldest".equals(sortOrder)) {
+            quizDtoList = quizService.getQuizByCreator(http, false);
+        } else {
+            // default latest
+            return "redirect://quiz?sortOrder=latest";
+        }
+
+        model.addAttribute("quiz", quizDtoList);
         return "quiz/quiz";
     }
 
@@ -173,15 +176,7 @@ public class QuizController {
         return "quiz/quiz-creating";
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createQuiz(HttpServletRequest request, QuizDto quizDto) {
-        try {
-            quizService.createQuiz(request, quizDto);
-            return ResponseEntity.ok("Create Quiz Successfully!");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
-        }
-    }
+
 
     @GetMapping("edit/{id}")
     public String showQuizEditForm(@PathVariable("id") Integer id, Model model) {
@@ -195,17 +190,6 @@ public class QuizController {
         Quiz existedQuiz = quizService.findQuizById(id);
         model.addAttribute("quiz", existedQuiz);
         return "quiz/quiz-detail";
-    }
-
-    @PostMapping("update/{id}")
-    public String updateQuiz(
-            HttpServletRequest http,
-            @PathVariable("id") Integer id,
-            @ModelAttribute("quiz") QuizDto updateQuiz,
-            RedirectAttributes redirectAttributes) {
-        quizService.updateQuiz(http, id, updateQuiz);
-        redirectAttributes.addAttribute("id", id);
-        return "redirect:/quiz/detail/{id}";
     }
 
     @GetMapping("/delete/{id}")

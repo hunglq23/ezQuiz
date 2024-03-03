@@ -8,9 +8,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuizDto {
-    private String code;
+    private String type;
     private String title;
     private String description;
-    private Boolean isActive;
-    private Boolean isExamOnly;
+    private String image;
+    private Boolean isDraft;
+    private Integer itemNumber;
+    private String timeString;
 }

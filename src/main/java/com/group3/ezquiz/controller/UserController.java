@@ -45,9 +45,8 @@ public class UserController {
           HttpServletRequest http,
           Model model,
           @RequestParam(required = false, defaultValue = "latest") String sortOrder) {
-    User userRequesting = userService.getUserRequesting(http);
     List<ObjectDto> objectDtoList;
-    // check for sortOrder is latest or oldest
+    // check for sortOrder is latest or oldlest
     if ("latest".equals(sortOrder)) {
       objectDtoList = userService.getQuizAndClassroomByTeacher(http, true);
     } else if ("oldest".equals(sortOrder)) {

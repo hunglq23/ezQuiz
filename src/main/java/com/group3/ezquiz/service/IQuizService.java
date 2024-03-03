@@ -2,6 +2,7 @@ package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
+import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
@@ -20,13 +21,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IQuizService {
 
-        void createQuiz(HttpServletRequest request, QuizDto quizDto);
+//        void createQuiz(HttpServletRequest request, QuizDto quizDto);
 
         Quiz findQuizById(Integer id);
 
         void deleteQuiz(Integer id);
 
-        void updateQuiz(HttpServletRequest http, Integer id, QuizDto updateQuiz);
+//        void updateQuiz(HttpServletRequest http, Integer id, QuizDto updateQuiz);
 
         Page<Quiz> listAll(HttpServletRequest http, String searchTerm, Pageable pageable);
 
@@ -61,5 +62,7 @@ public interface IQuizService {
         ByteArrayInputStream getDataDownloaded(QuizUUID quiz) throws IOException;
 
         QuizUUID getQuizForQuizTaking(UUID id);
+
+        List<QuizDto> getQuizByCreator(HttpServletRequest request, Boolean sortOrder);
 
 }

@@ -7,6 +7,7 @@ import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.QuizDetailsDto;
 import com.group3.ezquiz.payload.QuizDto;
 import com.group3.ezquiz.repository.QuizRepo;
@@ -43,12 +44,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -83,6 +84,34 @@ public class QuizServiceImpl implements IQuizService {
             return quizById;
         }
         throw new ResourceNotFoundException("Cannot find quiz with ID: " + id);
+    }
+
+    @Override
+    public List<QuizDto> getQuizByCreator(HttpServletRequest request, Boolean sortOrder) {
+        User userRequesting = getUserRequesting(request);
+        List<QuizUUID> quizByCreator = quizUUIDRepo.findByCreator(userRequesting);
+        List<QuizDto> quizDtoList = new ArrayList<>();
+        for (QuizUUID quiz : quizByCreator) {
+            QuizDto quizDto = QuizDto.builder()
+                    .type("Quiz")
+                    .title(quiz.getTitle())
+                    .description(quiz.getDescription())
+                    .image(quiz.getImageUrl())
+                    .isDraft(quiz.getIsDraft())
+                    .itemNumber(quiz.getQuestions().size())
+                    .timeString(quiz.getCreatedAt().toString())
+                    .build();
+            quizDtoList.add(quizDto);
+        }
+        Comparator<QuizDto> comparator = Comparator.comparing(QuizDto::getTimeString);
+        if (sortOrder) {
+            comparator = comparator.reversed();
+        }
+        quizDtoList.sort(comparator);
+        quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+                calculateTimeElapsed(
+                        convertStringToTimestamp(objectDto.getTimeString(), "yyyy-MM-dd HH:mm:ss.SSSSSS"))));
+        return quizDtoList;
     }
 
     @Override
@@ -167,22 +196,6 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
-    public void createQuiz(HttpServletRequest request, QuizDto quizDto) {
-        if (existedQuizByCode(quizDto.getCode())) {
-            throw new IllegalArgumentException("A quiz with the same code already existed");
-        }
-        qRepo.save(
-                Quiz.builder()
-                        .code(quizDto.getCode())
-                        .title(quizDto.getTitle())
-                        .description(quizDto.getDescription())
-                        .isExamOnly(quizDto.getIsExamOnly())
-                        .isActive(quizDto.getIsActive())
-                        .createdBy(getUserRequesting(request))
-                        .build());
-    }
-
-    @Override
     public Quiz getQuizById(String stringId) {
         Integer id = getIntegerId(stringId);
         if (id != null) {
@@ -213,28 +226,6 @@ public class QuizServiceImpl implements IQuizService {
         }
     }
 
-    @Override
-    public void updateQuiz(HttpServletRequest request, Integer id, QuizDto updateQuiz) {
-
-        Quiz existedQuiz = findQuizById(id);
-        // if(existedQuizByCode(updateQuiz.getCode())){
-        // throw new IllegalArgumentException("A quiz with the same code already
-        // existed");
-        // }
-        Quiz saveQuiz = Quiz.builder()
-                // unchangeable
-                .id(existedQuiz.getId())
-                .createdAt(existedQuiz.getCreatedAt())
-                .createdBy(existedQuiz.getCreatedBy())
-                // to update
-                .code(updateQuiz.getCode())
-                .title(updateQuiz.getTitle())
-                .description(updateQuiz.getDescription())
-                .isActive(updateQuiz.getIsActive())
-                .isExamOnly(updateQuiz.getIsExamOnly())
-                .build();
-        qRepo.save(saveQuiz);
-    }
 
     private User getUserRequesting(HttpServletRequest http) {
         Principal userPrincipal = http.getUserPrincipal();
@@ -422,4 +413,35 @@ public class QuizServiceImpl implements IQuizService {
         }
     }
 
+    public static Timestamp convertStringToTimestamp(String dateString, String pattern) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
+        return Timestamp.valueOf(dateTime);
+    }
+    public static String calculateTimeElapsed(Timestamp creationTime) {
+        Instant instant = creationTime.toInstant();
+        Instant currentInstant = Instant.now();
+        Duration duration = Duration.between(instant, currentInstant);
+
+        long seconds = duration.getSeconds();
+
+        long days = seconds / (24 * 3600);
+        seconds = seconds % (24 * 3600);
+        long hours = seconds / 3600;
+        seconds %= 3600;
+        long minutes = seconds / 60;
+        seconds %= 60;
+
+        StringBuilder timeElapsedStringBuilder = new StringBuilder();
+        if (days > 0) {
+            return days + " day(s) ago";
+        }
+        if (hours > 0) {
+            return hours + " hour(s) ago";
+        }
+        if (minutes > 0) {
+            return minutes + " minute(s) ago";
+        }
+        return seconds + " second(s) ago";
+    }
 }
