@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<ObjectDto> getQuizAndClassroomByUser(HttpServletRequest request, Boolean sortTime) {
+  public List<ObjectDto> getQuizAndClassroomByTeacher(HttpServletRequest request, Boolean sortOrder) {
     User userRequesting = getUserRequesting(request);
     List<QuizUUID> quizByUser = quizUUIDRepo.findByCreator(userRequesting);
     List<Classroom> classroomByUser = classroomRepo.findByCreator(userRequesting);
@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
             .collect(Collectors.toList());
 
     Comparator<ObjectDto> comparator = Comparator.comparing(ObjectDto::getTimeString);
-    if (sortTime) {
+    if (sortOrder) {
       comparator = comparator.reversed();
     }
     objectDtoList.sort(comparator);

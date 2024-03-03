@@ -53,6 +53,7 @@ public class Classroom {
 
     private String imageURL;
 
+    @Column(nullable = false)
     private Boolean isDraft;
 
     @Temporal(TemporalType.TIMESTAMP)

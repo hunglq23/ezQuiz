@@ -29,5 +29,5 @@ public interface UserService {
 
   void delete(Long id);
 
-  List<ObjectDto> getQuizAndClassroomByUser(HttpServletRequest request, Boolean sortTime);
+  List<ObjectDto> getQuizAndClassroomByTeacher(HttpServletRequest request, Boolean sortTime);
 }

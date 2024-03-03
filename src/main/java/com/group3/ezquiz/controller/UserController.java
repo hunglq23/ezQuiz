@@ -1,6 +1,5 @@
 package com.group3.ezquiz.controller;
 
-import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.QuizUUID;
 import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
@@ -42,17 +41,20 @@ public class UserController {
   }
 
   @GetMapping("/library")
-  public String getLibraryPage(HttpServletRequest http, Model model, @RequestParam(required = false) String sortOrder) {
+  public String getLibraryPage(
+          HttpServletRequest http,
+          Model model,
+          @RequestParam(required = false, defaultValue = "latest") String sortOrder) {
     User userRequesting = userService.getUserRequesting(http);
     List<ObjectDto> objectDtoList;
-    // check for sortOrder is latest or earliest
+    // check for sortOrder is latest or oldest
     if ("latest".equals(sortOrder)) {
-      objectDtoList = userService.getQuizAndClassroomByUser(http, true);
-    } else if ("earliest".equals(sortOrder)) {
-      objectDtoList = userService.getQuizAndClassroomByUser(http, false);
+      objectDtoList = userService.getQuizAndClassroomByTeacher(http, true);
+    } else if ("oldest".equals(sortOrder)) {
+      objectDtoList = userService.getQuizAndClassroomByTeacher(http, false);
     } else {
       // default latest
-      objectDtoList = userService.getQuizAndClassroomByUser(http, true);
+      return "redirect://library?sortOrder=latest";
     }
 
     model.addAttribute("object", objectDtoList);
