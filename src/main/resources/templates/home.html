@@ -80,41 +80,44 @@
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  >Library</a
+                  >My Library</a
                 >
                 <!-- Library dropdown -->
                 <div
                   class="dropdown-menu bg-white shadow animated--grow-in p-0"
                   aria-labelledby="libraryDropdown"
-                  style="min-width: 0; width: 100px; right: 9px"
+                  style="min-width: 0; width: 123px; right: 9px"
                 >
-                  <a class="dropdown-item btn btn-sm p-1" th:href="@{/library}">
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/library}"
+                  >
                     All
                   </a>
                   <a
                     sec:authorize="hasRole('ROLE_TEACHER')"
-                    class="dropdown-item btn btn-sm p-1"
+                    class="dropdown-item btn btn-sm text-center"
                     th:href="@{/quiz/created-list}"
                   >
                     Quiz
                   </a>
                   <a
                     sec:authorize="hasRole('ROLE_LEARNER')"
-                    class="dropdown-item btn btn-sm p-1"
+                    class="dropdown-item btn btn-sm text-center"
                     th:href="@{/quiz/joined-list}"
                   >
                     Quiz
                   </a>
                   <a
                     sec:authorize="hasRole('ROLE_TEACHER')"
-                    class="dropdown-item btn btn-sm p-1"
+                    class="dropdown-item btn btn-sm text-center"
                     th:href="@{/classrooms/created-list}"
                   >
                     Classroom
                   </a>
                   <a
                     sec:authorize="hasRole('ROLE_LEARNER')"
-                    class="dropdown-item btn btn-sm p-1"
+                    class="dropdown-item btn btn-sm text-center"
                     th:href="@{/classroom/joined-list}"
                   >
                     Classroom
@@ -126,32 +129,33 @@
                 class="nav-item dropdown no-arrow"
               >
                 <a
-                  class="btn dropdown-toggle btn-sm px-2 btn-purpleee"
+                  class="btn dropdown-toggle btn-sm btn-purpleee"
                   id="toCreateDropdown"
                   role="button"
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
+                  style="padding-left: 27px; padding-right: 27px"
                 >
                   Create<i class="fas fa-plus" style="margin-left: 5px"></i
                 ></a>
                 <div
                   class="dropdown-menu bg-white shadow animated--grow-in p-0"
                   aria-labelledby="toCreateDropdown"
-                  style="min-width: 0; width: 100px"
+                  style="min-width: 0; width: 123px"
                 >
                   <a
-                    class="dropdown-item btn btn-sm p-1"
+                    class="dropdown-item btn btn-sm"
                     href="quiz/quiz-editing.html"
                     th:href="@{/quiz/new}"
                   >
-                    Quiz
+                    New Quiz
                   </a>
                   <a
-                    class="dropdown-item btn btn-sm p-1"
+                    class="dropdown-item btn btn-sm"
                     th:href="@{/classrooms/created}"
                   >
-                    Classroom
+                    New Class
                   </a>
                 </div>
               </li>
@@ -321,9 +325,8 @@
                 grid-template-columns: 1fr 2fr;
               "
             >
-              <div class="portada">
-                <!-- Your content for the 'portada' div -->
-              </div>
+              <div class="portada"></div>
+
               <div class="p-3 rounded-2">
                 <h6
                   class="m-0"
@@ -356,111 +359,112 @@
           <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
             <!-- Card 1 -->
             <div class="col">
-              <button class="card btn w-100 p-0">
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+              <div class="card">
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end item-tag">
-                      exam
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
                     </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
 
             <!-- Card 2 -->
             <div class="col">
-              <button class="card btn w-100 p-0">
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+              <div class="card">
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end item-tag">
-                      exam
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
                     </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
 
             <!-- Card 3 -->
             <div class="col">
-              <button class="card btn w-100 p-0 position-relative">
-                <div
-                  class="d-xxl-none position-absolute"
-                  style="right: 0; top: -42px"
-                >
+              <div class="card p-0">
+                <div class="d-xxl-none see-more">
                   <a href="#" class="btn btn-sm btn-purple">See more</a>
                 </div>
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                    </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
 
-            <!-- Col 4 -->
-            <div class="col d-none d-xxl-block position-relative">
-              <button class="card btn w-100 p-0">
-                <div class="position-absolute" style="right: 0; top: -42px">
+            <!-- Card 4 -->
+            <div class="col d-none d-xxl-block">
+              <div class="card p-0">
+                <div class="see-more">
                   <a href="#" class="btn btn-sm btn-purple">See more</a>
                 </div>
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                    </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -471,111 +475,112 @@
           <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
             <!-- Card 1 -->
             <div class="col">
-              <button class="card btn w-100 p-0">
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+              <div class="card">
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end item-tag">
-                      exam
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
                     </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
 
             <!-- Card 2 -->
             <div class="col">
-              <button class="card btn w-100 p-0">
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+              <div class="card">
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 text-end item-tag">
-                      exam
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
                     </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
 
             <!-- Card 3 -->
             <div class="col">
-              <button class="card btn w-100 p-0 position-relative">
-                <div
-                  class="d-xxl-none position-absolute"
-                  style="right: 0; top: -42px"
-                >
+              <div class="card p-0">
+                <div class="d-xxl-none see-more">
                   <a href="#" class="btn btn-sm btn-purple">See more</a>
                 </div>
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                    </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
 
-            <!-- Col 4 -->
-            <div class="col d-none d-xxl-block position-relative">
-              <button class="card btn w-100 p-0">
-                <div class="position-absolute" style="right: 0; top: -42px">
+            <!-- Card 4 -->
+            <div class="col d-none d-xxl-block">
+              <div class="card p-0">
+                <div class="see-more">
                   <a href="#" class="btn btn-sm btn-purple">See more</a>
                 </div>
-                <img
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top"
-                  alt="Quiz Image"
-                />
+                <button class="btn w-100 p-0">
+                  <img
+                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    class="card-img-top"
+                    alt="Quiz Image"
+                  />
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                    </div>
+                    <h5 class="card-title p-0 d-flex">Card title</h5>
+                    <p class="card-text d-none d-md-flex">
+                      Some quick example text.
+                    </p>
                   </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
+                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
+                    99 questions
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>

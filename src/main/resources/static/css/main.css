@@ -283,10 +283,6 @@ footer a:not(.nav-link) {
   color: #fff;
 }
 
-.card {
-  margin-top: 15px;
-}
-
 /* Login and Register */
 form i {
   margin-left: -30px;
@@ -401,6 +397,9 @@ input[type="password"]::-webkit-autocomplete {
   border: 1px solid #e3e6f0;
   border-radius: 0.35rem;
 }
+.dropdown-item.btn {
+  padding-left: 23px;
+}
 
 /* Homepage Top */
 #top-left,
@@ -445,14 +444,26 @@ input[type="password"]::-webkit-autocomplete {
 }
 
 /* Homepage content */
-.content .btn-purple {
-  margin-top: 20px;
-  font-size: 16px;
-  font-weight: 800;
-  transition: all 0.2s;
+.card {
+  margin-top: 18px;
 }
-.card.btn {
-  max-width: 333px;
+.row .card:last-child {
+  position: relative;
+  .see-more {
+    position: absolute;
+    right: 0;
+    top: -36px;
+    a {
+      border-radius: 3px;
+    }
+  }
+}
+.card,
+.card .btn {
+  border: none;
+}
+.card .btn {
+  border-radius: 10px;
   img {
     width: 100%;
     object-fit: cover;

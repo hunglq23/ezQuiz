@@ -103,8 +103,8 @@
           </div>
           <div class="right-content p-3 bg-white rounded">
             <form th:action="@{/login}" method="post" role="form">
-              <div th:if="${param.error}" class="text-danger fs-6 mx-3 fw-bold">
-                Invalid email and password!
+              <div th:if="${param.error}" class="text-danger fs-6 mx-4 fw-bold">
+                <i class="error-icon"></i> Invalid email and password!
               </div>
               <div th:if="${param.logout}" class="alert alert-info">
                 <svg
