@@ -1,30 +1,12 @@
-// package com.group3.ezquiz.service;
+package com.group3.ezquiz.service;
 
-// import java.util.List;
-// import java.util.Map;
+import java.util.Map;
 
-// import
-// org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
+import com.group3.ezquiz.model.Question;
+import com.group3.ezquiz.model.Quiz;
 
-// import com.group3.ezquiz.model.Question;
-// import com.group3.ezquiz.payload.QuestionDto;
+public interface IQuestionService {
 
-// import jakarta.servlet.http.HttpServletRequest;
+  Question createNewQuestionOfQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
 
-// public interface IQuestionService {
-
-// void createNewQuestion(HttpServletRequest request, QuestionDto dto,
-// Map<String, String> params);
-
-// Page<Question> listAll(HttpServletRequest http, String searchTerm, Pageable
-// pageable);
-
-// void updateQuestion(Long id, Question question) throws NotFoundException;
-
-// void deleteQuestion(Long id);
-
-// public void toggleQuestionStatus(Long questionId);
-
-// }
+}

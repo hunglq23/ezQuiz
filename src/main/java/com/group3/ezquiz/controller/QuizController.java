@@ -1,111 +1,85 @@
-// package com.group3.ezquiz.controller;
+package com.group3.ezquiz.controller;
 
-// import com.group3.ezquiz.model.Quiz;
-// import com.group3.ezquiz.payload.QuizDto;
-// import com.group3.ezquiz.service.IQuizService;
-// import com.group3.ezquiz.service.impl.QuizServiceImpl;
-// import jakarta.servlet.http.HttpServletRequest;
-// import lombok.RequiredArgsConstructor;
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.PageRequest;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.security.access.prepost.PreAuthorize;
-// import org.springframework.stereotype.Controller;
-// import org.springframework.ui.Model;
-// import org.springframework.web.bind.annotation.*;
-// import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.service.IQuizService;
 
-// import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
-// @Controller
-// @PreAuthorize("hasRole('ROLE_TEACHER')")
-// @RequiredArgsConstructor
-// @RequestMapping("/quiz")
-// public class QuizController {
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
 
-// private final IQuizService quizService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-// @GetMapping("")
-// public String showQuizList(
-// HttpServletRequest http,
-// Model model,
-// @RequestParam(defaultValue = "0") Integer page,
-// @RequestParam(required = false, defaultValue = "", name = "searchTerm")
-// String searchTerm) {
-// Page<Quiz> quizList = quizService.listAll(http, searchTerm,
-// PageRequest.of(page, 5));
-// model.addAttribute("quizList", quizList);
-// model.addAttribute("items", quizList.getContent());
-// model.addAttribute("currentPage", page);
-// model.addAttribute("totalPages", quizList.getTotalPages());
-// model.addAttribute("search", searchTerm);
-// // List<Quiz> quizList = quizService.listAll();
-// // model.addAttribute("listQuiz", quizList);
-// return "quiz/quiz";
-// }
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/quiz")
+public class QuizController {
 
-// @GetMapping("create")
-// public String showCreateQuizForm(Model model) {
-// model.addAttribute("quiz", new QuizDto());
-// return "quiz/quiz-creating";
-// }
+  private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
+  // private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
 
-// // @PostMapping("create")
-// // public String createQuiz(HttpServletRequest http, QuizDto quizDto, Model
-// model) {
-// // // process the form data
-// // quizService.createQuiz(http, quizDto);
-// // // redirect to the quiz list page after creating a new quiz
-// // return "redirect:/quiz";
-// // }
+  private final IQuizService quizService;
 
-// @PostMapping("/create")
-// public ResponseEntity<String> createQuiz(HttpServletRequest request, QuizDto
-// quizDto) {
-// try {
-// quizService.createQuiz(request, quizDto);
-// return ResponseEntity.ok("Create Quiz Successfully!");
-// } catch (IllegalArgumentException e) {
-// return ResponseEntity.status(HttpStatus.BAD_REQUEST).
-// body("{\"errorMessage\": \"" + e.getMessage() + "\"}");
-// }
-// }
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @GetMapping("/new")
+  public String handleQuizCreatingRequest(HttpServletRequest request) {
+    Quiz quiz = quizService.getDraftQuiz(request);
+    return "redirect:" + "/quiz" + '/' + quiz.getId() + "/edit";
+  }
 
-// @GetMapping("edit/{id}")
-// public String showQuizEditForm(@PathVariable("id") Integer id, Model model) {
-// Quiz existedQuiz = quizService.findQuizById(id);
-// model.addAttribute("quiz", existedQuiz);
-// return "quiz/quiz-editing";
-// }
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @GetMapping("/{id}/edit")
+  public String getQuizEditPage(
+      HttpServletRequest request,
+      @PathVariable UUID id,
+      Model model) {
+    Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    model.addAttribute("quiz", quiz);
+    return "quiz/quiz-editing";
+  }
 
-// @GetMapping("/detail/{id}")
-// public String showQuizDetail(@PathVariable("id") Integer id, Model model) {
-// Quiz existedQuiz = quizService.findQuizById(id);
-// model.addAttribute("quiz", existedQuiz);
-// return "quiz/quiz-detail";
-// }
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @GetMapping("/{id}/edit/create-question")
+  public String getQuestionCreatingForm(
+      HttpServletRequest request,
+      @PathVariable UUID id,
+      @RequestParam(required = false, defaultValue = "") String type,
+      Model model) {
+    Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    if (!Quiz.AVAILABLE_TYPES.contains(type)) {
+      return "redirect:/quiz/" + id + "/edit/create-question?type=single-choice";
+    }
+    model.addAttribute("quiz", quiz);
+    model.addAttribute("qType", type);
+    return "question/question-creating";
+  }
 
-// @PostMapping("update/{id}")
-// public String updateQuiz(
-// HttpServletRequest http,
-// @PathVariable("id") Integer id,
-// @ModelAttribute("quiz") QuizDto updateQuiz,
-// RedirectAttributes redirectAttributes) {
-// quizService.updateQuiz(http, id, updateQuiz);
-// redirectAttributes.addAttribute("id", id);
-// return "redirect:/quiz/detail/{id}";
-// }
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @PostMapping("/{id}/add-question")
+  public ResponseEntity<?> submitQuestionCreatingInQuiz(
+      HttpServletRequest request,
+      @PathVariable UUID id,
+      @RequestParam String type,
+      @RequestParam(name = "qText") String questionText,
+      @RequestParam Map<String, String> params) {
 
-// @GetMapping("/delete/{id}")
-// public String deleteQuestion(@PathVariable Integer id) {
-// quizService.deleteQuiz(id);
-// return "redirect:/quiz";
-// }
+    Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    Quiz saved = quizService.handleQuestionCreatingInQuiz(quiz, type, questionText, params);
+    if (saved == null) {
+      return ResponseEntity.badRequest().body("Failed!");
+    }
+    return ResponseEntity.ok(
+        MessageResponse.builder()
+            .message(questionText)
+            .timestamp(LocalDateTime.now())
+            .build());
+  }
 
-// @GetMapping("/toggle/{id}")
-// public String toggleQuestionStatus(@PathVariable Integer id) {
-// quizService.toggleQuizStatus(id);
-// return "redirect:/quiz";
-// }
-// }
+}

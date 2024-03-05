@@ -1,78 +1,298 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en-US" xmlns="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Question</title>
 
-<head>
-    <title>Add Question</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-</head>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../static/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
+    />
 
-<body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="text-center">Add Question</h2>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <!-- Customize CSS -->
+    <link
+      href="../../static/css/main.css"
+      th:href="@{/css/main.css}"
+      rel="stylesheet"
+    />
+    <!-- Font Family Nunito Sans -->
+    <link
+      href="../../static/css/font.css"
+      th:href="@{/css/font.css}"
+      rel="stylesheet"
+    />
 
-                    <form th:action="@{/questions/create}" th:object="${question}" method="post">
-                        <div style="flex-wrap: wrap;">
-                            <div class="form-group flex-grow-1 my-3">
-                                <label for="text">Question Content:</label>
-                                <textarea class="form-control" id="text" th:field="*{text}" rows="4"
-                                    required></textarea>
-                            </div>
-                        </div>
+    <style>
+      .container {
+        padding-top: calc(20vh - 68px);
+      }
+      #questionTypes .nav-item .active {
+        background-color: #f4f6f8 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
 
-                        <!-- Options -->
-                        <div id="options-container" class="my-3">
-                            <label for="questionCode">Option 1:</label>
-                            <div class="input-group mr-3" style="display: flex;">
-                                <input type="text" class="form-control" id="option-1" name="option-1" required />
-                                <div class="input-group-text">
-                                    <input class="form-check-input" type="checkbox" name="answer-1" th:value="true" />
-                                </div>
-                            </div>
-                        </div>
+      .answer-input-end {
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
+            >ezQuiz</a
+          >
+          <div
+            class="mx-2 px-3"
+            style="
+              opacity: 0.69;
+              text-align: left;
+              border-left: 1px solid rgba(0, 0, 0, 0.1);
+            "
+          >
+            New question
+          </div>
+          <a
+            th:unless="${quiz.title == null}"
+            class="btn btn-sm mx-2 px-3 bd-left"
+            data-bs-toggle="modal"
+            data-bs-target="#quizInfo"
+            th:text="${quiz.title}"
+          ></a>
 
-                        <div class="py-2">
-                            <!-- Dynamic Options -->
-                            <button type="button" class="btn btn-primary" onclick="addOption()">Add Option</button>
-
-                            <!-- Submit Button -->
-                            <button type="submit" class="btn btn-success">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto me-2"></ul>
+            <button
+              type="button"
+              onclick="clickSaveQuestion()"
+              class="btn btn-sm btn-primary px-2"
+              style="text-transform: uppercase"
+            >
+              <i class="fas fa-save me-1"></i> save question
+            </button>
+          </div>
         </div>
+      </nav>
+    </header>
+
+    <div class="content pt-3 bg-light d-flex min-vh-100">
+      <div class="container bg-white rounded-3 px-3" style="max-width: 999px">
+        <div class="text-center mb-3">
+          <h2 class="marker marker-center mt-1">Create new question</h2>
+        </div>
+        <div class="bg-light custom-box-shadow rounded-3">
+          <div class="form-group">
+            <ul
+              class="nav nav-tabs nav-fill border-0"
+              role="tablist"
+              style="gap: 1px; padding: 1px"
+              id="questionTypes"
+            >
+              <li class="nav-item">
+                <a
+                  id="singleChoice"
+                  class="nav-link p-1 rounded-3 bg-white"
+                  th:classappend="${qType.equals('single-choice') ? 'active' : ''}"
+                  href="./create-question?type=single-choice"
+                  style="border: 1px solid #eee"
+                >
+                  <span class="badge bg-secondary me-1">1</span> Single Choice
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  id="multipleChoice"
+                  class="nav-link p-1 rounded-3 bg-white"
+                  th:classappend="${qType.equals('multiple-choice') ? 'active' : ''}"
+                  href="./create-question?type=multiple-choice"
+                  style="border: 1px solid #eee"
+                >
+                  <span class="badge bg-secondary me-1">2</span> Multiple Choice
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-3 pt-1">
+            <div class="text-center">
+              <span class="error-icon text-danger questionError d-none"
+                >Select at least 1 answer!</span
+              >
+            </div>
+            <form
+              id="questCreating"
+              class="bg-light d-md-flex gap-3"
+              th:action="@{../add-question(type=${qType})}"
+              method="post"
+              style="
+                border-bottom-left-radius: 0.3rem;
+                border-bottom-right-radius: 0.3rem;
+              "
+            >
+              <div
+                class="form-group col-12 col-md-6 flex-fill d-flex flex-column"
+              >
+                <label
+                  for="qText"
+                  class="form-label fw-bolder"
+                  style="margin: 7px 15px 0 15px"
+                  >Question Text</label
+                >
+                <textarea
+                  class="form-control flex-fill"
+                  style="margin-top: 3px"
+                  name="qText"
+                  id="qText"
+                  required
+                  placeholder="Enter the question text here"
+                ></textarea>
+              </div>
+
+              <div class="form-group col-12 col-md-6">
+                <div class="d-flex flex-row-reverse" style="margin-bottom: 8px">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-secondary m-0 p-0 px-1"
+                    onclick="addAnswer()"
+                  >
+                    Add Answer
+                  </button>
+                </div>
+
+                <div id="answers" class="d-flex flex-column gap-1"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script>
-        let i = 1;
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
 
-        function addOption() {
-            i++;
-            var optionsContainer = $("#options-container");
-            var newOption =
-                `
-                <div class="my-3" id="options-container">
-                    <label for="questionCode">Option ${i}:</label>
-                    <div class="input-group" style="display: flex;">
-                        <input type="text" class="form-control" id="option-${i}" name="option-${i}" required />
-                        <div class="input-group-text">
-                            <input class="form-check-input" type="checkbox" name="answer-${i}" th:value="true" />
-                        </div>
-                    </div>
-                </div>
-            `;
-            optionsContainer.append(newOption);
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
+
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      const MIN_ANS_NUM = 2;
+      const MAX_ANS_NUM = 6;
+
+      let quizId = /*[[${quiz.id}]]*/ "";
+      let questionType = /*[[${qType}]]*/ "single-choice";
+      let ansNum = 0;
+      let i = ansNum;
+      let inputType = "";
+      let nameProp = "";
+      let hiddenFalseInput = "";
+
+      function addAnswer() {
+        if (questionType === "single-choice") {
+          inputType = "radio";
+          nameProp = "ansValue";
+          hiddenFalseInput = "";
+        } else if (questionType === "multiple-choice") {
+          inputType = "checkbox";
+          nameProp = `ans${i}Value`;
+          hiddenFalseInput = `<input type="hidden" name="ans${i}Value" value="false" />`;
         }
+
+        if (ansNum < MAX_ANS_NUM) {
+          var answers = $("#answers");
+          var newAnswer = `
+                    <div class="input-group" id="answer-${i}">
+                      <div class="input-group-text">
+                        <input
+                          class="form-check-input mt-0"
+                          type="${inputType}"
+                          name="${nameProp}"
+                          value="true"
+                          aria-label="Checkbox for following text input"
+                        />
+                        ${hiddenFalseInput}
+                      </div>
+                      <input
+                        class="form-control rounded-end"
+                        type="text"
+                        name="ans${i}Text"
+                        placeholder="Enter the answer here"
+                        required
+                        style="padding-right: 45px"
+                      />
+                      <div class="answer-input-end">
+                        <span
+                          class="btn-delete"
+                          onclick="removeAns('#answer-${i}')"
+                        >
+                          <i
+                            id="passwordConfirm-toggle-icon"
+                            class="fas fa-trash"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                      </div>
+                    </div>
+          `;
+          answers.append(newAnswer);
+          i++;
+          ansNum++;
+        }
+      }
+
+      (function initAnswer() {
+        addAnswer();
+        addAnswer();
+        addAnswer();
+      })();
+
+      function removeAns(ansIdSelector) {
+        if (ansNum > MIN_ANS_NUM) {
+          $(ansIdSelector).remove();
+          ansNum--;
+        }
+      }
+
+      function clickSaveQuestion() {
+        handleFormSubmitByIdAndMethod("questCreating", function () {
+          window.location.href = `/quiz/${quizId}/edit?trigger=question-creating`;
+        });
+      }
+      /*]]>*/
     </script>
 
-</body>
-
+    <script>
+      $(document).ready(function () {
+        $(".form-check-input").each(function () {
+          $(this).on("click", function () {
+            $(".questionError").addClass("d-none");
+          });
+        });
+      });
+    </script>
+  </body>
 </html>

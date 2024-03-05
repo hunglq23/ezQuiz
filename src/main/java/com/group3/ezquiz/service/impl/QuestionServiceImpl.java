@@ -1,139 +1,89 @@
-// package com.group3.ezquiz.service.impl;
+package com.group3.ezquiz.service.impl;
 
-// import java.security.Principal;
-// import java.util.ArrayList;
-// import java.util.HashSet;
-// import java.util.List;
-// import java.util.Map;
-// import java.util.Optional;
-// import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
-// import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-// import com.group3.ezquiz.model.Option;
-// import com.group3.ezquiz.model.Question;
-// import com.group3.ezquiz.payload.QuestionDto;
-// import com.group3.ezquiz.repository.OptionRepo;
-// import com.group3.ezquiz.repository.QuestionRepo;
-// import com.group3.ezquiz.repository.UserRepo;
-// import com.group3.ezquiz.service.IQuestionService;
+import org.springframework.stereotype.Service;
 
-// import jakarta.persistence.EntityNotFoundException;
-// import jakarta.servlet.http.HttpServletRequest;
+import com.group3.ezquiz.exception.InvalidQuestionException;
+import com.group3.ezquiz.model.Answer;
+import com.group3.ezquiz.model.Question;
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.repository.QuestionRepo;
+import com.group3.ezquiz.service.IQuestionService;
 
-// @Service
-// public class QuestionServiceImpl implements IQuestionService {
+import lombok.RequiredArgsConstructor;
 
-// @Autowired
-// private QuestionRepo questionRepo;
+@Service
+@RequiredArgsConstructor
+public class QuestionServiceImpl implements IQuestionService {
 
-// @Autowired
-// private OptionRepo optionRepo;
+  private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
-// @Autowired
-// private UserRepo userRepo;
+  private final QuestionRepo questionRepo;
 
-// @Override
+  @Override
+  public Question createNewQuestionOfQuiz(
+      Quiz quiz,
+      String type,
+      String questionText,
+      Map<String, String> params) {
 
-// public void createNewQuestion(HttpServletRequest request, QuestionDto dto,
-// Map<String, String> params) {
-// Principal principal = request.getUserPrincipal();
+    Question question = Question.builder()
+        .type(type)
+        .text(questionText)
+        .creator(quiz.getCreator())
+        .isActive(true)
+        .isPublic(true)
+        .build();
 
-// String questionText = dto.getText();
-// if (questionRepo.existsByText(questionText)) {
-// throw new IllegalArgumentException("A question with the same text already
-// exists.");
-// }
+    List<Answer> answers = mapParamsToAnswers(params, question, type);
 
-// Question question = Question.builder()
-// .text(dto.getText())
-// .isActive(true) // Assuming new questions are active by default
-// .createdBy(userRepo.findByEmail(principal.getName()))
-// .build();
-// List<Option> options = new ArrayList<>();
-// Set<String> optionTexts = new HashSet<>();
-// boolean atLeastOneCorrectAnswer = false;
-// // Iterate through the params to create options
-// for (Map.Entry<String, String> entry : params.entrySet()) {
-// String optionKey = entry.getKey();
-// String optionText = entry.getValue();
-// // Check if the key starts with "option"
-// if (optionKey.startsWith("option")) {
-// if (!optionTexts.add(optionText)) {
-// throw new IllegalArgumentException("Duplicate option text found: " +
-// optionText);
-// }
-// boolean isAnswer = params.containsKey("answer" +
-// optionKey.substring("option".length()));
-// Option option = Option.builder()
-// .question(question)
-// .text(optionText)
-// .isAnswer(isAnswer)
-// .build();
-// options.add(option);
-// // Check if the current option is a correct answer
-// if (isAnswer) {
-// atLeastOneCorrectAnswer = true;
-// }
-// }
-// }
-// // Check if at least one correct answer is set
-// if (!atLeastOneCorrectAnswer) {
-// throw new IllegalArgumentException("At least one correct answer must be
-// set.");
-// }
-// questionRepo.save(question);
-// optionRepo.saveAll(options);
-// }
+    question.setAnswers(answers);
 
-// @Override
-// public Page<Question> listAll(HttpServletRequest http, String searchTerm,
-// Pageable pageable) {
-// return questionRepo.getAllQuestions(searchTerm, pageable);
-// }
+    return questionRepo.save(question);
+  }
 
-// public void updateQuestion(Long id, Question question) {
-// // Check if the question with the given ID exists
-// Question existQuestion = questionRepo.findQuestionByQuestionId(id);
-// Question saveQuestion = Question.builder()
-// // unchangeable
-// .questionId(existQuestion.getQuestionId())
-// .options(existQuestion.getOptions())
-// // to update
-// .text(question.getText())
-// .build();
-// questionRepo.save(saveQuestion);
-// }
+  private List<Answer> mapParamsToAnswers(Map<String, String> params, Question question, String type) {
 
-// public class ResourceNotFoundException extends RuntimeException {
-// public ResourceNotFoundException(String message) {
-// super(message);
-// }
-// }
+    List<Answer> answers = new ArrayList<>();
+    int correctAnswerCount = 0;
 
-// @Override
-// public void deleteQuestion(Long questionId) {
-// Optional<Question> optionalQuestion = questionRepo.findById(questionId);
-// if (optionalQuestion.isPresent()) {
-// Question question = optionalQuestion.get();
-// questionRepo.delete(question);
-// } else {
-// throw new EntityNotFoundException("Question with id " + questionId + " not
-// found");
-// }
-// }
+    Boolean ansValue = false;
+    // iterate through the map of all the answer
+    for (Map.Entry<String, String> entry : params.entrySet()) {
+      String key = entry.getKey();
+      if (key.startsWith("ans")) {
+        if (key.endsWith("Value")) {
+          try {
+            ansValue = Boolean.parseBoolean(entry.getValue());
+            if (ansValue)
+              correctAnswerCount++;
+          } catch (NumberFormatException e) {
+            log.error("Invalid answer value!");
+          }
+        } else if (key.endsWith("Text")) {
+          answers.add(
+              Answer.builder()
+                  .question(question)
+                  .text(entry.getValue())
+                  .isCorrect(ansValue)
+                  .build());
+          ansValue = false;
+        }
+      }
+    }
+    if (type.equals("single-choice") && correctAnswerCount < 1) {
+      throw new InvalidQuestionException("At least 1 answer selected in single choice!");
+    }
+    if (type.equals("multiple-choice") && correctAnswerCount < 2) {
+      throw new InvalidQuestionException("At least 2 answer selected in multiple choice!");
+    }
+    return answers;
+  }
 
-// public void toggleQuestionStatus(Long questionId) {
-// Optional<Question> questionOptional = questionRepo.findById(questionId);
-
-// if (questionOptional.isPresent()) {
-// Question question = questionOptional.get();
-// question.setActive(!question.isActive());
-// questionRepo.save(question);
-// }
-// }
-
-// }
+}

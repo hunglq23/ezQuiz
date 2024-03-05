@@ -1,26 +1,18 @@
-// package com.group3.ezquiz.service;
+package com.group3.ezquiz.service;
 
-// import com.group3.ezquiz.model.Quiz;
+import java.util.Map;
+import java.util.UUID;
 
-// import com.group3.ezquiz.payload.QuizDto;
-// import jakarta.servlet.http.HttpServletRequest;
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
+import com.group3.ezquiz.model.Quiz;
 
-// public interface IQuizService {
+import jakarta.servlet.http.HttpServletRequest;
 
-// void createQuiz(HttpServletRequest request, QuizDto quizDto);
+public interface IQuizService {
 
-// Quiz findQuizById(Integer id);
+  Quiz getDraftQuiz(HttpServletRequest request);
 
-// void deleteQuiz(Integer id);
+  Quiz getQuizByRequestAndID(HttpServletRequest request, UUID id);
 
-// void updateQuiz(HttpServletRequest http, Integer id, QuizDto updateQuiz);
+  Quiz handleQuestionCreatingInQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
 
-// Page<Quiz> listAll(HttpServletRequest http, String searchTerm, Pageable
-// pageable);
-
-// void toggleQuizStatus(Integer id);
-
-// boolean existedQuizByCode(String code);
-// }
+}

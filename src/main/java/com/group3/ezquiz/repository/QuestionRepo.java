@@ -1,28 +1,12 @@
-// package com.group3.ezquiz.repository;
+package com.group3.ezquiz.repository;
 
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
-// import org.springframework.data.jpa.repository.JpaRepository;
-// import org.springframework.data.jpa.repository.Query;
-// import org.springframework.data.repository.query.Param;
-// import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-// import com.group3.ezquiz.model.Question;
+import org.springframework.stereotype.Repository;
 
-// @Repository
-// public interface QuestionRepo extends JpaRepository<Question, Long> {
+import com.group3.ezquiz.model.Question;
 
-// boolean existsByText(String text);
+@Repository
+public interface QuestionRepo extends JpaRepository<Question, Long> {
 
-// Question findQuestionByQuestionId(Long questionId);
-
-// Page<Question> findByTextContainingIgnoreCase(String searchText, Pageable
-// pageable);
-
-// @Query("SELECT q FROM Question q WHERE " +
-// "(:text IS NULL OR q.text LIKE %:text%)")
-// Page<Question> getAllQuestions(
-// @Param("text") String text,
-// Pageable page);
-
-// }
+}
