@@ -138,6 +138,42 @@ function togglePasswordVisibility(passwordFieldId) {
   }
 })();
 
+function handleSignUpClick() {
+  console.log("clicked... ");
+
+  const form = $("#registerForm");
+
+  $.ajax({
+    url: form.attr("action"),
+    method: "post",
+    data: form.serialize(),
+    success: () => {
+      window.location = "/login?signUpSuccessfully";
+    },
+    error: (xhr) => {
+      if (xhr.status === 400) {
+        console.error("showing 400...");
+        Object.entries(JSON.parse(xhr.responseText).errors).forEach(
+          ([key, value]) => {
+            console.log(`${key}: ${value}`);
+
+            $("." + key).each(function () {
+              $(this).text(value);
+              $(this).removeClass("d-none");
+            });
+
+            $("." + key.replace("Error", "Input")).each(function () {
+              $(this).addClass("is-invalid");
+            });
+          }
+        );
+      } else {
+        console.error("Other error, not 400...");
+      }
+    },
+  });
+}
+
 // Suggestion for Nav Search
 const navSearchInput = document.getElementById("navSearchInput");
 const navSuggestionList = document.querySelector(".suggestions-list");
@@ -156,7 +192,7 @@ if (navSearchInput !== null) {
   });
 }
 
-function handleFormSubmitByIdAndMethod(formId, method = "post") {
+function handleFormSubmitByIdAndMethod(formId, onSuccess, method = "post") {
   const form = $("#" + formId);
   if (form === null) {
     console.error("Form is null!");
@@ -175,30 +211,31 @@ function handleFormSubmitByIdAndMethod(formId, method = "post") {
       success: (resp) => {
         console.log("Success");
         console.log(resp);
+        if (typeof onSuccess === "function") {
+          onSuccess();
+        }
       },
       error: (xhr, status, err) => {
         if (xhr.status === 400) {
           console.error("showing 400...");
-          handleJsonErrorsResponse(JSON.parse(xhr.responseText).errors);
+          Object.entries(JSON.parse(xhr.responseText).errors).forEach(
+            ([key, value]) => {
+              console.log(`${key}: ${value}`);
+
+              $("." + key).each(function () {
+                $(this).text(value);
+                $(this).removeClass("d-none");
+              });
+
+              $("." + key.replace("Error", "Input")).each(function () {
+                $(this).addClass("is-invalid");
+              });
+            }
+          );
         } else {
           console.error("Other error, not 400...");
         }
       },
-    });
-  }
-
-  function handleJsonErrorsResponse(errors) {
-    Object.entries(errors).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
-
-      $("." + key).each(function () {
-        $(this).text(value);
-        $(this).removeClass("d-none");
-      });
-
-      $("." + key.replace("Error", "Input")).each(function () {
-        $(this).addClass("is-invalid");
-      });
     });
   }
 }

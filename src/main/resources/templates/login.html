@@ -422,6 +422,20 @@
       </div>
     </div>
 
+    <div
+      th:if="${param.signUpSuccessfully}"
+      id="alert"
+      class="alert alert-success"
+      role="alert"
+    >
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span id="alertMsg">Your account was created successfully!</span>
+      </div>
+    </div>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
@@ -439,58 +453,19 @@
     <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
 
     <script>
+      $(document).ready(function () {
+        window.setTimeout(function () {
+          $(".alert").each(function () {
+            $(this).alert("close");
+          });
+        }, 5000);
+      });
+    </script>
+
+    <script>
       const signUpBtn = document.getElementById("signUpButton");
       let isCounting = null;
       let count = 0;
-
-      function handleSignUpClick() {
-        console.log("clicked... ");
-
-        const form = $("#registerForm");
-        const alert = document.getElementById("alert");
-        const alertMsg = document.getElementById("alertMsg");
-
-        $.ajax({
-          url: form.attr("action"),
-          method: "post",
-          data: form.serialize(),
-          success: (resp) => {
-            console.log("successs after handling!");
-            console.log(resp);
-
-            alert.classList.add("alert-success");
-            document.getElementById("successAlertIcon").style.display = "block";
-            alertMsg.textContent = resp.message;
-
-            $("#registerModal").modal("hide");
-            form.trigger("reset");
-            showAlertAndHideAfterSecond(alert, 5);
-          },
-          error: ({ status, responseText }) => {
-            if (status === 400) {
-              console.error("showing 400...");
-              handleJsonErrorsResponse(JSON.parse(responseText).errors);
-            } else {
-              console.error("Other error, not 400...");
-            }
-          },
-        });
-      }
-
-      function handleJsonErrorsResponse(errors) {
-        Object.entries(errors).forEach(([key, value]) => {
-          console.log(`${key}: ${value}`);
-
-          $("." + key).each(function () {
-            $(this).text(value);
-            $(this).removeClass("d-none");
-          });
-
-          $("." + key.replace("Error", "Input")).each(function () {
-            $(this).addClass("is-invalid");
-          });
-        });
-      }
 
       function showAlertAndHideAfterSecond(alert, second = 0) {
         console.log("showing alert...");
@@ -515,12 +490,6 @@
           }
         }, 1000);
       }
-
-      $(document).ready(function () {
-        window.setTimeout(function () {
-          $(".alert-info").alert("close");
-        }, 5000);
-      });
     </script>
   </body>
 </html>

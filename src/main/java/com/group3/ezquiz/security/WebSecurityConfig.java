@@ -1,24 +1,17 @@
 package com.group3.ezquiz.security;
 
-import java.io.IOException;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.group3.ezquiz.security.oauth2.CustomOAuth2UserService;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -49,7 +42,7 @@ public class WebSecurityConfig {
                 .loginPage("/login")
                 .userInfoEndpoint(
                     userInfo -> userInfo.userService(oAuth2UserService))
-                .successHandler(getHandler()))
+                .defaultSuccessUrl("/home", false))
 
         // login form config
         .formLogin(
@@ -70,21 +63,6 @@ public class WebSecurityConfig {
   @Bean
   PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
-  }
-
-  private AuthenticationSuccessHandler getHandler() {
-    return new AuthenticationSuccessHandler() {
-      @Override
-      public void onAuthenticationSuccess(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          Authentication authentication) throws IOException, ServletException {
-        // CustomOAuth2User oauthUser = (CustomOAuth2User)
-        // authentication.getPrincipal();
-        // userService.processOAuthPostLogin(oauthUser.getEmail());
-        response.sendRedirect("/home");
-      }
-    };
   }
 
 }
