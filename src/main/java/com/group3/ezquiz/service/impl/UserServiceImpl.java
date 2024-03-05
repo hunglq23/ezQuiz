@@ -7,6 +7,7 @@ import com.group3.ezquiz.payload.auth.RegisterRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +56,8 @@ public class UserServiceImpl implements IUserService {
   }
 
   private void validateEmail(String email) {
-    User byEmail = userRepo.findByEmail(email);
-    if (byEmail != null) { // email existed
+    Boolean emailExisted = userRepo.findByEmail(email).isPresent();
+    if (emailExisted) {
       throw new InvalidEmailException("Email existed!");
     } else {
       String[] permitedEmailDomains = { "@gmail.com", "@fpt.edu.vn", "@email" };
@@ -77,13 +78,8 @@ public class UserServiceImpl implements IUserService {
   public User getUserRequesting(HttpServletRequest http) {
 
     Principal userPrincipal = http.getUserPrincipal();
-    String email = userPrincipal.getName(); //
-    return userRepo.findByEmail(email);
-  }
-
-  @Override
-  public User getUserByEmail(String email) {
-    return userRepo.findByEmail(email);
+    String email = userPrincipal.getName();
+    return getUserByEmail(email);
   }
 
   @Override
@@ -140,6 +136,11 @@ public class UserServiceImpl implements IUserService {
   @Override
   public void delete(Long id) {
     userRepo.deleteById(id);
+  }
+
+  private User getUserByEmail(String email) {
+    return userRepo.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException(email));
   }
 
 }

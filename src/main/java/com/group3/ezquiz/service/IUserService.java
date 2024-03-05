@@ -10,13 +10,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface IUserService {
+
   ResponseEntity<?> registerUser(RegisterRequest user);
 
   User getUserRequesting(HttpServletRequest http);
 
-  User getUserByEmail(String email);
-
-  Page<User> getListUser(HttpServletRequest http, String email, Boolean status, Pageable page);
+  Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
+      Pageable page);
 
   void createUser(HttpServletRequest request, UserDto userDto);
 

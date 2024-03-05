@@ -1,6 +1,5 @@
 package com.group3.ezquiz.service.impl;
 
-import java.security.Principal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +8,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Classroom;
-import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.ClassroomDto;
 import com.group3.ezquiz.repository.ClassroomRepo;
-import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.ClassroomService;
+import com.group3.ezquiz.service.IUserService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +21,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Autowired
     private ClassroomRepo classroomRepo;
     @Autowired
-    private UserRepo userRepo;
+    private IUserService userService;
 
     @Override
     public void deleteClassroomById(Long id) {
@@ -71,7 +69,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                         .description(dto.getDescription())
                         .code(code)
                         .isEnable(true)
-                        .creator(getUserRequesting(request))
+                        .creator(userService.getUserRequesting(request))
                         .build());
     }
 
@@ -79,13 +77,6 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
 
         return classroomRepo.getAllClassroom(searchName, PageRequest.of(page, 5));
-    }
-
-    private User getUserRequesting(HttpServletRequest http) {
-        Principal userPrincipal = http.getUserPrincipal();
-        String requestingUserByEmail = userPrincipal.getName();
-        User requestingUser = userRepo.findByEmail(requestingUserByEmail);
-        return requestingUser;
     }
 
     private String generateClassCode() {
