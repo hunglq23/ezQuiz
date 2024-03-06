@@ -60,6 +60,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 188px;
+    opacity: 0.68;
   }
 
   label {
@@ -82,12 +84,22 @@
   font-weight: 300;
 }
 
-.detail-title:hover {
+.detail-title:hover,
+.title-on-focus {
   h3 {
     display: none;
   }
   input {
     display: block;
+  }
+}
+
+.title-out-focus {
+  h3 {
+    display: block;
+  }
+  input {
+    display: none;
   }
 }
 

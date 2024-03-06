@@ -122,10 +122,7 @@
                         maxlength="16"
                       />
                       <h3 id="quizTitle" class="m-0">
-                        <span
-                          th:if="${quiz.title == null}"
-                          class="fw-light"
-                          style="opacity: 0.68"
+                        <span th:if="${quiz.title == null}" class="fw-light"
                           >Untitled Quiz</span
                         >
                         <span
@@ -316,12 +313,16 @@
                   </div>
                   <!-- edit, delete,... to the right -->
                   <div class="d-flex">
-                    <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"
+                    <a
+                      class="btn btn-sm bg p-1 px-2 qcard-tool border-0"
+                      style="box-shadow: none"
                       ><i class="fas fa-edit mx-1"></i> Edit
                       <span class="d-md-none d-lg-inline">this question</span>
                     </a>
                     <div style="border-left: 1px solid #e8e8e8"></div>
-                    <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"
+                    <a
+                      class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"
+                      style="box-shadow: none"
                       ><i class="fas fa-trash mx-1"></i
                     ></a>
                   </div>
@@ -906,27 +907,6 @@
     <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
 
     <script>
-      (function handleDetailsChangeOutsideForm() {
-        const IDs = ["titleInput1", "descriptionInput1"];
-        for (let id of IDs) {
-          const input = document.getElementById(id);
-          input.addEventListener("keyup", () => {
-            const formInput = document.getElementById(id.replace("Input1", ""));
-            formInput.value = input.value;
-            if (id === "titleInput1") {
-              if (input.value === "") {
-                const quizTitle = document.getElementById("quizTitle");
-                quizTitle.textContent = "Untitled Quiz";
-                quizTitle.style.fontWeight = 300;
-                quizTitle.style.opacity = 0.68;
-              } else {
-                quizTitle.textContent = input.value;
-              }
-            }
-          });
-        }
-      })();
-
       (function handleInputError() {
         const IDs = [
           "imageUrl",
@@ -950,26 +930,20 @@
         document.getElementById("searchQuizInput").focus();
       }
 
-      function handleEditFormContinueClick() {
-        const IDs = ["imageUrl", "title", "description"];
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
 
-        for (let id of IDs) {
-          const fieldValue = document.getElementById(id).value;
-          if (fieldValue) {
-            if (id === "imageUrl") {
-              const bgValue = `url(${fieldValue})`;
-              const quizImage = document.getElementById("quizImage");
-              quizImage.style.backgroundImage = bgValue;
-              quizImage.querySelector("div").classList.add("d-none");
-            } else {
-              document.getElementById(id + "Input1").value = fieldValue;
-              if (id === "title") {
-                document.getElementById("quizTitle").textContent = fieldValue;
-              }
-            }
-          }
-        }
-      }
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
 
       $(document).ready(function () {
         // Gọi hàm khi trang được tải
@@ -1043,6 +1017,83 @@
 
     <script th:inline="javascript">
       /*<![CDATA[*/
+      const inputIDs = ["imageUrl", "title", "examOnly", "description"];
+      var quizId = /*[[${quiz.id}]]*/ "";
+      (function () {
+        for (let id of inputIDs) {
+          const input = document.getElementById(id);
+          const savedItem = localStorage.getItem(quizId + id);
+          if (savedItem != null) {
+            if (id === "examOnly") {
+              if (savedItem === "true") {
+                input.checked = "checked";
+              } else {
+                input.removeAttribute("checked");
+              }
+            } else {
+              input.value = savedItem;
+            }
+          }
+        }
+        handleEditFormContinueClick();
+      })();
+
+      (function handleDetailsChangeOutsideForm() {
+        const IDs = ["titleInput1", "descriptionInput1"];
+        for (let id of IDs) {
+          const input = document.getElementById(id);
+          input.addEventListener("keyup", () => {
+            const formInput = document.getElementById(id.replace("Input1", ""));
+            formInput.value = input.value;
+            saveToLocalStorage(["title", "description"]);
+            if (id === "titleInput1") {
+              if (input.value === "") {
+                const quizTitle = document.getElementById("quizTitle");
+                quizTitle.textContent = "Untitled Quiz";
+                quizTitle.style.fontWeight = 300;
+                quizTitle.style.opacity = 0.68;
+              } else {
+                quizTitle.textContent = input.value;
+              }
+            }
+          });
+        }
+      })();
+
+      function handleEditFormContinueClick() {
+        const IDs = ["imageUrl", "title", "description"];
+        for (let id of IDs) {
+          const fieldValue = document.getElementById(id).value;
+          if (fieldValue) {
+            if (id === "imageUrl") {
+              const bgValue = `url(${fieldValue})`;
+              const quizImage = document.getElementById("quizImage");
+              quizImage.style.backgroundImage = bgValue;
+              quizImage.querySelector("div").classList.add("d-none");
+            } else {
+              document.getElementById(id + "Input1").value = fieldValue;
+              if (id === "title") {
+                document.getElementById("quizTitle").textContent = fieldValue;
+              }
+            }
+          }
+        }
+        saveToLocalStorage(inputIDs);
+      }
+
+      function saveToLocalStorage(inputIDs) {
+        for (let id of inputIDs) {
+          const input = document.getElementById(id);
+          let value = "";
+          if (id === "examOnly") {
+            value = input.checked;
+          } else {
+            value = input.value;
+          }
+          localStorage.setItem(quizId + id, value);
+        }
+      }
+
       var imageUrl = /*[[${quiz.imageUrl}]]*/ "";
       (function getQuizImage() {
         if (imageUrl) {
@@ -1059,7 +1110,16 @@
         } else if (questionNum === 0) {
           alert("At least 1 Question in the Quiz before saving!");
         } else if (questionNum > 0) {
-          handleFormSubmitByIdAndMethod("editForm", "put");
+          handleFormSubmitByIdAndMethod(
+            "editForm",
+            function () {
+              alert("Saved successfully!");
+              for (let id of inputIDs) {
+                localStorage.removeItem(quizId + id);
+              }
+            },
+            "put"
+          );
         }
       }
       /*]]>*/

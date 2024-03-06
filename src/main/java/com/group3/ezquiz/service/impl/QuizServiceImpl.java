@@ -1,14 +1,19 @@
 package com.group3.ezquiz.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
@@ -58,6 +63,37 @@ public class QuizServiceImpl implements IQuizService {
     quiz.getQuestions().add(newQuestion);
     quizRepo.save(quiz);
     return quizRepo.save(quiz);
+  }
+
+  @Override
+  public ResponseEntity<?> handleQuizUpdatingRequest(
+      HttpServletRequest request,
+      UUID id,
+      QuizDetailsDto dto) {
+    Quiz quiz = getQuizByRequestAndID(request, id);
+
+    if (quiz.getQuestions().size() == 0) {
+      return new ResponseEntity<>(
+          MessageResponse.builder()
+              .message("The number of questions must be greater than 0!")
+              .timestamp(LocalDateTime.now())
+              .build(),
+          HttpStatus.BAD_REQUEST);
+    }
+
+    quiz.setImageUrl(dto.getImageUrl());
+    quiz.setTitle(dto.getTitle());
+    quiz.setIsExam(dto.getIsExam());
+    quiz.setDescription(dto.getDescription());
+    quiz.setIsDraft(false);
+
+    quizRepo.save(quiz);
+
+    return ResponseEntity.ok(
+        MessageResponse.builder()
+            .message("Saved successfully!")
+            .timestamp(LocalDateTime.now())
+            .build());
   }
 
 }
