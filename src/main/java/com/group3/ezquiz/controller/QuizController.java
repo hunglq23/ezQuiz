@@ -1,16 +1,25 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.service.IQuizService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.BindException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -80,6 +89,34 @@ public class QuizController {
             .message(questionText)
             .timestamp(LocalDateTime.now())
             .build());
+  }
+
+  @PostMapping("{id}/import")
+  public ResponseEntity<?> importData(HttpServletRequest request,
+      @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto) throws BindException {
+    quizService.importQuizDataFromExcel(request, fileDto.getExcelFile(), id);
+
+    return new ResponseEntity<>(
+        MessageResponse.builder()
+            .message("hi")
+            .timestamp(LocalDateTime.now())
+            .build(),
+        HttpStatus.OK);
+  }
+
+  @GetMapping("/download")
+  public ResponseEntity<InputStreamResource> downloadTemplate() throws IOException {
+    ClassPathResource resource = new ClassPathResource("Book3.xlsx");
+    InputStream inputStream = resource.getInputStream();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Book3.xlsx");
+
+    return ResponseEntity
+        .ok()
+        .headers(headers)
+        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+        .body(new InputStreamResource(inputStream));
   }
 
 }

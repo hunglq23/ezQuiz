@@ -213,6 +213,8 @@ function handleFormSubmitByIdAndMethod(formId, onSuccess, method = "post") {
         console.log(resp);
         if (typeof onSuccess === "function") {
           onSuccess();
+        } else {
+          location.reload();
         }
       },
       error: (xhr, status, err) => {

@@ -42,4 +42,8 @@ public class Answer {
     this.text = text;
   }
 
+  public static Answer initFalseAnswer(Question question, String text) {
+    return new Answer(null, question, text, false);
+  }
+
 }

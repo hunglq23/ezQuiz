@@ -1,11 +1,34 @@
 package com.group3.ezquiz.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
+import com.group3.ezquiz.model.Answer;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
@@ -58,6 +81,177 @@ public class QuizServiceImpl implements IQuizService {
     quiz.getQuestions().add(newQuestion);
     quizRepo.save(quiz);
     return quizRepo.save(quiz);
+  }
+
+  @Transactional
+  @Override
+  public void importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id) {
+    Quiz quiz = getQuizByRequestAndID(request, id);
+    try (InputStream inputStream = file.getInputStream()) {
+      Workbook workbook = WorkbookFactory.create(inputStream);
+      Sheet sheet = workbook.getSheetAt(0); // Assuming the quiz data is in the first sheet
+      Iterator<Row> rowIterator = sheet.iterator();
+
+      // Check if there is at least one row
+      if (rowIterator.hasNext()) {
+        rowIterator.next(); // Skip header row
+        rowIterator.next();
+
+        List<Question> questions = quiz.getQuestions();
+
+        // Iterate over each row in the sheet starting from the third row
+        while (rowIterator.hasNext()) {
+          Row row = rowIterator.next();
+          Iterator<Cell> cellIterator = row.cellIterator();
+
+          Question question = new Question();
+          // question.setQuiz(List.of(quiz));
+
+          // Parse question text from the first cell of the row
+          Cell questionCell = cellIterator.next();
+          String questionText = getCellValue(questionCell).trim();
+          question.setText(questionText);
+
+          // Parse question type from the second cell of the row
+          Cell typeCell = cellIterator.next();
+          String questionType = getCellValue(typeCell).trim();
+          question.setType(questionType);
+
+          List<Answer> answers = new ArrayList<>();
+
+          // Skip the cell containing the correct answer(s)
+          cellIterator.next();
+
+          // Parse Answers from the subsequent cells until the end of the row
+          while (cellIterator.hasNext()) {
+            Cell answerCell = cellIterator.next();
+            String answerText = getCellValue(answerCell).trim();
+
+            Answer answer = Answer.initFalseAnswer(question, answerText);
+            answers.add(answer);
+          }
+
+          int countCorrectAnswer = 0;
+
+          // For single choice questions, find the matching Answer for the correct answer
+          // and mark it as correct
+          if (questionType.equalsIgnoreCase("single choice")) {
+            String correctAnswerText = getCellValue(row.getCell(2)).trim();
+            for (Answer answer : answers) {
+              if (answer.getText().equalsIgnoreCase(correctAnswerText)) {
+                answer.setIsCorrect(true);
+                countCorrectAnswer++;
+              }
+            }
+            if (countCorrectAnswer < 1) {
+              throw new InvalidQuestionException("At least 1 answer selected in single choice!");
+            }
+          }
+
+          // For multiple choice questions, parse the correct answer indices and mark the
+          // corresponding Answers as correct
+          else if (questionType.equalsIgnoreCase("multiple choice")) {
+            String correctAnswerText = getCellValue(row.getCell(2)).trim();
+            List<Integer> correctAnswerIndexes = parseCorrectAnswers(correctAnswerText);
+            for (int index : correctAnswerIndexes) {
+              if (index >= 0 && index < answers.size()) {
+                answers.get(index).setIsCorrect(true);
+                countCorrectAnswer++;
+              }
+            }
+            if (countCorrectAnswer < 2) {
+              throw new InvalidQuestionException("At least 2 answer selected in multiple choice!");
+            }
+          }
+
+          question.setAnswers(answers);
+          questions.add(question);
+        }
+
+        quiz.setQuestions(questions);
+
+        quizRepo.save(quiz);
+
+      }
+    } catch (IOException | EncryptedDocumentException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private String getCellValue(Cell cell) {
+    switch (cell.getCellType()) {
+      case STRING:
+        return cell.getStringCellValue();
+      case NUMERIC:
+        return String.valueOf(cell.getNumericCellValue());
+      default:
+        return ""; // Return empty string for other cell types
+    }
+  }
+
+  private List<Integer> parseCorrectAnswers(String correctAnswerText) {
+    List<Integer> correctAnswers = new ArrayList<>();
+    if (correctAnswerText != null && !correctAnswerText.isEmpty()) {
+      String[] indexes = correctAnswerText.split(",");
+      for (String index : indexes) {
+        try {
+          correctAnswers.add(Integer.parseInt(index.trim()) - 1);
+        } catch (NumberFormatException e) {
+          // Handle invalid index
+        }
+      }
+    }
+    return correctAnswers;
+  }
+
+  @Override
+  public ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException {
+    String[] columns = { "Question", "Type", "Correct Answer", "Choice 1", "Choice 2", "Choice 3", "Choice 4",
+        "Choice 5", "Choice 6" };
+
+    try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      Sheet sheet = workbook.createSheet("Quiz Data");
+      Font headerFont = workbook.createFont();
+      headerFont.setBold(true);
+
+      CellStyle headerCellStyle = workbook.createCellStyle();
+      headerCellStyle.setFont(headerFont);
+
+      // Create the header row
+      Row headerRow = sheet.createRow(0);
+      for (int i = 0; i < columns.length; i++) {
+        Cell cell = headerRow.createCell(i);
+        cell.setCellValue(columns[i]);
+        cell.setCellStyle(headerCellStyle);
+      }
+
+      // Fill data rows
+      int rowNum = 1;
+      for (Question question : quiz.getQuestions()) {
+        Row row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue(question.getText());
+        row.createCell(1).setCellValue(question.getType());
+
+        List<Answer> answers = question.getAnswers();
+        int answerNum = 2;
+        for (Answer answer : answers) {
+          Cell answerCell = row.createCell(answerNum++);
+          answerCell.setCellValue(answer.getText());
+          if (answer.getIsCorrect()) {
+            CellStyle correctCellStyle = workbook.createCellStyle();
+            answerCell.setCellStyle(correctCellStyle);
+          }
+        }
+
+        // Fill remaining cells with empty strings
+        for (int i = answerNum; i < columns.length; i++) {
+          row.createCell(i).setCellValue("");
+        }
+      }
+
+      workbook.write(out);
+      return new ByteArrayInputStream(out.toByteArray());
+    }
   }
 
 }

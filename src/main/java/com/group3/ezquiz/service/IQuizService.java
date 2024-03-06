@@ -1,7 +1,11 @@
 package com.group3.ezquiz.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Quiz;
 
@@ -14,5 +18,9 @@ public interface IQuizService {
   Quiz getQuizByRequestAndID(HttpServletRequest request, UUID id);
 
   Quiz handleQuestionCreatingInQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
+
+  void importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
+
+  ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
 
 }
