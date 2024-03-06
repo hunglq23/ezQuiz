@@ -122,10 +122,7 @@
                         maxlength="16"
                       />
                       <h3 id="quizTitle" class="m-0">
-                        <span
-                          th:if="${quiz.title == null}"
-                          class="fw-light"
-                          style="opacity: 0.68"
+                        <span th:if="${quiz.title == null}" class="fw-light"
                           >Untitled Quiz</span
                         >
                         <span
@@ -971,6 +968,21 @@
         }
       }
 
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
+
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
+
       $(document).ready(function () {
         // Gọi hàm khi trang được tải
         delayedSearch();
@@ -1059,7 +1071,13 @@
         } else if (questionNum === 0) {
           alert("At least 1 Question in the Quiz before saving!");
         } else if (questionNum > 0) {
-          handleFormSubmitByIdAndMethod("editForm", "put");
+          handleFormSubmitByIdAndMethod(
+            "editForm",
+            function () {
+              alert("Saved successfully!");
+            },
+            "put"
+          );
         }
       }
       /*]]>*/

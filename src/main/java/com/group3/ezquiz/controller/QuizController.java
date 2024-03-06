@@ -2,9 +2,12 @@ package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.service.IQuizService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.validation.BindException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -80,6 +83,16 @@ public class QuizController {
             .message(questionText)
             .timestamp(LocalDateTime.now())
             .build());
+  }
+
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @PutMapping("/{id}/edit")
+  public ResponseEntity<?> updateQuizDetails(
+      HttpServletRequest request,
+      @PathVariable UUID id,
+      @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
+
+    return quizService.handleQuizUpdatingRequest(request, id, dto);
   }
 
 }
