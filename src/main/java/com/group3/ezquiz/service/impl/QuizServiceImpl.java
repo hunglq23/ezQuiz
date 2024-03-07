@@ -255,7 +255,6 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Transactional
-    @Override
     public void importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id) {
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
@@ -264,21 +263,20 @@ public class QuizServiceImpl implements IQuizService {
 
             // Check if there is at least one row
             if (rowIterator.hasNext()) {
-                Row firstRow = rowIterator.next();
-                // String quizTitle = getCellValue(firstRow.getCell(0)).trim();
+                rowIterator.next(); // Skip header row
+                rowIterator.next();
 
                 QuizUUID quiz = getQuizByRequestAndUUID(request, id);
-                // quiz.setTitle(quizTitle);
 
-                List<Quest> questions = quiz.getQuestions();
+                List<Quest> questions = new ArrayList<>();
 
-                // Iterate over each row in the sheet starting from the second row
+                // Iterate over each row in the sheet starting from the third row
                 while (rowIterator.hasNext()) {
                     Row row = rowIterator.next();
                     Iterator<Cell> cellIterator = row.cellIterator();
 
                     Quest question = new Quest();
-                    question.setQuiz(quiz);
+                    question.setQuiz(List.of(quiz));
 
                     // Parse question text from the first cell of the row
                     Cell questionCell = cellIterator.next();
@@ -290,61 +288,84 @@ public class QuizServiceImpl implements IQuizService {
                     String questionType = getCellValue(typeCell).trim();
                     question.setType(questionType);
 
-                    List<Answer> Answers = new ArrayList<>();
+                    List<Answer> answers = new ArrayList<>();
 
-                    cellIterator.next(); // Skipping the answer cell
+                    // Skip the cell containing the correct answer(s)
+                    cellIterator.next();
 
                     // Parse Answers from the subsequent cells until the end of the row
                     while (cellIterator.hasNext()) {
-                        Cell AnswerCell = cellIterator.next();
-                        String AnswerText = getCellValue(AnswerCell).trim();
+                        Cell answerCell = cellIterator.next();
+                        String answerText = getCellValue(answerCell).trim();
 
-                        Answer Answer = new Answer(AnswerText);
-                        Answer.setQuestion(question);
-                        Answers.add(Answer);
+                        Answer answer = new Answer(answerText);
+                        answer.setQuestion(question);
+                        answers.add(answer);
                     }
 
-                    // Find the matching Answer for the correct answer and mark it as correct
-                    String answerText = getCellValue(row.getCell(2)).trim();
-                    for (Answer Answer : Answers) {
-                        if (Answer.getText().equalsIgnoreCase(answerText)) {
-                            Answer.setIsCorrect(true);
-                        } else {
-                            Answer.setIsCorrect(false);
+                    // For single choice questions, find the matching Answer for the correct answer
+                    // and mark it as correct
+                    if (questionType.equalsIgnoreCase("single choice")) {
+                        String correctAnswerText = getCellValue(row.getCell(2)).trim();
+                        for (Answer answer : answers) {
+                            if (answer.getText().equalsIgnoreCase(correctAnswerText)) {
+                                answer.setIsCorrect(true);
+                            }
+                        }
+                    }
+                    // For multiple choice questions, parse the correct answer indices and mark the
+                    // corresponding Answers as correct
+                    else if (questionType.equalsIgnoreCase("multiple choice")) {
+                        String correctAnswerText = getCellValue(row.getCell(2)).trim();
+                        List<Integer> correctAnswerIndexes = parseCorrectAnswers(correctAnswerText);
+                        for (int index : correctAnswerIndexes) {
+                            if (index >= 0 && index < answers.size()) {
+                                answers.get(index).setIsCorrect(true);
+                            }
                         }
                     }
 
-                    question.setAnswers(Answers);
+                    question.setAnswers(answers);
                     questions.add(question);
                 }
 
                 quiz.setQuestions(questions);
 
-                // Save the quiz object without saving the correct answer as a Answer
                 quizUUIDRepo.save(quiz);
+
             }
         } catch (IOException | EncryptedDocumentException e) {
-            log.error(null, e);
+            e.printStackTrace();
         }
     }
 
-    // Method to get the cell value as a string, handling both string and numeric
-    // cell types
     private String getCellValue(Cell cell) {
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();
             case NUMERIC:
-                // Convert numeric value to string
                 return String.valueOf(cell.getNumericCellValue());
             default:
                 return ""; // Return empty string for other cell types
         }
     }
 
+    private List<Integer> parseCorrectAnswers(String correctAnswerText) {
+        List<Integer> correctAnswers = new ArrayList<>();
+        if (correctAnswerText != null && !correctAnswerText.isEmpty()) {
+            String[] indexes = correctAnswerText.split(",");
+            for (String index : indexes) {
+                try {
+                    correctAnswers.add(Integer.parseInt(index.trim()) - 1);
+                } catch (NumberFormatException e) {
+                    // Handle invalid index
+                }
+            }
+        }
+        return correctAnswers;
+    }
+
     public QuizUUID getQuizById(UUID id) {
-        // Implement the logic to get quiz by its UUID from the repository
-        // For example:
         return quizUUIDRepo.findById(id).orElse(null);
     }
 

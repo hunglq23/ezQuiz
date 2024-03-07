@@ -1,6 +1,7 @@
 package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.RegisterRequest;
 
@@ -8,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 public interface UserService {
   ResponseEntity<?> registerUser(RegisterRequest user);
@@ -26,6 +29,7 @@ public interface UserService {
 
   void delete(Long id);
 
+  List<ObjectDto> getQuizAndClassroomByTeacher(HttpServletRequest request, Boolean sortTime);
   boolean checkEmail(String email);
 
   void updatePassword(String email, String pass);

@@ -317,7 +317,9 @@
                     aria-expanded="false"
                   >
                     <i class="fas fa-sort" style="margin-right: 5px"></i>
-                    <span>Latest</span>
+                    <span th:if="${param.sortOrder==null}">Latest</span>
+                    <span th:unless="${param.sortOrder==null}" th:text="${param.sortOrder}"
+                    style="text-transform: capitalize"></span>
                   </a>
                   <!-- Sort dropdown -->
                   <div
@@ -326,9 +328,8 @@
                     aria-labelledby="sortDropdown"
                     style="min-width: 0; width: 88px"
                   >
-                    <a class="dropdown-item btn btn-sm p-0 px-1"> Latest </a>
-                    <a class="dropdown-item btn btn-sm p-0 px-1"> Earliest </a>
-                    <a class="dropdown-item btn btn-sm p-0 px-1"> A - Z </a>
+                    <a class="dropdown-item btn btn-sm p-0 px-1" href="?sortOrder=latest"> Latest </a>
+                    <a class="dropdown-item btn btn-sm p-0 px-1" href="?sortOrder=oldest"> Oldest </a>
                   </div>
                 </li>
               </ul>
@@ -338,19 +339,26 @@
                 <div
                   class="bg-white p-1 d-flex flex-row gap-1 rounded-1"
                   style="min-width: 678px; height: 188px"
+                  th:each="object: ${object}"
                 >
                   <div class="bg-info h-100 w-25">
                     <img
                       class="h-100"
-                      src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                      alt="Quiz image"
+                      th:src="${object.image}"
                     />
                   </div>
                   <!-- quiz details to the right -->
                   <div class="bg-light d-flex flex-column flex-fill gap-1 p-1">
                     <!-- quiz tag & ellipsis button -->
                     <div class="d-flex align-items-center position-relative">
-                      <div class="bg-white rounded-2 item-tag px-1">quiz</div>
+                      <div class="bg-white rounded-2 item-tag px-1" th:text="${object.type}"></div>
+                      <div
+                              th:if="${object.isDraft}"
+                              class="rounded-2 item-tag px-1"
+                              style="color: rgb(247, 95, 95)"
+                      >
+                        draft
+                      </div>
                       <button
                         class="btn btn-sm bg-white position-absolute"
                         style="right: 10px; top: 8px; padding: 3px 8px 2px 8px"
@@ -359,9 +367,9 @@
                       </button>
                     </div>
                     <!-- quiz title -->
-                    <h6 class="my-0">Quiz Title</h6>
+                    <h6 class="my-0" th:text="${object.name}">Quiz Title</h6>
                     <!-- description -->
-                    <p class="text-small m-0 flex-fill">
+                    <p class="text-small m-0 flex-fill" th:text="${object.description}">
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                     </p>
                     <!-- creator & created-date & button -->
@@ -378,172 +386,16 @@
                             class="fas fa-list h-100"
                             style="opacity: 0.55; margin-right: 3px"
                           ></i>
-                          <span style="margin: 0 3px">99</span>student<span
-                            >s</span
-                          >
+                          <span style="margin: 0 3px" th:text="${object.itemNumber}">99</span><span
+                            th:if="${object.type=='Quiz'}">question(s)</span
+                          > <span th:if="${object.type=='Classroom'}">student(s)</span>
                         </div>
                         <div class="d-flex flex-row align-items-center mx-2">
                           <i
                             class="fas fa-history h-100"
                             style="opacity: 0.55; margin-right: 3px"
                           ></i>
-                          <span style="margin: 0 3px">99</span>
-                          hour<span style="margin-right: 3px">s</span>
-                          ago
-                        </div>
-                      </div>
-
-                      <div>
-                        <button class="btn btn-sm btn-primary m-0 py-0">
-                          Play
-                          <i class="fas fa-caret-down"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Item 2 -->
-                <div
-                  class="bg-white p-1 d-flex flex-row gap-1 rounded-1"
-                  style="min-width: 678px; height: 188px"
-                >
-                  <div class="bg-danger h-100 w-25">
-                    <img
-                      class="h-100"
-                      src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                      alt="Quiz image"
-                    />
-                  </div>
-                  <!-- item details to the right -->
-                  <div class="bg-light d-flex flex-column flex-fill gap-1 p-1">
-                    <!-- item tag & ellipsis button -->
-                    <div class="d-flex align-items-center position-relative">
-                      <div class="bg-white rounded-2 item-tag px-1">
-                        classroom
-                      </div>
-                      <div
-                        class="rounded-2 item-tag px-1"
-                        style="color: rgb(247, 95, 95)"
-                      >
-                        draft
-                      </div>
-                      <button
-                        class="btn btn-sm bg-white position-absolute"
-                        style="right: 10px; top: 8px; padding: 3px 8px 2px 8px"
-                      >
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                      </button>
-                    </div>
-                    <!-- class title -->
-                    <h6 class="my-0">Classroom Title</h6>
-                    <!-- description -->
-                    <p class="text-small m-0 flex-fill">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </p>
-                    <!-- creator & created-date & button -->
-                    <div
-                      class="mt-auto d-flex justify-content-between align-items-center"
-                      style="align-items: center"
-                    >
-                      <div
-                        class="d-flex flex-row align-items-center"
-                        style="font-size: 12px; opacity: 0.88; font-weight: 100"
-                      >
-                        <div class="d-flex flex-row align-items-center">
-                          <i
-                            class="fas fa-list h-100"
-                            style="opacity: 0.55; margin-right: 3px"
-                          ></i>
-                          <span style="margin: 0 3px">99</span>student<span
-                            >s</span
-                          >
-                        </div>
-                        <div class="d-flex flex-row align-items-center mx-2">
-                          <i
-                            class="fas fa-history h-100"
-                            style="opacity: 0.55; margin-right: 3px"
-                          ></i>
-                          <span style="margin: 0 3px">99</span>
-                          hour<span style="margin-right: 3px">s</span>
-                          ago
-                        </div>
-                      </div>
-
-                      <div>
-                        <button class="btn btn-sm btn-primary m-0 py-0">
-                          Play
-                          <i class="fas fa-caret-down"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Item 3 -->
-                <div
-                  class="bg-white p-1 d-flex flex-row gap-1 rounded-1"
-                  style="min-width: 678px; height: 188px"
-                >
-                  <div class="bg-success h-100 w-25">
-                    <img
-                      class="h-100"
-                      src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"
-                      alt="Quiz image"
-                    />
-                  </div>
-                  <!-- quiz details to the right -->
-                  <div class="bg-light d-flex flex-column flex-fill gap-1 p-1">
-                    <!-- quiz tag & ellipsis button -->
-                    <div class="d-flex align-items-center position-relative">
-                      <div class="bg-white rounded-2 item-tag px-1">
-                        classroom
-                      </div>
-                      <div
-                        class="rounded-2 item-tag px-1"
-                        style="color: rgb(247, 95, 95)"
-                      >
-                        draft
-                      </div>
-                      <button
-                        class="btn btn-sm bg-white position-absolute"
-                        style="right: 10px; top: 8px; padding: 3px 8px 2px 8px"
-                      >
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                      </button>
-                    </div>
-                    <!-- class title -->
-                    <h6 class="my-0">Classroom Title</h6>
-                    <!-- description -->
-                    <p class="text-small m-0 flex-fill">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </p>
-                    <!-- creator & created-date & button -->
-                    <div
-                      class="mt-auto d-flex justify-content-between align-items-center"
-                      style="align-items: center"
-                    >
-                      <div
-                        class="d-flex flex-row align-items-center"
-                        style="font-size: 12px; opacity: 0.88; font-weight: 100"
-                      >
-                        <div class="d-flex flex-row align-items-center">
-                          <i
-                            class="fas fa-list h-100"
-                            style="opacity: 0.55; margin-right: 3px"
-                          ></i>
-                          <span style="margin: 0 3px">99</span>student<span
-                            >s</span
-                          >
-                        </div>
-                        <div class="d-flex flex-row align-items-center mx-2">
-                          <i
-                            class="fas fa-history h-100"
-                            style="opacity: 0.55; margin-right: 3px"
-                          ></i>
-                          <span style="margin: 0 3px">99</span>
-                          hour<span style="margin-right: 3px">s</span>
-                          ago
+                          <span style="margin: 0 3px" th:text="${object.timeString}">99</span>
                         </div>
                       </div>
 
