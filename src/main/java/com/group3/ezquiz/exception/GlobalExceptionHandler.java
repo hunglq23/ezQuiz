@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -18,13 +19,15 @@ import org.springframework.web.context.request.WebRequest;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
-  public String handleResourceNotFoundException() {
+  public String handleResourceNotFoundException(
+      ResourceNotFoundException exception, Model model) {
+    model.addAttribute("message", exception.getMessage());
     return "error/404";
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public String handleMissingServletRequestParameterException() {
-    return "error/404";
+    return "error";
   }
 
   @ExceptionHandler(BindException.class)
