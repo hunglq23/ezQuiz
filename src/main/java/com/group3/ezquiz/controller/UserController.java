@@ -7,6 +7,7 @@ import com.group3.ezquiz.service.impl.QuizServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserController {
 
+  private final PasswordEncoder passwordEncoder;
   private final UserService userService;
   private final QuizServiceImpl quizService;
 
@@ -61,12 +63,12 @@ public class UserController {
     return "library";
   }
 
-  // @GetMapping("/profile")
-  // public String getProfile(HttpServletRequest http, Model model) {
-  // User userRequesting = userService.getUserRequesting(http);
-  // model.addAttribute("user", userRequesting);
-  // return "profile";
-  // }
+   @GetMapping("/profile")
+   public String getProfilePage(HttpServletRequest http, Model model) {
+   User userRequesting = userService.getUserRequesting(http);
+   model.addAttribute("user", userRequesting);
+   return "profile";
+   }
 
   @GetMapping("/admin/list")
   public String userManagement(HttpServletRequest http, Model model,
@@ -146,5 +148,23 @@ public class UserController {
       @PathVariable(name = "id") Long id) {
     userService.delete(id);
     return "redirect:/admin/list";
+  }
+
+  @PostMapping ("/user/update-password")
+  public String updatePass( HttpServletRequest http, Model model,
+                           @Valid @ModelAttribute("oldPass") String oldPass,
+                           @Valid @ModelAttribute("newPass") String newPass,
+                           @Valid @ModelAttribute("reNewPass") String reNewPass, RedirectAttributes redirectAttributes) {
+    User userRequesting = userService.getUserRequesting(http);
+    boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
+    model.addAttribute("user", userRequesting);
+    String successMessage = "updated fail!";
+    if(isPasswordCorrect && newPass.equals(reNewPass)) {
+      userService.updatePassword(userRequesting.getEmail(), newPass);
+      model.addAttribute("message", "success");
+      successMessage = "updated successfully!";
+    }
+    redirectAttributes.addFlashAttribute("successMessage", successMessage);
+    return "redirect:/profile";
   }
 }
