@@ -25,6 +25,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
@@ -43,6 +45,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements IQuizService {
+
+  private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final QuizRepo quizRepo;
   private final IQuestionService questionService;
@@ -85,8 +89,11 @@ public class QuizServiceImpl implements IQuizService {
 
   @Transactional
   @Override
-  public void importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id) {
+  public List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile file, UUID id) {
     Quiz quiz = getQuizByRequestAndID(request, id);
+
+    List<Question> errorQuestions = new ArrayList<>();
+
     try (InputStream inputStream = file.getInputStream()) {
       Workbook workbook = WorkbookFactory.create(inputStream);
       Sheet sheet = workbook.getSheetAt(0); // Assuming the quiz data is in the first sheet
@@ -101,20 +108,26 @@ public class QuizServiceImpl implements IQuizService {
 
         // Iterate over each row in the sheet starting from the third row
         while (rowIterator.hasNext()) {
+          boolean validQuestion = true;
           Row row = rowIterator.next();
           Iterator<Cell> cellIterator = row.cellIterator();
-
-          Question question = new Question();
-          // question.setQuiz(List.of(quiz));
 
           // Parse question text from the first cell of the row
           Cell questionCell = cellIterator.next();
           String questionText = getCellValue(questionCell).trim();
-          question.setText(questionText);
+          if (questionText.length() > 512) { // validtion question text max length
+            validQuestion = false;
+          }
+          Question question = Question.builder()
+              .text(questionText)
+              .build();
 
           // Parse question type from the second cell of the row
           Cell typeCell = cellIterator.next();
           String questionType = getCellValue(typeCell).trim();
+          if (!List.of("Single Choice", "Multiple Choice").contains(questionType)) {
+            validQuestion = false;
+          }
           question.setType(questionType);
 
           List<Answer> answers = new ArrayList<>();
@@ -126,42 +139,46 @@ public class QuizServiceImpl implements IQuizService {
           while (cellIterator.hasNext()) {
             Cell answerCell = cellIterator.next();
             String answerText = getCellValue(answerCell).trim();
+            if (answerText.length() > 512) {
+              validQuestion = false;
+            }
 
             Answer answer = Answer.initFalseAnswer(question, answerText);
             answers.add(answer);
           }
 
-          int countCorrectAnswer = 0;
+          String correctAnswerText = getCellValue(row.getCell(2)).trim();
+          List<Integer> correctAnswerIndexes = parseCorrectAnswers(correctAnswerText);
+          int countCorrectAnswer = correctAnswerIndexes.size();
 
           // For single choice questions, find the matching Answer for the correct answer
           // and mark it as correct
           if (questionType.equalsIgnoreCase("single choice")) {
-            String correctAnswerText = getCellValue(row.getCell(2)).trim();
+            if (countCorrectAnswer < 1 || countCorrectAnswer >= 2) {
+              // throw new InvalidQuestionException("Only 1 answer selected choice!");
+              validQuestion = false;
+            }
             for (Answer answer : answers) {
               if (answer.getText().equalsIgnoreCase(correctAnswerText)) {
                 answer.setIsCorrect(true);
-                countCorrectAnswer++;
               }
             }
-            if (countCorrectAnswer < 1) {
-              throw new InvalidQuestionException("At least 1 answer selected in single choice!");
-            }
+
           }
 
           // For multiple choice questions, parse the correct answer indices and mark the
           // corresponding Answers as correct
           else if (questionType.equalsIgnoreCase("multiple choice")) {
-            String correctAnswerText = getCellValue(row.getCell(2)).trim();
-            List<Integer> correctAnswerIndexes = parseCorrectAnswers(correctAnswerText);
+            if (countCorrectAnswer < 2) {
+              // throw new InvalidQuestionException("At least 2 answer selected!");
+              validQuestion = false;
+            }
             for (int index : correctAnswerIndexes) {
               if (index >= 0 && index < answers.size()) {
                 answers.get(index).setIsCorrect(true);
-                countCorrectAnswer++;
               }
             }
-            if (countCorrectAnswer < 2) {
-              throw new InvalidQuestionException("At least 2 answer selected in multiple choice!");
-            }
+
           }
 
           question.setAnswers(answers);
@@ -176,6 +193,8 @@ public class QuizServiceImpl implements IQuizService {
     } catch (IOException | EncryptedDocumentException e) {
       e.printStackTrace();
     }
+
+    return errorQuestions;
   }
 
   private String getCellValue(Cell cell) {
@@ -194,10 +213,16 @@ public class QuizServiceImpl implements IQuizService {
     if (correctAnswerText != null && !correctAnswerText.isEmpty()) {
       String[] indexes = correctAnswerText.split(",");
       for (String index : indexes) {
+        int answerIndex = -69;
         try {
-          correctAnswers.add(Integer.parseInt(index.trim()) - 1);
+          answerIndex = Integer.parseInt(index.trim()) - 1;
+          if (answerIndex > 0 && answerIndex < 7) {
+            correctAnswers.add(answerIndex);
+          }
+          throw new NumberFormatException();
+
         } catch (NumberFormatException e) {
-          // Handle invalid index
+          log.error("Invalid correct ans column: " + answerIndex);
         }
       }
     }

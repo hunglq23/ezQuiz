@@ -1,5 +1,6 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.BindException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -92,16 +94,15 @@ public class QuizController {
   }
 
   @PostMapping("{id}/import")
-  public ResponseEntity<?> importData(HttpServletRequest request,
-      @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto) throws BindException {
-    quizService.importQuizDataFromExcel(request, fileDto.getExcelFile(), id);
-
-    return new ResponseEntity<>(
-        MessageResponse.builder()
-            .message("hi")
-            .timestamp(LocalDateTime.now())
-            .build(),
-        HttpStatus.OK);
+  public String importData(HttpServletRequest request,
+      @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto, Model model) throws BindException {
+    Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    List<Question> errorQuestions = quizService.importQuizDataFromExcel(request, fileDto.getExcelFile(), id);
+    model.addAttribute("quiz", quiz);
+    if (errorQuestions.size() > 0) {
+      model.addAttribute("errorQuestions", errorQuestions);
+    }
+    return "quiz/quiz-editing";
   }
 
   @GetMapping("/download")
