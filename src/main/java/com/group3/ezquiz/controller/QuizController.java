@@ -5,6 +5,7 @@ import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.service.IQuizService;
+import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
+
+  private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
   // private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
@@ -101,6 +106,9 @@ public class QuizController {
     model.addAttribute("quiz", quiz);
     if (errorQuestions.size() > 0) {
       model.addAttribute("errorQuestions", errorQuestions);
+      for (Question errorQuestion : errorQuestions) {
+        log.info(errorQuestion.getText());
+      }
     }
     return "quiz/quiz-editing";
   }

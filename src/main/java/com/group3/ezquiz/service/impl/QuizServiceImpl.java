@@ -5,9 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -40,6 +42,8 @@ import com.group3.ezquiz.service.IUserService;
 import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -116,6 +120,7 @@ public class QuizServiceImpl implements IQuizService {
           Cell questionCell = cellIterator.next();
           String questionText = getCellValue(questionCell).trim();
           if (questionText.length() > 512) { // validtion question text max length
+            log.error("> 512");
             validQuestion = false;
           }
           Question question = Question.builder()
@@ -127,66 +132,74 @@ public class QuizServiceImpl implements IQuizService {
           String questionType = getCellValue(typeCell).trim();
           if (!List.of("Single Choice", "Multiple Choice").contains(questionType)) {
             validQuestion = false;
+            log.error("type " + questionType);
+
           }
           question.setType(questionType);
 
           List<Answer> answers = new ArrayList<>();
 
-          // Skip the cell containing the correct answer(s)
+          String correctAnswerText = getCellValue(row.getCell(2)).trim();
+          Set<Integer> correctAnswerIndexes = parseCorrectAnswers(correctAnswerText);
+          if (correctAnswerIndexes.contains(-1)) {
+            validQuestion = false;
+          }
+
+          int currentAnswerIndex = 0;
+
           cellIterator.next();
 
           // Parse Answers from the subsequent cells until the end of the row
           while (cellIterator.hasNext()) {
             Cell answerCell = cellIterator.next();
             String answerText = getCellValue(answerCell).trim();
-            if (answerText.length() > 512) {
+            if (answerText.isEmpty() || answerText.length() > 512) { // invalid answer text
               validQuestion = false;
+              log.error("> 512 ANS");
+            } else { // valid answer text
+              currentAnswerIndex++;
             }
 
             Answer answer = Answer.initFalseAnswer(question, answerText);
+            if (correctAnswerIndexes.contains(currentAnswerIndex)) {
+              answer.setIsCorrect(true);
+            }
             answers.add(answer);
           }
 
-          String correctAnswerText = getCellValue(row.getCell(2)).trim();
-          List<Integer> correctAnswerIndexes = parseCorrectAnswers(correctAnswerText);
           int countCorrectAnswer = correctAnswerIndexes.size();
 
           // For single choice questions, find the matching Answer for the correct answer
           // and mark it as correct
           if (questionType.equalsIgnoreCase("single choice")) {
-            if (countCorrectAnswer < 1 || countCorrectAnswer >= 2) {
-              // throw new InvalidQuestionException("Only 1 answer selected choice!");
+            if (countCorrectAnswer != 1) {
               validQuestion = false;
-            }
-            for (Answer answer : answers) {
-              if (answer.getText().equalsIgnoreCase(correctAnswerText)) {
-                answer.setIsCorrect(true);
-              }
-            }
+              log.error("single != 1");
 
+            }
           }
 
           // For multiple choice questions, parse the correct answer indices and mark the
           // corresponding Answers as correct
           else if (questionType.equalsIgnoreCase("multiple choice")) {
             if (countCorrectAnswer < 2) {
-              // throw new InvalidQuestionException("At least 2 answer selected!");
               validQuestion = false;
+              log.error(" MTP < 2");
             }
-            for (int index : correctAnswerIndexes) {
-              if (index >= 0 && index < answers.size()) {
-                answers.get(index).setIsCorrect(true);
-              }
-            }
-
           }
 
           question.setAnswers(answers);
+          if (!validQuestion) {
+            errorQuestions.add(question);
+          }
           questions.add(question);
+
         }
 
         quiz.setQuestions(questions);
-
+        for (Question errorQuestion : errorQuestions) {
+          log.info(errorQuestion.getText());
+        }
         quizRepo.save(quiz);
 
       }
@@ -208,24 +221,21 @@ public class QuizServiceImpl implements IQuizService {
     }
   }
 
-  private List<Integer> parseCorrectAnswers(String correctAnswerText) {
-    List<Integer> correctAnswers = new ArrayList<>();
-    if (correctAnswerText != null && !correctAnswerText.isEmpty()) {
-      String[] indexes = correctAnswerText.split(",");
-      for (String index : indexes) {
-        int answerIndex = -69;
-        try {
-          answerIndex = Integer.parseInt(index.trim()) - 1;
-          if (answerIndex > 0 && answerIndex < 7) {
-            correctAnswers.add(answerIndex);
-          }
-          throw new NumberFormatException();
-
-        } catch (NumberFormatException e) {
-          log.error("Invalid correct ans column: " + answerIndex);
-        }
+  private Set<Integer> parseCorrectAnswers(@NotNull @NotBlank String correctAnswerText) throws NumberFormatException {
+    log.info("cat " + correctAnswerText);
+    Set<Integer> correctAnswers = new HashSet<>();
+    String[] indexes = correctAnswerText.split(",");
+    log.info("list " + indexes.toString());
+    for (String index : indexes) {
+      log.info("Parsing " + index);
+      int answerIndex = (int) Float.parseFloat(index);
+      if (answerIndex != (float) Float.parseFloat(index) || answerIndex < 1 || answerIndex > 6) {
+        answerIndex = -1;
       }
+      correctAnswers.add(answerIndex);
+
     }
+
     return correctAnswers;
   }
 
