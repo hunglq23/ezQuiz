@@ -1,12 +1,10 @@
 
 package com.group3.ezquiz.model;
 
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
-
 import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,18 +36,17 @@ public class Classroom {
     private Long id;
 
     // unique
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 8, unique = true)
     private String code;
 
-    @Column(nullable = false, length = 100)
-    private String className;
+    @Column(nullable = false, length = 64)
+    private String name;
 
     @Column(nullable = false)
     private Boolean isEnable;
 
+    @Column( length = 128)
     private String description;
-
-    private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
@@ -60,10 +57,12 @@ public class Classroom {
     private User creator;
 
     @ManyToMany
-    @JoinTable(name = "class_joining", joinColumns = {
+    @JoinTable(name = "class_joining", 
+    joinColumns = {
             @JoinColumn(name = "class_id", referencedColumnName = "id")
-    }, inverseJoinColumns = {
+    }, 
+    inverseJoinColumns = {
             @JoinColumn(name = "user_id", referencedColumnName = "id")
     })
-    private Set<User> members;
+    private List<User> members;
 }
