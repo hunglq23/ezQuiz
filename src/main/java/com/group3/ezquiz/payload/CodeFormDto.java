@@ -1,0 +1,14 @@
+package com.group3.ezquiz.payload;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CodeFormDto {
+    private String code;
+}
