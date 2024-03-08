@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -66,7 +67,7 @@ public class User {
 
   @ManyToMany
   @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
-  private Set<Classroom> classrooms;
+  private List<Classroom> classrooms;
 
   public Boolean isLearner() {
     return role == Role.LEARNER;
