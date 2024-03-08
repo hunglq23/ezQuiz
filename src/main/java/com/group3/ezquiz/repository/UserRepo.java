@@ -21,4 +21,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
       " AND (:status IS NULL OR u.isEnable = :status)")
   Page<User> getAllUser(String email, String name, Boolean status, Pageable page);
 
+  User findUserById(Long memberId);
+
 }
