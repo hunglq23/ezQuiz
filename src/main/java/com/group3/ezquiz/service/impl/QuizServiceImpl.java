@@ -191,15 +191,13 @@ public class QuizServiceImpl implements IQuizService {
           question.setAnswers(answers);
           if (!validQuestion) {
             errorQuestions.add(question);
+          } else {
+            questions.add(question);
           }
-          questions.add(question);
 
         }
 
         quiz.setQuestions(questions);
-        for (Question errorQuestion : errorQuestions) {
-          log.info(errorQuestion.getText());
-        }
         quizRepo.save(quiz);
 
       }

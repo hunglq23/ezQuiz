@@ -163,25 +163,68 @@
                 question<span th:if="${quiz.questions.size() > 1}">s</span>
               </strong>
               <div class="text-danger" th:if="${errorQuestions != null}">Some questions are invalid!
-                <button class="btn btn-sm text-danger" onclick="openErrorModal()">
+                <button class="btn btn-sm text-danger" onclick="openErrorModal()">>
                   <u>Details</u>
                 </button>
               </div>
-              <!-- Modal -->
-              <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="errorModalLabel">Invalid Questions</h5>
+              <!-- Off-canvas -->
+              <div class="offcanvas offcanvas-end" style="width: 30%; min-width: 208px" tabindex="-1"
+                id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                  <h5 class="offcanvas-title" id="offcanvasRightLabel">Error Questions</h5>
+                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-bod flex-column">
+                  <!-- List of error questions -->
+                  <div th:each="question, iStat : ${errorQuestions}" th:id="${'question' + (iStat.index + 1)}"
+                    class="card mt-0">
+                    <div class="card-header bg-white">
+                      <!-- question number to the left-->
+                      <div class="qcard-number mx-2">
+                        <i class="far fa-check-square mx-1"></i>
+                        Error Question <span th:text="${iStat.index + 1}">1</span>
+                      </div>
+                      <!-- edit, delete,... to the right -->
+                      <div class="d-flex">
+                        <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"><i class="fas fa-edit mx-1"></i> Edit
+                          <span class="d-md-none d-lg-inline">this question</span>
+                        </a>
+                        <div style="border-left: 1px solid #e8e8e8"></div>
+                        <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"><i class="fas fa-trash mx-1"></i></a>
+                      </div>
                     </div>
-                    <div class="modal-body">
-                      <ul th:if="${errorQuestions != null}">
-                        <li th:each="errorQuestion : ${errorQuestions}" th:text="${errorQuestion.text}"></li>
-                      </ul>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-danger" onclick="closeErrorModal()">Close</button>
+                    <div class="card-body px-3 pb-1 pt-2">
+                      <div style="min-height: 123px">
+                        <p th:text="${question.text}" class="card-text mx-2"></p>
+                      </div>
+
+                      <div class="divider answer-divider mb-1">
+                        <div style="color: #999">
+                          <span th:if="${question.type.equals('single-choice')}">
+                            Single Choice
+                          </span>
+                          <span th:if="${question.type.equals('multiple-choice')}">
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div th:each="answer : ${question.answers}" class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                          <div class="px-0 d-flex align-items-start">
+                            <div th:if="${answer.isCorrect}">
+                              <span style="color: green">&#10003;</span>&nbsp;&nbsp;
+                            </div>
+                            <div th:unless="${answer.isCorrect}">
+                              <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
+                            </div>
+                            <div style="white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            width: 188px;" th:text="${answer.text}" class="text-secondary fw-bold"></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -754,18 +797,11 @@
     }
     /*]]>*/
   </script>
-  <script th:inline="javascript">
-    /*<![CDATA[*/
-
+  <script>
     function openErrorModal() {
-      $('#errorModal').modal('show');
+      var offcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasRight'));
+      offcanvas.show();
     }
-
-    function closeErrorModal() {
-      $('#errorModal').modal('hide');
-    }
-
-    /*]]>*/
   </script>
 </body>
 
