@@ -3,6 +3,7 @@ package com.group3.ezquiz.controller;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
+import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.service.IQuizService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class QuizController {
 
   private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
-  // private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
+  private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
 
   private final IQuizService quizService;
 
@@ -93,6 +94,30 @@ public class QuizController {
       @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
 
     return quizService.handleQuizUpdatingRequest(request, id, dto);
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @GetMapping("/{id}/play")
+  public String takeQuizByLearner(
+      @PathVariable UUID id,
+      Model model) {
+    QuizToLearner toLearner = quizService.getQuizByLearnerForQuizTaking(id);
+    model.addAttribute("quiz", toLearner);
+    return "quiz/quiz-taking";
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @PostMapping("/{quizId}/check-answer")
+  public ResponseEntity<?> checkQuestionAnswers(
+      @PathVariable UUID quizId,
+      @RequestParam Long questId,
+      @RequestParam String questIndex,
+      @RequestParam Map<String, String> params) {
+
+    params.remove("questId");
+    params.remove("questIndex");
+
+    return quizService.handleAnswersChecking(quizId, questId, questIndex, params);
   }
 
 }

@@ -1,18 +1,25 @@
 package com.group3.ezquiz.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.exception.InvalidQuestionException;
+import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Answer;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.question.CorrectQuestion;
+import com.group3.ezquiz.payload.question.IncorrectQuestion;
 import com.group3.ezquiz.repository.QuestionRepo;
 import com.group3.ezquiz.service.IQuestionService;
 
@@ -39,6 +46,7 @@ public class QuestionServiceImpl implements IQuestionService {
         .creator(quiz.getCreator())
         .isActive(true)
         .isPublic(true)
+        .quizList(new ArrayList<>(List.of(quiz)))
         .build();
 
     List<Answer> answers = mapParamsToAnswers(params, question, type);
@@ -55,7 +63,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     Boolean ansValue = false;
     // iterate through the map of all the answer
-    for (Map.Entry<String, String> entry : params.entrySet()) {
+    for (Entry<String, String> entry : params.entrySet()) {
       String key = entry.getKey();
       if (key.startsWith("ans")) {
         if (key.endsWith("Value")) {
@@ -86,4 +94,56 @@ public class QuestionServiceImpl implements IQuestionService {
     return answers;
   }
 
+  @Override
+  public Integer getTrueOrFalseAnswerNumberInQuestion(Long questId, Boolean findValue) {
+
+    return questionRepo.findTrueOfFlaseAnswerNumberInQuestion(questId, findValue);
+  }
+
+  @Override
+  public Question getByIdAndQuiz(Long questId, Quiz quiz) {
+
+    return questionRepo
+        .findByIdAndQuizList_Id(questId, quiz.getId())
+        .orElseThrow(
+            () -> new ResourceNotFoundException(
+                "Not found question ID (" + questId +
+                    ") in quiz ID: " + quiz.getId()));
+  }
+
+  @Override
+  public ResponseEntity<?> checkQuestionAnswers(
+      Long questionId,
+      Map<String, String> uncheckAnswers,
+      String questIndex) {
+
+    Boolean allAnswerCorrect = true;
+    IncorrectQuestion incorrectQuestion = new IncorrectQuestion(questIndex, new HashMap<>());
+
+    for (Entry<String, String> ansEntry : uncheckAnswers.entrySet()) {
+      if (questionRepo
+          .findByIdAndAnswers_IdAndAnswers_IsCorrect(
+              questionId,
+              Long.parseLong(ansEntry.getKey()),
+              Boolean.parseBoolean(ansEntry.getValue()))
+          .isPresent() == false) {
+
+        incorrectQuestion.getAnswers().put(ansEntry.getKey(), false);
+        allAnswerCorrect = false;
+      } else {
+        incorrectQuestion.getAnswers().put(ansEntry.getKey(), true);
+      }
+    }
+
+    if (allAnswerCorrect) {
+      return ResponseEntity.ok(
+          CorrectQuestion.builder()
+              .message("All the answers in question are correct!")
+              .questIndex(questIndex)
+              .timestamp(LocalDateTime.now())
+              .build());
+    }
+
+    return new ResponseEntity<>(incorrectQuestion, HttpStatus.BAD_REQUEST);
+  }
 }

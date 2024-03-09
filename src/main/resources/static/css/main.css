@@ -283,18 +283,20 @@ footer a:not(.nav-link) {
   color: #fff;
 }
 
-/* Login and Register */
+.btn:focus {
+  box-shadow: none;
+}
+
+/* LOGIN & REGISTER PAGE */
 form i {
   margin-left: -30px;
   cursor: pointer;
 }
-
 .divider {
   font-size: 15px;
   display: flex;
   align-items: center;
 }
-
 .divider::before,
 .divider::after {
   flex: 1;
@@ -304,7 +306,6 @@ form i {
   margin: 5px;
 }
 
-/* LOGIN & REGISTER PAGE */
 .login-input-custom {
   display: flex;
   align-items: center;

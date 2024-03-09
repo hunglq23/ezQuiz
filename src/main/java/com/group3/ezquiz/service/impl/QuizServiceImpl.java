@@ -1,6 +1,9 @@
 package com.group3.ezquiz.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -8,12 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
+import com.group3.ezquiz.model.Answer;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.QuestionToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
+import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
@@ -94,6 +101,57 @@ public class QuizServiceImpl implements IQuizService {
             .message("Saved successfully!")
             .timestamp(LocalDateTime.now())
             .build());
+  }
+
+  @Override
+  public QuizToLearner getQuizByLearnerForQuizTaking(UUID id) {
+    Quiz quizById = getQuizById(id);
+
+    List<QuestionToLearner> questions = new ArrayList<>();
+
+    Map<Long, String> answers;
+    for (Question quest : quizById.getQuestions()) {
+      answers = new HashMap<>();
+      for (Answer answer : quest.getAnswers()) {
+        answers.put(answer.getId(), answer.getText());
+      }
+
+      questions.add(
+          QuestionToLearner.builder()
+              .id(quest.getId())
+              .text(quest.getText())
+              .answers(answers)
+              .numberOfCorrect(questionService
+                  .getTrueOrFalseAnswerNumberInQuestion(quest.getId(), true))
+              .build());
+    }
+
+    return QuizToLearner.builder()
+        .id(quizById.getId())
+        .title(quizById.getTitle())
+        .questions(questions)
+        .build();
+  }
+
+  @Override
+  public ResponseEntity<?> handleAnswersChecking(
+      UUID quizId,
+      Long questId,
+      String questIndex,
+      Map<String, String> params) {
+    Quiz quiz = getQuizById(quizId);
+    Question uncheck = questionService.getByIdAndQuiz(questId, quiz);
+    if (uncheck.getAnswers().size() != params.size()) {
+      throw new InvalidQuestionException("Number of submited answers was wrong!");
+    }
+    return questionService
+        .checkQuestionAnswers(uncheck.getId(), params, questIndex);
+  }
+
+  private Quiz getQuizById(UUID id) {
+    return quizRepo.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Not found quiz by ID " + id));
   }
 
 }
