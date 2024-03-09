@@ -185,13 +185,9 @@
                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                     Change Password
                   </a>
-                  <a
-                    sec:authorize="hasRole('ROLE_ADMIN')"
-                    class="dropdown-item"
-                    th:href="@{/admin/list}"
-                  >
+                  <a class="dropdown-item" th:href="@{/admin/list}">
                     <i
-                      class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"
+                            class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"
                     ></i>
                     User Management
                   </a>

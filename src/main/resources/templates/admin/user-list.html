@@ -17,11 +17,11 @@
     <!-- Bootstrap 5 CSS -->
     <link th:href="@{../vendor/bootstrap/bootstrap.min.css}" rel="stylesheet"/>
     <!-- Customize CSS -->
-    <link href="css/main.css" th:href="@{css/main.css}" rel="stylesheet" />
+    <link href="../css/main.css" th:href="@{css/main.css}" rel="stylesheet" />
     <!-- Customize CSS -->
-    <link th:href="@{css/main.css}" rel="stylesheet" />
-    <link th:href="@{css/profile-menu.css}" rel="stylesheet" />
-    <link th:href="@{css/user-profile.css}" rel="stylesheet" />
+    <link th:href="@{../css/main.css}" rel="stylesheet" />
+    <link th:href="@{../css/profile-menu.css}" rel="stylesheet" />
+    <link th:href="@{../css/user-profile.css}" rel="stylesheet" />
 
     <!-- Include Font Awesome -->
     <script
@@ -92,19 +92,19 @@
             <div>
                 <ul class="pagination">
                     <li class="page-item" th:class="${currentPage == 0} ? 'disabled' : ''">
-                        <a class="page-link" th:href="@{/list(page=0,email=${search})}">First</a>
+                        <a class="page-link" th:href="@{/admin/list(page=0,email=${search})}">First</a>
                     </li>
                     <li class="page-item" th:class="${currentPage == 0} ? 'disabled' : ''">
-                        <a class="page-link" th:href="@{/list(page=${currentPage - 1},email=${search})}">Previous</a>
+                        <a class="page-link" th:href="@{/admin/list(page=${currentPage - 1},email=${search})}">Previous</a>
                     </li>
                     <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, totalPages -1)}" th:class="${pageNumber == currentPage} ? 'active' : ''">
-                        <a class="page-link" th:href="@{/list(page=${pageNumber},email=${search})}" th:text="${pageNumber + 1}"></a>
+                        <a class="page-link" th:href="@{/admin/list(page=${pageNumber},email=${search})}" th:text="${pageNumber + 1}"></a>
                     </li>
                     <li class="page-item" th:class="${currentPage == totalPages - 1} ? 'disabled' : ''">
-                        <a class="page-link" th:href="@{/list(page=${currentPage + 1},email=${search})}">Next</a>
+                        <a class="page-link" th:href="@{/admin/list(page=${currentPage + 1},email=${search})}">Next</a>
                     </li>
                     <li class="page-item" th:class="${currentPage == totalPages - 1} ? 'disabled' : ''">
-                        <a class="page-link" th:href="@{/list(page=${totalPages - 1},email=${search})}">Last</a>
+                        <a class="page-link" th:href="@{/admin/list(page=${totalPages - 1},email=${search})}">Last</a>
                     </li>
                 </ul>
             </div>
