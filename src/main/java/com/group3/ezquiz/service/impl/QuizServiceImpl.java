@@ -150,6 +150,7 @@ public class QuizServiceImpl implements IQuizService {
           cellIterator.next();
 
           // Parse Answers from the subsequent cells until the end of the row
+          boolean hasAnswer = false; // Đánh dấu khi có ít nhất một câu trả lời không rỗng
           while (cellIterator.hasNext()) {
             Cell answerCell = cellIterator.next();
             String answerText = getCellValue(answerCell).trim();
@@ -158,6 +159,7 @@ public class QuizServiceImpl implements IQuizService {
               log.error("> 512 ANS");
             } else { // valid answer text
               currentAnswerIndex++;
+              hasAnswer = true;
             }
 
             Answer answer = Answer.initFalseAnswer(question, answerText);
@@ -165,6 +167,11 @@ public class QuizServiceImpl implements IQuizService {
               answer.setIsCorrect(true);
             }
             answers.add(answer);
+          }
+
+          if (!hasAnswer) {
+            validQuestion = false;
+            log.error("Question has no answers");
           }
 
           int countCorrectAnswer = correctAnswerIndexes.size();
@@ -191,15 +198,13 @@ public class QuizServiceImpl implements IQuizService {
           question.setAnswers(answers);
           if (!validQuestion) {
             errorQuestions.add(question);
+          } else {
+            questions.add(question);
           }
-          questions.add(question);
 
         }
 
         quiz.setQuestions(questions);
-        for (Question errorQuestion : errorQuestions) {
-          log.info(errorQuestion.getText());
-        }
         quizRepo.save(quiz);
 
       }
