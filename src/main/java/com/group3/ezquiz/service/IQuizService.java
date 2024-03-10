@@ -1,10 +1,16 @@
 package com.group3.ezquiz.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
@@ -25,5 +31,9 @@ public interface IQuizService {
   QuizToLearner getQuizByLearnerForQuizTaking(UUID id);
 
   ResponseEntity<?> handleAnswersChecking(UUID quizId, Long questId, String questIndex, Map<String, String> params);
+
+  List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
+
+  ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
 
 }

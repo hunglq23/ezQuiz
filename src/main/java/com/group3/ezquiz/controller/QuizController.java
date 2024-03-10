@@ -1,30 +1,44 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.service.IQuizService;
+import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
+
+  private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
   private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
@@ -118,6 +132,38 @@ public class QuizController {
     params.remove("questIndex");
 
     return quizService.handleAnswersChecking(quizId, questId, questIndex, params);
+  }
+
+  @PostMapping("{id}/import")
+  public String importData(HttpServletRequest request,
+      @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto, Model model)
+      throws BindException {
+    Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    List<Question> errorQuestions = quizService.importQuizDataFromExcel(request,
+        fileDto.getExcelFile(), id);
+    model.addAttribute("quiz", quiz);
+    if (errorQuestions.size() > 0) {
+      model.addAttribute("errorQuestions", errorQuestions);
+      for (Question errorQuestion : errorQuestions) {
+        log.info(errorQuestion.getText());
+      }
+    }
+    return "quiz/quiz-editing";
+  }
+
+  @GetMapping("/download")
+  public ResponseEntity<InputStreamResource> downloadTemplate() throws IOException {
+    ClassPathResource resource = new ClassPathResource("Book3.xlsx");
+    InputStream inputStream = resource.getInputStream();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Book3.xlsx");
+
+    return ResponseEntity
+        .ok()
+        .headers(headers)
+        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+        .body(new InputStreamResource(inputStream));
   }
 
 }
