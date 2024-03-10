@@ -56,7 +56,7 @@ public class UserServiceImpl implements IUserService {
   }
 
   private void validateEmail(String email) {
-    Boolean emailExisted = userRepo.findByEmail(email).isPresent();
+    Boolean emailExisted = userRepo.findByEmailAndIsEnableIsTrue(email).isPresent();
     if (emailExisted) {
       throw new InvalidEmailException("Email existed!");
     } else {
@@ -139,14 +139,14 @@ public class UserServiceImpl implements IUserService {
   }
 
   private User getUserByEmail(String email) {
-    return userRepo.findByEmail(email)
+    return userRepo.findByEmailAndIsEnableIsTrue(email)
         .orElseThrow(() -> new UsernameNotFoundException(email));
   }
 
   @Override
   public void updatePassword(String email, String pass) {
     String encodedPass = passwordEncoder.encode(pass);
-    User user = userRepo.findByEmail(email).get();
+    User user = userRepo.findByEmailAndIsEnableIsTrue(email).get();
     user.setPassword(encodedPass);
     userRepo.save(user);
   }

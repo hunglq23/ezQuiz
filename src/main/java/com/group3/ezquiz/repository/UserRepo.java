@@ -14,7 +14,7 @@ import com.group3.ezquiz.model.User;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
 
-  Optional<User> findByEmail(String email);
+  Optional<User> findByEmailAndIsEnableIsTrue(String email);
 
   @Query("SELECT u FROM User u WHERE " +
       "((:email IS NULL OR u.email LIKE %:email%) OR " +

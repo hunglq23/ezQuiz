@@ -1,7 +1,7 @@
 package com.group3.ezquiz.security;
 
-import java.util.Collections;
-
+import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,8 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.repository.UserRepo;
+import java.util.Collections;
 
 @Service
 public class CustomUserDetail implements UserDetailsService {
@@ -22,7 +21,7 @@ public class CustomUserDetail implements UserDetailsService {
   public UserDetails loadUserByUsername(String email)
       throws UsernameNotFoundException {
 
-    User foundUser = userRepo.findByEmail(email)
+    User foundUser = userRepo.findByEmailAndIsEnableIsTrue(email)
         .orElseThrow(() -> new UsernameNotFoundException(email));
     return new org.springframework.security.core.userdetails.User(
         email,

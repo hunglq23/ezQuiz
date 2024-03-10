@@ -88,7 +88,7 @@
           <div class="right-content p-3 bg-white rounded">
             <form th:action="@{/login}" method="post" role="form">
               <div th:if="${param.error}" class="text-danger fs-6 mx-4 fw-bold">
-                <i class="error-icon"></i> Invalid email and password!
+                <i class="error-icon"></i> Invalid password or Account is inactive!
               </div>
               <div th:if="${param.logout}" class="alert alert-info">
                 <svg

@@ -29,7 +29,7 @@ public class CustomOAuth2User implements OAuth2User {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     String email = oAuth2User.getAttribute("email");
-    User user = userRepo.findByEmail(email)
+    User user = userRepo.findByEmailAndIsEnableIsTrue(email)
         .orElseThrow(() -> new UsernameNotFoundException(email));
     Role role = user.getRole();
     return Collections
