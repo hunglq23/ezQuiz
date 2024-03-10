@@ -143,4 +143,15 @@ public class UserServiceImpl implements IUserService {
         .orElseThrow(() -> new UsernameNotFoundException(email));
   }
 
+  @Override
+  public void updatePassword(String email, String pass) {
+    String encodedPass = passwordEncoder.encode(pass);
+    User user = userRepo.findByEmail(email).get();
+    user.setPassword(encodedPass);
+    userRepo.save(user);
+  }
+
+  public boolean checkEmail(String email) {
+    return userRepo.existsByEmail(email);
+  }
 }

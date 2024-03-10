@@ -63,22 +63,6 @@
     .text-danger {
       font-size: 14px;
     }
-
-    .alert {
-      display: flex;
-      align-items: center;
-      position: fixed;
-      left: 23px;
-      bottom: 5px;
-      height: 68px;
-      .bi {
-        width: 23px;
-        #successAlertIcon,
-        #failAlertIcon {
-          display: none;
-        }
-      }
-    }
   </style>
 
   <body class="bg-light">
@@ -433,6 +417,19 @@
       </svg>
       <div>
         <span id="alertMsg">Your account was created successfully!</span>
+      </div>
+    </div>
+    <div
+      th:if="${param.passwordChanged}"
+      id="alert"
+      class="alert alert-success"
+      role="alert"
+    >
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span id="alertMsg">Your password was changed successfully!</span>
       </div>
     </div>
 

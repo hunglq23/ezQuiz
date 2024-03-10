@@ -40,10 +40,11 @@
         class="navbar navbar-expand-lg navbar-light bg-light"
         id="header-nav"
         role="navigation"
-        th:fragment="header-navbar"
       >
         <div class="container">
-          <a class="link-dark navbar-brand site-title mb-0" href="./">ezQuiz</a>
+          <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
+            >ezQuiz</a
+          >
           <button
             class="navbar-toggler"
             type="button"

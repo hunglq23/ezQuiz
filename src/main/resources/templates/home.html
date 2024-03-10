@@ -41,6 +41,7 @@
         class="navbar navbar-expand-sm p-0 navbar-light bg-white"
         id="header-nav"
         role="navigation"
+        th:fragment="header-navbar"
       >
         <div class="container-fluid mx-2">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -177,19 +178,11 @@
                   class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                   aria-labelledby="userDropdown"
                 >
-                  <a class="dropdown-item" th:href="@{/profile}">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Profile
-                  </a>
-                  <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" th:href="@{/change-password}">
                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                     Change Password
                   </a>
-                  <a
-                    sec:authorize="hasRole('ROLE_ADMIN')"
-                    class="dropdown-item"
-                    th:href="@{/admin/list}"
-                  >
+                  <a class="dropdown-item" th:href="@{/admin/list}">
                     <i
                       class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"
                     ></i>
