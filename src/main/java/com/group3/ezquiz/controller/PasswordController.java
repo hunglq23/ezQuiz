@@ -35,13 +35,12 @@ public class PasswordController {
 
   @PostMapping("/send-forgot-password")
   public String sendForgotPassword(HttpServletRequest request, Model model,
-       @Valid @ModelAttribute("username") String email
-  ) throws IOException, MessagingException {
+      @Valid @ModelAttribute("username") String email) throws IOException, MessagingException {
     System.out.println(email);
 
     boolean isExistEmail = userService.checkEmail(email);
-    if(!isExistEmail) {
-      return "forgot-password";
+    if (!isExistEmail) {
+      return "redirect:/forgot-password?error";
     }
     String subject = "ezQuiz Password Reset";
     Resource resource = new ClassPathResource("static/email/email-forgot-pass.html");
@@ -51,29 +50,30 @@ public class PasswordController {
     String token = jwtService.generateToken(email);
     content = content.replace("[token]", token);
     emailService.sendSimpleMessage(email, subject, content);
-    return "login";
-  }
-
-  @PostMapping("/update-forgot-password")
-  public String updateForgotPasswordPage(HttpServletRequest request, Model model,
-                                        @Valid @RequestParam("email") String email,
-                                        @Valid @RequestParam("token") String token,
-                                        @Valid @ModelAttribute("password") String password,
-                                        @Valid @ModelAttribute("re_password") String rePassword) {
-    if(!password.equals(rePassword)) {
-      return "forgot-password";
-    }
-    String emailForgot = jwtService.getEmailFromToken(token);
-    userService.updatePassword(emailForgot, password);
-    return "login";
+    return "redirect:/forgot-password?emailSent";
   }
 
   @GetMapping("/reset-forgot-password")
   public String resetForgotPassword(HttpServletRequest request, Model model,
-                                        @RequestParam(value = "token") String token) {
+      @RequestParam(value = "token") String token) {
     String email = jwtService.getEmailFromToken(token);
     model.addAttribute("email", email);
     model.addAttribute("token", token);
-    return "reset-forgot-password";
+    return "password-reset";
+  }
+
+  @PostMapping("/update-forgot-password")
+  public String updateForgotPasswordPage(
+      HttpServletRequest request, Model model,
+      @Valid @RequestParam("email") String email,
+      @Valid @RequestParam("token") String token,
+      @Valid @ModelAttribute("password") String password,
+      @Valid @ModelAttribute("re_password") String rePassword) {
+    if (!password.equals(rePassword)) {
+      return "redirect:/forgot-password?fail";
+    }
+    String emailForgot = jwtService.getEmailFromToken(token);
+    userService.updatePassword(emailForgot, password);
+    return "redirect:/login?passwordChanged";
   }
 }
