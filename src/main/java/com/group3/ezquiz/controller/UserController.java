@@ -44,11 +44,11 @@ public class UserController {
     User userRequesting = userService.getUserRequesting(http);
     boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
     model.addAttribute("user", userRequesting);
-    String successMessage = "updated fail!";
+    String successMessage = "Updated failed please check your password again!";
     if (isPasswordCorrect && newPass.equals(reNewPass)) {
       userService.updatePassword(userRequesting.getEmail(), newPass);
       model.addAttribute("message", "success");
-      successMessage = "updated successfully!";
+      successMessage = "Updated successfully!";
     }
     redirectAttributes.addFlashAttribute("successMessage", successMessage);
     return "redirect:/change-password";
