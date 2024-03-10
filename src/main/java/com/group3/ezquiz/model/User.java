@@ -12,7 +12,6 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -65,9 +64,8 @@ public class User {
   @UpdateTimestamp
   private Timestamp updatedAt;
 
-  @ManyToMany
-  @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
-  private List<Classroom> classrooms;
+  @ManyToMany(mappedBy = "members")
+  private List<Classroom> joinedClassrooms;
 
   public Boolean isLearner() {
     return role == Role.LEARNER;

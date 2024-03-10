@@ -4,78 +4,43 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ezQuiz Home Page</title>
+    <title>Classroom Details</title>
     <link
       rel="icon"
       type="image/x-icon"
       href="../../static/images/favicon.ico"
-      th:href="@{../../images/favicon.ico}"
+      th:href="@{/images/favicon.ico}"
     />
-
-    <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin="crossorigin"
-    />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
-      />
-    </noscript>
     <link
       href="../../static/vendor/bootstrap/bootstrap.min.css"
-      th:href="@{../../vendor/bootstrap/bootstrap.min.css}"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
       rel="stylesheet"
     />
     <link
       href="../../static/css/main.css"
-      th:href="@{../../css/main.css}"
+      th:href="@{/css/main.css}"
       rel="stylesheet"
     />
     <link
-      href="../../static/css/profile-menu.css"
-      th:href="@{css/profile-menu.css}"
+      href="../../static/css/quiz/quiz-editing.css"
+      th:href="@{/css/quiz/quiz-editing.css}"
       rel="stylesheet"
     />
-    <script
-      src="https://kit.fontawesome.com/b16b259998.js"
-      crossorigin="anonymous"
-    ></script>
-
-    <!-- Include your main.js at the end -->
-    <script
-      src="../../js/bootstrap.bundle.min.js"
-      th:src="@{../../js/bootstrap.bundle.min.js}"
-    ></script>
-    <script src="../../js/main.js" th:src="@{../../js/main.js}"></script>
+    <!-- Font Family Nunito Sans -->
+    <link
+      href="../../static/css/font.css"
+      th:href="@{/css/font.css}"
+      rel="stylesheet"
+    />
 
     <style>
       body {
         background-color: #f1eeee;
       }
-      .back-to-list {
-        font-size: 10px;
-        margin: 50px;
-      }
       .card {
         box-shadow: 2px 2px 1px #c4c4c4;
       }
-      .add-student {
-        float: right;
-        margin-bottom: 20px;
-      }
+
       .action {
         margin-right: 20px;
       }
@@ -93,7 +58,7 @@
 
       .edit-class {
         position: absolute;
-        top: 20px;
+        top: 3px;
         right: 10px;
         bottom: 10px;
       }
@@ -170,18 +135,13 @@
                 >
                   <a
                     class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/quiz/list}"
+                    th:href="@{/quiz/created-list}"
                   >
-                    Quiz </a
-                  ><a
-                    class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/question/list}"
-                  >
-                    Question
+                    Quiz
                   </a>
                   <a
                     class="dropdown-item btn btn-sm p-1"
-                    th:href="@{/classrooms/created-list}"
+                    th:href="@{/classroom/created-list}"
                   >
                     Classroom
                   </a>
@@ -240,18 +200,25 @@
 
     <!-- Content  -->
     <div class="container">
-      <div class="back-to-list">
-        <i class="fa-solid fa-arrow-left">
-          <a th:href="@{/classroom/created-list}">
-            <span> Back to all classes</span>
-          </a>
-        </i>
+      <div class="fs-6 mt-3 d-flex justify-content-between">
+        <a
+          href="../classroom/class-list.html"
+          th:href="@{/classroom/created-list}"
+          ><i class="fa-solid fa-arrow-left"> </i> Back to all classes
+        </a>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addStudent"
+        >
+          <i class="fa-solid fa-user-plus"> </i> Add Student
+        </button>
       </div>
-      <div class="row justify-content-between">
+      <div class="row g-4">
         <div class="col-4">
           <div
             class="card"
-            style="width: 20rem"
             th:each="classroom: ${classroom}"
             th:id="${classroom.id}"
           >
@@ -259,53 +226,50 @@
               <img
                 src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
                 class="card-img-top"
+                height="234"
                 alt="..."
               />
             </div>
-            <div class="card-body">
-              <h5 class="card-title" th:text="${classroom.name}"></h5>
-              <p class="card-text" th:text="${classroom.description}"></p>
+            <div class="p-2">
+              <div class="card-body p-0">
+                <h5 class="card-title" th:text="${classroom.name}">
+                  Classroom Name
+                </h5>
+                <p class="card-text" th:text="${classroom.description}">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                </p>
 
-              <div class="edit-class">
+                <div class="edit-class">
+                  <button
+                    class="btn btn-sm btn-purple"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editClassModal"
+                  >
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="mt-2">
+                <div class="w-100">
+                  <strong>Import from:</strong>
+                </div>
+
+                <!-- Excel input trigger button -->
                 <button
-                  class="btn btn-sm btn-purple"
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary border border-1 mb-2 mt-1 px-3"
                   data-bs-toggle="modal"
-                  data-bs-target="#editClassModal"
+                  data-bs-target="#excelImport"
                 >
-                  <i class="fa-regular fa-pen-to-square"></i>
+                  <i class="fas fa-file-excel me-1"></i> Excel file
                 </button>
               </div>
-            </div>
-            <div class="mx-1">
-              <div class="w-100">
-                <strong>Import from:</strong>
-              </div>
-
-              <!-- Excel input trigger button -->
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary w-50 my-1 border-1"
-                data-bs-toggle="modal"
-                data-bs-target="#excelImport"
-              >
-                <i class="fas fa-file-excel me-1"></i> Excel file
-              </button>
             </div>
           </div>
         </div>
         <!-- Table Student in Class -->
         <div class="col-8">
-          <div class="add-student">
-            <button
-              type="button"
-              class="btn btn-sm btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#addStudent"
-            >
-              <i class="fa-solid fa-user-plus"> </i> Add Student
-            </button>
-          </div>
-          <div class="card" style="width: 60rem">
+          <div class="card">
             <table class="table-light align-middle">
               <thead>
                 <tr>
@@ -401,12 +365,9 @@
       class="modal fade"
       id="editClassModal"
       tabindex="-1"
-      aria-labelledby="exampleModalLabel"
+      aria-labelledby="editClassModal"
       aria-hidden="true"
     >
-      <div th:if="${successMessage}" class="alert alert-success">
-        <p th:text="${successMessage}"></p>
-      </div>
       <form
         th:action="@{/classroom/{id}/update(id=${classroom.id})}"
         th:object="${classroom}"
@@ -415,8 +376,8 @@
         <input type="hidden" th:field="*{id}" />
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">New Classroom</h5>
+            <div class="modal-header p-2">
+              <h5 class="modal-title" id="exampleModalLabel">Edit classroom</h5>
               <button
                 type="button"
                 class="btn-close"
@@ -425,43 +386,106 @@
               ></button>
             </div>
             <div class="modal-body">
-              <div class="mb-3">
-                <label for="recipient-name" class="col-form-label"
-                  >Classroom Name:</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="recipient-name"
-                  th:field="*{name}"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="message-text" class="col-form-label"
-                  >Description:</label
-                >
-                <textarea
-                  class="form-control"
-                  id="message-text"
-                  rows="3"
-                  th:field="*{description}"
-                ></textarea>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="submit"
-                class="btn btn-sm btn-primary p-1"
-                name="save"
+              <form
+                id="createClassroomForm"
+                class="d-flex flex-column gap-1"
+                th:action="@{/classroom/{id}/update(id = ${classroom.id})}"
+                method="POST"
+                role="form"
+                autocomplete="off"
               >
-                Save
-              </button>
+                <input
+                  autocomplete="false"
+                  name="hidden"
+                  type="text"
+                  style="display: none"
+                />
+                <div class="form-group">
+                  <label for="name" class="col-form-label">Class Name:</label>
+                  <input
+                    class="form-control nameInput"
+                    type="text"
+                    id="name"
+                    name="name"
+                    maxlength="64"
+                    th:value="${classroom.name}"
+                  />
+                  <div class="error-area text-danger px-1">
+                    <span id="nameError" class="d-none nameError">
+                      Name existed!
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="description" class="col-form-label"
+                    >Description:</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    name="description"
+                    rows="3"
+                    maxlength="128"
+                    th:text="${classroom.description}"
+                  ></textarea>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-primary rounded-2 px-5"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </form>
     </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+      <symbol id="check-circle-fill" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+      </symbol>
+      <symbol id="info-fill" viewBox="0 0 16 16">
+        <path
+          d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+        />
+      </symbol>
+      <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+        <path
+          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+        />
+      </symbol>
+    </svg>
+    <div id="alert" class="alert alert-success d-none" role="alert">
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span id="alertMsg">Your account was created successfully!</span>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
 
     <!-- Add student in excel file -->
     <!-- <div

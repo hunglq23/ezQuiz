@@ -82,23 +82,24 @@
         min-width: 488px;
         max-width: 678px;
       }
-      
-      .action{
-        display: flex;
-        align-items: center;
+
+      #content .classroom-item {
+        background-color: #fff;
+        &:hover {
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
       }
 
-      .action i{
-        margin: auto;
-      }
-      
-      .substance{
-        position: relative;
-      }
-    
-      .action{
-        position: absolute;
-        right: 8px;
+      .ellipsis-toggle {
+        right: 0;
+        top: 16px;
+        button {
+          padding: 8px 20px;
+        }
+        &:hover {
+          background-color: #e8e8e8;
+          border-radius: 10px;
+        }
       }
     </style>
   </head>
@@ -112,7 +113,7 @@
       >
         <div class="container-fluid mx-2">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="link-dark navbar-brand site-title mb-0" href="./home"
+            <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
               >ezQuiz</a
             >
             <div id="navSearch" class="position-relative mx-2 suggest-search">
@@ -137,37 +138,43 @@
                 </ul>
               </div>
             </div>
-            <ul class="navbar-nav align-items-center ms-auto">
+            <ul class="navbar-nav align-items-center ms-auto d-flex gap-1 mx-2">
               <li class="nav-item">
                 <a
-                  class="btn btn-sm bg-light mx-1 px-2 bd-left"
+                  class="btn btn-sm bg-light px-2 bd-left"
                   style="min-width: 111px"
                   th:href="@{/home}"
                 >
                   Home&nbsp;&nbsp;<i class="fas fa-home"></i>
                 </a>
               </li>
-              <li class="nav-item dropdown no-arrow">
+              <li sec:authorize="hasRole('ROLE_LEARNER')" class="nav-item">
+                <button
+                  class="btn btn-sm btn-purpleee px-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#joinClass"
+                >
+                  Join a Classroom
+                </button>
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_TEACHER')"
+                class="nav-item dropdown no-arrow"
+              >
                 <a
                   class="btn dropdown-toggle btn-sm px-2"
-                  id="libraryDropdown"
+                  id="createDropdown"
                   role="button"
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  style="
-                    margin-right: 25px;
-                    background-color: #8854c0;
-                    color: #fff;
-                  "
+                  style="background-color: #8854c0; color: #fff"
                 >
                   Create<i class="fas fa-plus" style="margin-left: 5px"></i
                 ></a>
-                <!-- Library dropdown -->
                 <div
-                  id="libraryDropdown"
                   class="dropdown-menu bg-white shadow animated--grow-in p-0"
-                  aria-labelledby="libraryDropdown"
+                  aria-labelledby="createDropdown"
                   style="min-width: 0; width: 100px; right: 25px"
                 >
                   <a
@@ -187,7 +194,7 @@
                   </a>
                 </div>
               </li>
-              <li class="nav-item dropdown no-arrow">
+              <li class="nav-item dropdown no-arrow" style="margin-left: 25px">
                 <a
                   class="nav-link dropdown-toggle bg-light rounded-full rounded-circle"
                   id="userDropdown"
@@ -295,10 +302,8 @@
           <!-- <right content> -->
           <div id="content" class="d-flex flex-column" style="gap: 0.456789rem">
             <div class="section d-flex justify-content-between">
-            
-
               <ul class="navbar-nav align-items-center ms-auto">
-                <li class="nav-item dropdown">
+                <!-- <li class="nav-item dropdown">
                   <a
                     class="btn dropdown-toggle btn-sm bg-white p-0"
                     id="filterDropdown"
@@ -315,7 +320,6 @@
                       style="text-transform: capitalize"
                     ></span>
                   </a>
-                  <!-- Sort dropdown -->
                   <div
                     id="sortDropdown"
                     class="dropdown-menu position-absolute bg-white shadow animated--grow-in p-0"
@@ -335,74 +339,100 @@
                       Oldest
                     </a>
                   </div>
-                </li>
+                </li> -->
               </ul>
             </div>
-            
-              <div id="data" class="section substance">
-                <div class="d-flex flex-column gap-2">
+
+            <div id="data" class="section">
+              <div class="d-flex flex-column gap-2">
+                <div th:each="classroom : ${classrooms}">
                   <div
-                    class="bg-white p-1 d-flex flex-row gap-1 rounded-1"
-                    style="min-width: 678px; height: 170px"
-                    th:each="classroom : ${classrooms}"
+                    sec:authorize="hasRole('ROLE_TEACHER')"
+                    class="position-relative"
                   >
-               <!-- image  -->
-                    <div class="bg-info h-100 w-20">
+                    <div class="dropdown position-absolute ellipsis-toggle">
+                      <button
+                        class="btn"
+                        aria-expanded="false"
+                        data-bs-toggle="dropdown"
+                        style="right: 0"
+                      >
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li>
+                          <a class="dropdown-item" type="button">
+                            <i class="fa-regular fa-pen-to-square"> </i>
+                            Edit Class Detail
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            type="button"
+                            class="dropdown-item"
+                            th:href="@{/classroom/{id}/delete(id=${classroom.id})}"
+                            onclick="confirm('Are you sure you want to delete this classroom?')"
+                          >
+                            <i class="fa-solid fa-trash"> </i> Delete Class
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <a
+                    sec:authorize="hasRole('ROLE_TEACHER')"
+                    th:href="@{./{id}(id=${classroom.id})}"
+                    class="btn p-1 d-flex gap-1 rounded-1 classroom-item"
+                    style="min-width: 678px; height: 170px"
+                  >
+                    <div class="h-100 w-20">
                       <img
                         class="h-100"
                         src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
                       />
                     </div>
-                <!-- content -->
-                    <div class="bg-light d-flex flex-column flex-fill gap-1 p-1 ">
-                     
-                     <a th:href="@{./{id}(id=${classroom.id})}" type="button">
-                    <!-- class name -->
-                    <h6 class="my-0" th:text="${classroom.name}">
-                      Class Name
-                    </h6>
-                    <!-- description -->
-                    <p
-                      class="text-small m-0 flex-fill"
-                      th:text="${classroom.description}"
+                    <div
+                      class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1"
                     >
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </p>
-                    <!-- creator & created-date & button -->
-                     </a>
-                    
-                  <div class="action dropdown">
-                    <i
-                      class="fa-solid fa-ellipsis-vertical btn"
-                      data-bs-toggle="dropdown"
-                      id="dropdownMenu2"
-                    ></i>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                      <li>
-                        <button class="dropdown-item" type="button">
-                          <i class="fa-regular fa-pen-to-square"> </i> Edit
-                          Class Detail
-                        </button>
-                      </li>
-                      <li>
-                        <button type="button" class="dropdown-item">
-                          <a
-                            th:href="@{/classroom/{id}/delete(id=${classroom.id})}"
-                            onclick="return confirm('Are you sure you want to delete this classroom?')"
-                          >
-                            <i class="fa-solid fa-trash"> </i> Delete Class.
-                            
-                          </a>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
+                      <div class="my-0 h5" th:text="${classroom.name}">
+                        Class Name
+                      </div>
+                      <p
+                        class="text-small m-0 flex-fill fw-light"
+                        th:text="${classroom.description}"
+                      >
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      </p>
                     </div>
+                  </a>
+                  <div
+                    sec:authorize="hasRole('ROLE_LEARNER')"
+                    class="p-1 d-flex gap-1 rounded-1 classroom-item"
+                    style="min-width: 678px; height: 170px"
+                  >
+                    <div class="h-100 w-20">
+                      <img
+                        class="h-100"
+                        src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                      />
                     </div>
-                  
+                    <div
+                      class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1"
+                    >
+                      <div class="my-0 h5" th:text="${classroom.name}">
+                        Class Name
+                      </div>
+                      <p
+                        class="text-small m-0 flex-fill fw-light"
+                        th:text="${classroom.description}"
+                      >
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>      
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -410,6 +440,7 @@
 
     <!-- Modal create -->
     <div
+      sec:authorize="hasRole('ROLE_TEACHER')"
       class="modal fade"
       id="createClassModal"
       tabindex="-1"
@@ -503,6 +534,55 @@
       </div>
     </div>
 
+    <div
+      sec:authorize="hasRole('ROLE_LEARNER')"
+      class="modal fade"
+      id="joinClass"
+      tabindex="-1"
+      aria-labelledby="joinClass"
+      aria-hidden="true"
+    >
+      <form th:action="@{/classroom/join}" method="POST">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="modal-title h5">Join a Class</div>
+              <div style="color: #888">
+                Enter a code that teacher shared with you
+              </div>
+              <div class="my-2 mb-3">
+                <input
+                  type="text"
+                  class="form-control py-1"
+                  id="recipient-name"
+                  name="code"
+                  placeholder="ABCD1234"
+                  required
+                />
+              </div>
+              <div class="text-end">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-purple px-2"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-purpleee"
+                  name="join"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check-circle-fill" viewBox="0 0 16 16">
         <path
@@ -519,7 +599,18 @@
       >
         <use xlink:href="#check-circle-fill" />
       </svg>
-      <span style="margin-right: 8px">Created Class Successfully</span>
+      <span style="margin-right: 8px">Created class successfully!</span>
+    </div>
+    <div th:if="${param.joined}" class="alert alert-success">
+      <svg
+        class="bi flex-shrink-0 me-2"
+        role="img"
+        aria-label="Info:"
+        style="width: 20"
+      >
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <span style="margin-right: 8px">You have joined a class!</span>
     </div>
 
     <script
@@ -553,6 +644,12 @@
             $(this).alert("close");
           });
         }, 3000);
+      });
+    </script>
+
+    <script th:if="${param.newClass}">
+      $(document).ready(function () {
+        $("#createClassModal").modal("show");
       });
     </script>
   </body>

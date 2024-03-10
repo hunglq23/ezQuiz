@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ClassroomDto;
-import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +39,7 @@ public class ClassroomController {
     public String getCreatedClassrooms(HttpServletRequest request, Model model) {
         List<Classroom> classrooms = classroomService.getCreatedClassrooms(request);
         model.addAttribute("classrooms", classrooms);
-        return "classroom/lib-classroom";
+        return "classroom/classroom-list";
     }
 
     @PreAuthorize(TEACHER_AUTHORITY)
@@ -61,7 +60,7 @@ public class ClassroomController {
         Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
         model.addAttribute("classroom", classroom);
 
-        return "classroom/classroom-update";
+        return "classroom/classroom-detail";
     }
 
     @PostMapping("/{id}/update")
@@ -85,10 +84,13 @@ public class ClassroomController {
 
     @PreAuthorize(LEARNER_AUTHORITY)
     @GetMapping("/joined-list")
-    public String joinClassroomForm(HttpServletRequest request, Model model) {
-        model.addAttribute("classroom", new CodeFormDto());
-        model.addAttribute("classrooms", userService.getUserRequesting(request).getClassrooms());
-        return "classroom/joined-list";
+    public String joinClassroomForm(
+            HttpServletRequest request,
+            Model model) {
+        model.addAttribute(
+                "classrooms",
+                userService.getUserRequesting(request).getJoinedClassrooms());
+        return "classroom/classroom-list";
     }
 
     @PreAuthorize(LEARNER_AUTHORITY)
@@ -98,10 +100,10 @@ public class ClassroomController {
             @RequestParam String code, Model model) {
         boolean success = classroomService.joinClassroom(request, code);
         if (success) {
-            model.addAttribute("classrooms", userService.getUserRequesting(request).getClassrooms());
-            return "classroom/joined-list";
+            model.addAttribute("classrooms", userService.getUserRequesting(request).getJoinedClassrooms());
+            return "redirect:/classroom/joined-list?joined";
         }
-        return "error";
+        return "redirect:/error";
     }
 
     @PreAuthorize(TEACHER_AUTHORITY)
@@ -111,11 +113,10 @@ public class ClassroomController {
             @PathVariable(value = "id") Long id,
             @RequestParam(required = true) Long memberId,
             Model model) {
-                Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
-                model.addAttribute("classroom", classroomService.removeMemberFromClassroomByMemberId(classroom,memberId));
+        Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
+        model.addAttribute("classroom", classroomService.removeMemberFromClassroomByMemberId(classroom, memberId));
         return "classroom/classroom-update";
     }
-  
 
 }
 //

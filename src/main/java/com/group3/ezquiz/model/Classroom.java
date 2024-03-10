@@ -3,7 +3,6 @@ package com.group3.ezquiz.model;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,38 +30,36 @@ import lombok.Setter;
 @Entity
 @Table(name = "_classroom")
 public class Classroom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    // unique
-    @Column(nullable = false, length = 8, unique = true)
-    private String code;
+        // unique
+        @Column(nullable = false, length = 8, unique = true)
+        private String code;
 
-    @Column(nullable = false, length = 64)
-    private String name;
+        @Column(nullable = false, length = 64)
+        private String name;
 
-    @Column(nullable = false)
-    private Boolean isEnable;
+        @Column(nullable = false)
+        private Boolean isEnable;
 
-    @Column( length = 128)
-    private String description;
+        @Column(length = 128)
+        private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
-    private Timestamp createdAt;
+        @Temporal(TemporalType.TIMESTAMP)
+        @CreationTimestamp
+        private Timestamp createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "created_id")
-    private User creator;
+        @ManyToOne
+        @JoinColumn(name = "created_id")
+        private User creator;
 
-    @ManyToMany
-    @JoinTable(name = "class_joining", 
-    joinColumns = {
-            @JoinColumn(name = "class_id", referencedColumnName = "id")
-    }, 
-    inverseJoinColumns = {
-            @JoinColumn(name = "user_id", referencedColumnName = "id")
-    })
-    private List<User> members;
+        @ManyToMany
+        @JoinTable(name = "_class_joining", joinColumns = {
+                        @JoinColumn(name = "class_id", referencedColumnName = "id")
+        }, inverseJoinColumns = {
+                        @JoinColumn(name = "user_id", referencedColumnName = "id")
+        })
+        private List<User> members;
 }

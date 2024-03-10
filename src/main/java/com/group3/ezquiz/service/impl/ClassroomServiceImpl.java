@@ -1,6 +1,5 @@
 package com.group3.ezquiz.service.impl;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -8,9 +7,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,9 +22,7 @@ import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -52,6 +46,7 @@ public class ClassroomServiceImpl implements IClassroomService {
     public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDto dto) {
         String code = generateClassCode();
         // Tiếp tục xử lý khi có người dùng xác thực
+        log.info("hi");
         Classroom classroom = Classroom.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
@@ -63,14 +58,14 @@ public class ClassroomServiceImpl implements IClassroomService {
             classroomRepo.save(classroom);
             return new ResponseEntity<>(
                     MessageResponse.builder()
-                            .message("Created Class Successfully!")
+                            .message("Created class successfully!")
                             .timestamp(LocalDateTime.now())
                             .build(),
                     HttpStatus.OK);
         }
         return new ResponseEntity<>(
                 MessageResponse.builder()
-                        .message("Created Class Fail!")
+                        .message("Created fail!")
                         .timestamp(LocalDateTime.now())
                         .build(),
                 HttpStatus.BAD_REQUEST);
@@ -125,7 +120,7 @@ public class ClassroomServiceImpl implements IClassroomService {
 
     @Override
     public Classroom findByCode(String code) {
-        
+
         return classroomRepo.findByCode(code);
     }
 
@@ -133,10 +128,10 @@ public class ClassroomServiceImpl implements IClassroomService {
     public boolean joinClassroom(HttpServletRequest request, String code) {
         User learner = userService.getUserRequesting(request);
         Classroom classroom = classroomRepo.findByCode(code);
-        if(classroom != null && learner != null){
+        if (classroom != null && learner != null) {
             classroom.getMembers().add(learner);
             classroomRepo.save(classroom);
-            learner.getClassrooms().add(classroom);
+            learner.getJoinedClassrooms().add(classroom);
             userRepo.save(learner);
             return true;
         }
@@ -146,15 +141,11 @@ public class ClassroomServiceImpl implements IClassroomService {
     @Override
     public Classroom removeMemberFromClassroomByMemberId(Classroom classroom, Long memberId) {
         User member = userRepo.findUserById(memberId);
-        member.getClassrooms().remove(classroom);
+        member.getJoinedClassrooms().remove(classroom);
         userRepo.save(member);
         classroom.getMembers().remove(member);
-       return classroomRepo.save(classroom);
-        
+        return classroomRepo.save(classroom);
+
     }
-
-    
-
-
 
 }
