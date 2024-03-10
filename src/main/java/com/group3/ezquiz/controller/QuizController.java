@@ -153,11 +153,11 @@ public class QuizController {
 
   @GetMapping("/download")
   public ResponseEntity<InputStreamResource> downloadTemplate() throws IOException {
-    ClassPathResource resource = new ClassPathResource("Book3.xlsx");
+    ClassPathResource resource = new ClassPathResource("Template.xlsx");
     InputStream inputStream = resource.getInputStream();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Book3.xlsx");
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Template.xlsx");
 
     return ResponseEntity
         .ok()

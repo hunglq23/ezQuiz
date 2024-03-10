@@ -1,289 +1,424 @@
 <!DOCTYPE html>
 <html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ezQuiz Login Page</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ezQuiz Login Page</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/images/favicon.ico"
+      th:href="@{images/favicon.ico}"
+    />
 
-  <link rel="icon" type="image/x-icon" href="/images/favicon.ico" th:href="@{images/favicon.ico}" />
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
 
-  <!-- Bootstrap 5 CSS -->
-  <link href="../static/vendor/bootstrap/bootstrap.min.css" th:href="@{vendor/bootstrap/bootstrap.min.css}"
-    rel="stylesheet" />
+    <!-- Customize CSS -->
+    <link
+      href="../static/css/main.css"
+      th:href="@{css/main.css}"
+      rel="stylesheet"
+    />
 
-  <!-- Customize CSS -->
-  <link href="../static/css/main.css" th:href="@{css/main.css}" rel="stylesheet" />
+    <!-- Font Family Nunito Sans -->
+    <link
+      href="../static/css/font.css"
+      th:href="@{css/font.css}"
+      rel="stylesheet"
+    />
+  </head>
 
-  <!-- Font Family Nunito Sans -->
-  <link href="../static/css/font.css" th:href="@{css/font.css}" rel="stylesheet" />
-</head>
+  <style>
+    body {
+      height: 95vh;
+    }
 
-<style>
-  body {
-    height: 95vh;
-  }
+    .left-content {
+      min-width: 388px;
+    }
 
-  .left-content {
-    min-width: 388px;
-  }
+    .right-content {
+      height: fit-content;
+      min-width: 488px;
+    }
 
-  .right-content {
-    height: fit-content;
-    min-width: 488px;
-  }
+    .modal-dialog .form-control {
+      border: solid 1px #ccc;
+      background-color: #f5f6f7;
+    }
+    .modal-dialog .form-control.is-invalid {
+      border: solid 2px #e9573f !important;
+    }
 
-  .modal-dialog .form-control {
-    border: solid 1px #ccc;
-    background-color: #f5f6f7;
-  }
+    .error-area {
+      min-height: 8px;
+    }
 
-<<<<<<< HEAD
     .text-danger {
       font-size: 14px;
     }
   </style>
-=======
-  .modal-dialog .form-control.is-invalid {
-    border: solid 2px #e9573f !important;
-  }
 
-  .error-area {
-    min-height: 8px;
-  }
-
-  .text-danger {
-    font-size: 14px;
-  }
-
-  .alert {
-    display: flex;
-    align-items: center;
-    position: fixed;
-    left: 23px;
-    bottom: 5px;
-    height: 68px;
-
-    .bi {
-      width: 23px;
-
-      #successAlertIcon,
-      #failAlertIcon {
-        display: none;
-      }
-    }
-  }
-</style>
->>>>>>> thanh
-
-<body class="bg-light">
-  <div class="content h-100 d-flex align-items-center justify-content-center">
-    <div class="container mx-3" style="max-width: 1234px">
-      <div class="d-flex justify-content-between w-100 m-0 gap-5">
-        <div>
-          <div class="left-content" style="padding: 68px 0 0 33px">
-            <div class="navbar-brand site-title w-100 mb-0" style="font-size: 56px">
-              ezQuiz
-            </div>
-            <div>
-              <h1 class="intro-title marker">Your Success is Our Mission.</h1>
-              <p class="lead fw-normal mt-4">
-                Online Quiz Practice and Exam Platform.
-              </p>
+  <body class="bg-light">
+    <div class="content h-100 d-flex align-items-center justify-content-center">
+      <div class="container mx-3" style="max-width: 1234px">
+        <div class="d-flex justify-content-between w-100 m-0 gap-5">
+          <div>
+            <div class="left-content" style="padding: 68px 0 0 33px">
+              <div
+                class="navbar-brand site-title w-100 mb-0"
+                style="font-size: 56px"
+              >
+                ezQuiz
+              </div>
+              <div>
+                <h1 class="intro-title marker">Your Success is Our Mission.</h1>
+                <p class="lead fw-normal mt-4">
+                  Online Quiz Practice and Exam Platform.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="right-content p-3 bg-white rounded">
-          <form th:action="@{/login}" method="post" role="form">
-            <div th:if="${param.error}" class="text-danger fs-6 mx-4 fw-bold">
-              <i class="error-icon"></i> Invalid email and password!
-            </div>
-            <div th:if="${param.logout}" class="alert alert-info">
-              <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Info:" style="width: 20">
-                <use xlink:href="#info-fill" />
-              </svg>
-              <span style="margin-right: 8px">You have been logged out!</span>
-            </div>
-            <div class="form-group" style="margin-top: 3px">
-              <div class="login-input-custom email-input">
-                <label for="username"><span><i class="fas fa-envelope"></i></span></label>
-                <input class="form-control" type="email" id="username" name="username" autocomplete="email"
-                  placeholder="Email@example" required />
+          <div class="right-content p-3 bg-white rounded">
+            <form th:action="@{/login}" method="post" role="form">
+              <div th:if="${param.error}" class="text-danger fs-6 mx-4 fw-bold">
+                <i class="error-icon"></i> Invalid email and password!
               </div>
-            </div>
-            <div class="form-group my-2">
-              <div class="login-input-custom password-input">
-                <label for="password"><span> <i class="fas fa-lock"></i> </span></label>
-
-                <input class="form-control" type="password" id="loginPassword" name="password" placeholder="Password"
-                  required />
-                <span class="btn-show-pass" onclick="togglePasswordVisibility('loginPassword')">
-                  <i id="loginPasswordIcon" class="fas fa-eye" aria-hidden="true"></i>
-                </span>
-              </div>
-            </div>
-            <div class="d-flex justify-content-between w-100 px-3">
-              <a class="nav-link p-0 d-flex align-items-center" th:href="@{/forgot-password}" style="cursor: pointer">
-                <span>Forgot Password?</span>
-              </a>
-              <button class="btn btn-sm btn-primary px-3 rounded-3" type="submit">
-                SIGN IN
-              </button>
-            </div>
-          </form>
-          <div class="d-flex justify-content-center mt-3">
-            <a class="btn btn-sm bg-light mt-1 px-3 glitter-button" style="border: solid 1px #eaeaeb"
-              th:href="@{/oauth2/authorization/google}">
-              <div class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="0.98em" height="1em" viewBox="0 0 256 262">
-                  <path fill="#4285f4"
-                    d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" />
-                  <path fill="#34a853"
-                    d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" />
-                  <path fill="#fbbc05"
-                    d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z" />
-                  <path fill="#eb4335"
-                    d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" />
+              <div th:if="${param.logout}" class="alert alert-info">
+                <svg
+                  class="bi flex-shrink-0 me-2"
+                  role="img"
+                  aria-label="Info:"
+                  style="width: 20"
+                >
+                  <use xlink:href="#info-fill" />
                 </svg>
-                <div class="px-2">Continue with Google</div>
+                <span style="margin-right: 8px">You have been logged out!</span>
               </div>
-            </a>
-          </div>
-
-          <div class="divider my-1">or</div>
-
-          <div class="d-flex align-items-center px-3 gap-1">
-            <span>Don't have an account yet?</span>
-
-            <a class="btn btn-sm btn-secondary glitter-button mx-1 px-2" data-bs-toggle="modal"
-              data-bs-target="#registerModal">
-              SIGN UP
-              <span class="p-0" style="margin-left: 3px">
-                <i class="fas fa-arrow-right"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Register Modal -->
-  <div class="modal fade" id="registerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 399px">
-      <div class="modal-content" style="padding: 8px">
-        <div class="modal-header p-1 pb-0 d-flex">
-          <div class="p-1">
-            <h3 class="modal-title fs-3" id="staticBackdropLabel" style="line-height: 0.88">
-              Sign Up
-            </h3>
-            <span class="fw-light">It's easy and quick.</span>
-          </div>
-
-          <button type="button" class="btn-close position-relative" style="top: -30px; right: -3px"
-            data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-1 pt-2">
-          <form id="registerForm" class="d-flex flex-column gap-1" action="/register" th:action="@{/register}"
-            method="post" role="form" autocomplete="off">
-            <input autocomplete="false" name="hidden" type="text" style="display: none" />
-            <div class="form-group" data-bs-toggle="tooltip" data-bs-placement="left"
-              data-bs-title="What is your full name?">
-              <input class="form-control fullNameInput" type="text" id="fullName" name="fullName"
-                placeholder="Full Name" />
-              <div class="error-area text-danger px-1">
-                <span id="fullNameError" class="d-none fullNameError">
-                  Invalid! Try again. (ex: Nguyễn Văn A)
-                </span>
+              <div class="form-group" style="margin-top: 3px">
+                <div class="login-input-custom email-input">
+                  <label for="username"
+                    ><span><i class="fas fa-envelope"></i></span
+                  ></label>
+                  <input
+                    class="form-control"
+                    type="email"
+                    id="username"
+                    name="username"
+                    autocomplete="email"
+                    placeholder="Email@example"
+                    required
+                  />
+                </div>
               </div>
+              <div class="form-group my-2">
+                <div class="login-input-custom password-input">
+                  <label for="password"
+                    ><span> <i class="fas fa-lock"></i> </span
+                  ></label>
+
+                  <input
+                    class="form-control"
+                    type="password"
+                    id="loginPassword"
+                    name="password"
+                    placeholder="Password"
+                    required
+                  />
+                  <span
+                    class="btn-show-pass"
+                    onclick="togglePasswordVisibility('loginPassword')"
+                  >
+                    <i
+                      id="loginPasswordIcon"
+                      class="fas fa-eye"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between w-100 px-3">
+                <a
+                  class="nav-link p-0 d-flex align-items-center"
+                  th:href="@{/forgot-password}"
+                  style="cursor: pointer"
+                >
+                  <span>Forgot Password?</span>
+                </a>
+                <button
+                  class="btn btn-sm btn-primary px-3 rounded-3"
+                  type="submit"
+                >
+                  SIGN IN
+                </button>
+              </div>
+            </form>
+            <div class="d-flex justify-content-center mt-3">
+              <a
+                class="btn btn-sm bg-light mt-1 px-3 glitter-button"
+                style="border: solid 1px #eaeaeb"
+                th:href="@{/oauth2/authorization/google}"
+              >
+                <div class="d-flex align-items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="0.98em"
+                    height="1em"
+                    viewBox="0 0 256 262"
+                  >
+                    <path
+                      fill="#4285f4"
+                      d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                    />
+                    <path
+                      fill="#34a853"
+                      d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                    />
+                    <path
+                      fill="#fbbc05"
+                      d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"
+                    />
+                    <path
+                      fill="#eb4335"
+                      d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                    />
+                  </svg>
+                  <div class="px-2">Continue with Google</div>
+                </div>
+              </a>
             </div>
-            <div class="form-group" data-bs-toggle="tooltip" data-bs-placement="left"
-              data-bs-title="What is your email?">
-              <input class="form-control emailInput" type="text" id="email" name="email" placeholder="Email@example"
-                autocomplete="off" />
-              <div class="error-area text-danger px-1">
-                <span id="emailError" class="d-none emailError">
-                  Email error!
-                </span>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="register-input-custom password-input">
-                <input class="form-control passwordInput" style="background-image: none" type="password" id="password"
-                  name="password" placeholder="Password" />
-                <span class="btn-show-pass" onclick="togglePasswordVisibility('password')">
-                  <i id="passwordIcon" class="fas fa-eye" aria-hidden="true"></i>
-                </span>
-              </div>
-              <div class="error-area text-danger px-1">
-                <span id="passwordError" class="d-none error-icon passwordError"></span>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="register-input-custom password-input">
-                <input class="form-control" style="background-image: none" type="password" id="passwordConfirm"
-                  placeholder="Confirm Password" />
-                <span class="btn-show-pass" onclick="togglePasswordVisibility('passwordConfirm')">
-                  <i id="passwordConfirmIcon" class="fas fa-eye" aria-hidden="true"></i>
-                </span>
-              </div>
-              <div class="error-area text-danger px-1">
-                <span id="passwordConfirmError" class="d-none error-icon">
-                  Password and confirm password must be same
-                </span>
-              </div>
-            </div>
 
-            <p class="m-0 p-1" style="line-height: 1.23; font-size: 12px">
-              By clicking Sign Up, you agree to our Terms and Policy.
-            </p>
-            <div class="d-flex justify-content-center">
-              <button id="signUpButton" type="button" onclick="handleSignUpClick()" class="btn btn-sm btn-primary"
-                style="padding: 3px 23px">
+            <div class="divider my-1">or</div>
+
+            <div class="d-flex align-items-center px-3 gap-1">
+              <span>Don't have an account yet?</span>
+
+              <a
+                class="btn btn-sm btn-secondary glitter-button mx-1 px-2"
+                data-bs-toggle="modal"
+                data-bs-target="#registerModal"
+              >
                 SIGN UP
-              </button>
+                <span class="p-0" style="margin-left: 3px">
+                  <i class="fas fa-arrow-right"></i>
+                </span>
+              </a>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-    <symbol id="check-circle-fill" viewBox="0 0 16 16">
-      <path
-        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-    </symbol>
-    <symbol id="info-fill" viewBox="0 0 16 16">
-      <path
-        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-    </symbol>
-    <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
-      <path
-        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-    </symbol>
-  </svg>
+    <!-- Register Modal -->
+    <div
+      class="modal fade"
+      id="registerModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" style="max-width: 399px">
+        <div class="modal-content" style="padding: 8px">
+          <div class="modal-header p-1 pb-0 d-flex">
+            <div class="p-1">
+              <h3
+                class="modal-title fs-3"
+                id="staticBackdropLabel"
+                style="line-height: 0.88"
+              >
+                Sign Up
+              </h3>
+              <span class="fw-light">It's easy and quick.</span>
+            </div>
 
-  <div id="alert" class="alert d-none" role="alert">
-    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
-      <use id="successAlertIcon" xlink:href="#check-circle-fill" />
-      <use id="failAlertIcon" xlink:href="#exclamation-triangle-fill" />
-    </svg>
-    <div>
-      <span id="alertMsg">Your account was created successfully!</span>
-      (<span id="counter">5</span>)
+            <button
+              type="button"
+              class="btn-close position-relative"
+              style="top: -30px; right: -3px"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-1 pt-2">
+            <form
+              id="registerForm"
+              class="d-flex flex-column gap-1"
+              action="/register"
+              th:action="@{/register}"
+              method="post"
+              role="form"
+              autocomplete="off"
+            >
+              <input
+                autocomplete="false"
+                name="hidden"
+                type="text"
+                style="display: none"
+              />
+              <div
+                class="form-group"
+                data-bs-toggle="tooltip"
+                data-bs-placement="left"
+                data-bs-title="What is your full name?"
+              >
+                <input
+                  class="form-control fullNameInput"
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  placeholder="Full Name"
+                />
+                <div class="error-area text-danger px-1">
+                  <span id="fullNameError" class="d-none fullNameError">
+                    Invalid! Try again. (ex: Nguyễn Văn A)
+                  </span>
+                </div>
+              </div>
+              <div
+                class="form-group"
+                data-bs-toggle="tooltip"
+                data-bs-placement="left"
+                data-bs-title="What is your email?"
+              >
+                <input
+                  class="form-control emailInput"
+                  type="text"
+                  id="email"
+                  name="email"
+                  placeholder="Email@example"
+                  autocomplete="off"
+                />
+                <div class="error-area text-danger px-1">
+                  <span id="emailError" class="d-none emailError">
+                    Email error!
+                  </span>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="register-input-custom password-input">
+                  <input
+                    class="form-control passwordInput"
+                    style="background-image: none"
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                  />
+                  <span
+                    class="btn-show-pass"
+                    onclick="togglePasswordVisibility('password')"
+                  >
+                    <i
+                      id="passwordIcon"
+                      class="fas fa-eye"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                </div>
+                <div class="error-area text-danger px-1">
+                  <span
+                    id="passwordError"
+                    class="d-none error-icon passwordError"
+                  ></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="register-input-custom password-input">
+                  <input
+                    class="form-control"
+                    style="background-image: none"
+                    type="password"
+                    id="passwordConfirm"
+                    placeholder="Confirm Password"
+                  />
+                  <span
+                    class="btn-show-pass"
+                    onclick="togglePasswordVisibility('passwordConfirm')"
+                  >
+                    <i
+                      id="passwordConfirmIcon"
+                      class="fas fa-eye"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                </div>
+                <div class="error-area text-danger px-1">
+                  <span id="passwordConfirmError" class="d-none error-icon">
+                    Password and confirm password must be same
+                  </span>
+                </div>
+              </div>
+
+              <p class="m-0 p-1" style="line-height: 1.23; font-size: 12px">
+                By clicking Sign Up, you agree to our Terms and Policy.
+              </p>
+              <div class="d-flex justify-content-center">
+                <button
+                  id="signUpButton"
+                  type="button"
+                  onclick="handleSignUpClick()"
+                  class="btn btn-sm btn-primary"
+                  style="padding: 3px 23px"
+                >
+                  SIGN UP
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div th:if="${param.signUpSuccessfully}" id="alert" class="alert alert-success" role="alert">
-    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
-      <use xlink:href="#check-circle-fill" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+      <symbol id="check-circle-fill" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+      </symbol>
+      <symbol id="info-fill" viewBox="0 0 16 16">
+        <path
+          d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+        />
+      </symbol>
+      <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+        <path
+          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+        />
+      </symbol>
     </svg>
-    <div>
-      <span id="alertMsg">Your account was created successfully!</span>
+
+    <div id="alert" class="alert d-none" role="alert">
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use id="successAlertIcon" xlink:href="#check-circle-fill" />
+        <use id="failAlertIcon" xlink:href="#exclamation-triangle-fill" />
+      </svg>
+      <div>
+        <span id="alertMsg">Your account was created successfully!</span>
+        (<span id="counter">5</span>)
+      </div>
     </div>
-<<<<<<< HEAD
+
+    <div
+      th:if="${param.signUpSuccessfully}"
+      id="alert"
+      class="alert alert-success"
+      role="alert"
+    >
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span id="alertMsg">Your account was created successfully!</span>
+      </div>
+    </div>
     <div
       th:if="${param.passwordChanged}"
       id="alert"
@@ -297,60 +432,61 @@
         <span id="alertMsg">Your password was changed successfully!</span>
       </div>
     </div>
-=======
-  </div>
->>>>>>> thanh
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- Include Font Awesome -->
-  <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
+    <!-- Include Font Awesome -->
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
 
-  <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
+    <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
 
-  <script>
-    $(document).ready(function () {
-      window.setTimeout(function () {
-        $(".alert").each(function () {
-          $(this).alert("close");
-        });
-      }, 5000);
-    });
-  </script>
+    <script>
+      $(document).ready(function () {
+        window.setTimeout(function () {
+          $(".alert").each(function () {
+            $(this).alert("close");
+          });
+        }, 5000);
+      });
+    </script>
 
-  <script>
-    const signUpBtn = document.getElementById("signUpButton");
-    let isCounting = null;
-    let count = 0;
+    <script>
+      const signUpBtn = document.getElementById("signUpButton");
+      let isCounting = null;
+      let count = 0;
 
-    function showAlertAndHideAfterSecond(alert, second = 0) {
-      console.log("showing alert...");
+      function showAlertAndHideAfterSecond(alert, second = 0) {
+        console.log("showing alert...");
 
-      const counter = document.getElementById("counter");
-      count = second;
+        const counter = document.getElementById("counter");
+        count = second;
 
-      counter.textContent = count;
-      alert.classList.remove("d-none");
-
-      if (isCounting) {
-        console.log("counting");
-        clearInterval(isCounting);
-        isCounting = null;
-      }
-      isCounting = setInterval(() => {
-        count--;
         counter.textContent = count;
-        if (count === 0) {
-          clearInterval(isCounting);
-          alert.classList.add("d-none");
-        }
-      }, 1000);
-    }
-  </script>
-</body>
+        alert.classList.remove("d-none");
 
+        if (isCounting) {
+          console.log("counting");
+          clearInterval(isCounting);
+          isCounting = null;
+        }
+        isCounting = setInterval(() => {
+          count--;
+          counter.textContent = count;
+          if (count === 0) {
+            clearInterval(isCounting);
+            alert.classList.add("d-none");
+          }
+        }, 1000);
+      }
+    </script>
+  </body>
 </html>

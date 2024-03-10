@@ -232,10 +232,11 @@ public class QuizServiceImpl implements IQuizService {
           if (correctAnswerIndexes.contains(-1)) {
             validQuestion = false;
           }
+          cellIterator.next();
 
           int currentAnswerIndex = 0;
-
-          cellIterator.next();
+          int validAnswerCount = 0;
+          int correctAnswerNumber = 0;
 
           // Parse Answers from the subsequent cells until the end of the row
           while (cellIterator.hasNext()) {
@@ -245,32 +246,36 @@ public class QuizServiceImpl implements IQuizService {
               validQuestion = false;
               log.error("> 512 ANS");
             } else { // valid answer text
-              currentAnswerIndex++;
+              validAnswerCount++;
             }
+            currentAnswerIndex++;
 
             Answer answer = Answer.initFalseAnswer(question, answerText);
             if (correctAnswerIndexes.contains(currentAnswerIndex)) {
               answer.setIsCorrect(true);
+              correctAnswerNumber++;
             }
             answers.add(answer);
           }
 
-          int countCorrectAnswer = correctAnswerIndexes.size();
+          if (validAnswerCount < 2) {
+            validQuestion = false;
+            log.error("At least 2 valid answer of a question!");
+          }
 
           // For single choice questions, find the matching Answer for the correct answer
           // and mark it as correct
           if (questionType.equalsIgnoreCase("single choice")) {
-            if (countCorrectAnswer != 1) {
+            if (correctAnswerNumber != 1) {
               validQuestion = false;
               log.error("single != 1");
-
             }
           }
 
           // For multiple choice questions, parse the correct answer indices and mark the
           // corresponding Answers as correct
           else if (questionType.equalsIgnoreCase("multiple choice")) {
-            if (countCorrectAnswer < 2) {
+            if (correctAnswerNumber < 2) {
               validQuestion = false;
               log.error(" MTP < 2");
             }
