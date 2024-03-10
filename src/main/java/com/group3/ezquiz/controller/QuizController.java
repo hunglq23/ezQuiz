@@ -3,6 +3,7 @@ package com.group3.ezquiz.controller;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
+import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -95,4 +97,29 @@ public class QuizController {
     return quizService.handleQuizUpdatingRequest(request, id, dto);
   }
 
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @GetMapping("/my-quiz")
+  public String showQuizList(
+          HttpServletRequest http,
+          Model model,
+          @RequestParam(required = false, defaultValue = "latest") String sortOrder,
+          @RequestParam(required = false, defaultValue = "") String draft) {
+    String[] availableSortList = {"latest", "oldest"};
+    if(availableSortList.equals(sortOrder)){
+      return "redirect://my-quiz?sortOrder=latest";
+    }
+    Boolean isDraft = null;
+    if(!draft.isEmpty()){
+      try {
+        isDraft = Boolean.parseBoolean(draft);
+      } catch (NumberFormatException e){
+        return "redirect://my-quiz";
+      }
+    }
+    List<QuizDto> quizDtoList = quizService.getQuizByCreator(http, sortOrder, isDraft);
+    model.addAttribute("quiz", quizDtoList);
+    model.addAttribute("isDraft", isDraft);
+    model.addAttribute("sort", sortOrder);
+    return "quiz/created-quiz-list";
+  }
 }

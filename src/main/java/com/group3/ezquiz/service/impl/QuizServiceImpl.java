@@ -1,9 +1,14 @@
 package com.group3.ezquiz.service.impl;
 
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
+import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.utils.Utility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -96,4 +101,45 @@ public class QuizServiceImpl implements IQuizService {
             .build());
   }
 
+  @Override
+  public List<QuizDto> getQuizByCreator(HttpServletRequest http, String sortOrder, Boolean isDraft) {
+    User userRequesting = userService.getUserRequesting(http);
+    List<Quiz> quizByCreator;
+    if (isDraft != null) {
+      quizByCreator = quizRepo.findByCreatorAndIsDraft(userRequesting, isDraft);
+    } else {
+      quizByCreator = quizRepo.findByCreator(userRequesting);
+    }
+    List<QuizDto> quizDtoList = new ArrayList<>();
+    for (Quiz quiz : quizByCreator) {
+      quizDtoList.add(mapToQuizDto(quiz));
+    }
+    Comparator<QuizDto> comparator;
+    switch (sortOrder){
+      case "latest":
+        comparator = Comparator.comparing(QuizDto::getTimeString).reversed();
+        quizDtoList.sort(comparator);
+        break;
+      case "oldest":
+        comparator = Comparator.comparing(QuizDto::getTimeString);
+        quizDtoList.sort(comparator);
+        break;
+    }
+    quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+            Utility.calculateTimeElapsed(
+                    Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    return quizDtoList;
+  }
+
+  private QuizDto mapToQuizDto(Quiz quiz) {
+    return QuizDto.builder()
+            .type("Quiz")
+            .title(quiz.getTitle())
+            .description(quiz.getDescription())
+            .image(quiz.getImageUrl())
+            .isDraft(quiz.getIsDraft())
+            .itemNumber(quiz.getQuestions().size())
+            .timeString(quiz.getCreatedAt().toString())
+            .build();
+  }
 }
