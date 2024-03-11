@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -111,6 +112,9 @@ public class QuizController {
           @RequestParam(required = false, defaultValue = "") String draft,
           @PageableDefault(size = 3) Pageable pageable) {
     String[] availableSortList = {"latest", "oldest"};
+//    if(Arrays.asList(availableSortList).contains(sortOrder)){
+//      return "redirect://my-quiz?sortOrder=latest";
+//    }
     if(availableSortList.equals(sortOrder)){
       return "redirect://my-quiz?sortOrder=latest";
     }
