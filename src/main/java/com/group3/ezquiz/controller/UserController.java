@@ -1,5 +1,6 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -30,6 +32,21 @@ public class UserController {
     model.addAttribute("user", userRequesting);
 
     return "home";
+  }
+
+  @GetMapping("/library")
+  public String getLibraryPage(
+          HttpServletRequest http,
+          Model model,
+          @RequestParam(required = false, defaultValue = "latest") String sortOrder) {
+    String[] availableSortList = {"latest", "oldest"};
+    if(availableSortList.equals(sortOrder)){
+      return "redirect:/library?sortOrder=latest";
+    }
+    List<ObjectDto> objectDtoList = userService.getQuizAndClassroomByTeacher(http, sortOrder);
+    model.addAttribute("object", objectDtoList);
+    model.addAttribute("sort", sortOrder);
+    return "library";
   }
 
   @GetMapping("/admin/list")

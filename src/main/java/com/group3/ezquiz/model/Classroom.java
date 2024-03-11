@@ -47,6 +47,12 @@ public class Classroom {
     @Column(nullable = false)
     private Boolean isEnable;
 
+    @Column(nullable = true)
+    private String imageURL;
+
+    @Column(nullable = true)
+    private Boolean isDraft;
+
     private String description;
 
     private Date startDate;

@@ -276,7 +276,7 @@
                         </a>
                     </li>
                     <li class="nav-link w-100 p-0 rounded-1">
-                        <a class="btn btn-sm d-flex" href="quiz/quiz-list.html">
+                        <a class="btn btn-sm d-flex" th:href="@{/quiz/my-quiz}">
                             <div class="square-33-center-item rotate-on-hover">
                                 <i class="fas fa-graduation-cap"></i>
                             </div>
@@ -410,7 +410,7 @@
                                 >
                                     <input
                                             type="radio"
-                                            name="sort"
+                                            name="sortOrder"
                                             value="latest"
                                             class="btn-check"
                                             id="sortLatest"
@@ -427,7 +427,7 @@
                                     </button>
                                     <input
                                             type="radio"
-                                            name="sort"
+                                            name="sortOrder"
                                             value="oldest"
                                             class="btn-check"
                                             id="sortOldest"

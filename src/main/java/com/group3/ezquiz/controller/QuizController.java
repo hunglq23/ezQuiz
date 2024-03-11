@@ -7,6 +7,11 @@ import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +108,8 @@ public class QuizController {
           HttpServletRequest http,
           Model model,
           @RequestParam(required = false, defaultValue = "latest") String sortOrder,
-          @RequestParam(required = false, defaultValue = "") String draft) {
+          @RequestParam(required = false, defaultValue = "") String draft,
+          @PageableDefault(size = 3) Pageable pageable) {
     String[] availableSortList = {"latest", "oldest"};
     if(availableSortList.equals(sortOrder)){
       return "redirect://my-quiz?sortOrder=latest";
@@ -116,10 +122,13 @@ public class QuizController {
         return "redirect://my-quiz";
       }
     }
-    List<QuizDto> quizDtoList = quizService.getQuizByCreator(http, sortOrder, isDraft);
+    Page<QuizDto> quizDtoList = quizService.getQuizByCreator(http, sortOrder, isDraft, pageable);
     model.addAttribute("quiz", quizDtoList);
     model.addAttribute("isDraft", isDraft);
     model.addAttribute("sort", sortOrder);
+    model.addAttribute("currentPage", quizDtoList.getNumber());
+    model.addAttribute("pageSize", quizDtoList.getSize());
+    model.addAttribute("totalPages", quizDtoList.getTotalPages());
     return "quiz/created-quiz-list";
   }
 }

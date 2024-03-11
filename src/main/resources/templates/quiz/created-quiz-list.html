@@ -265,8 +265,8 @@
                     <div><h4>Library</h4></div>
                 </header>
                 <ul class="nav d-flex flex-column align-items-center">
-                    <li class="nav-link w-100 p-0 rounded-1 active">
-                        <a class="btn btn-sm d-flex" href>
+                    <li class="nav-link w-100 p-0 rounded-1">
+                        <a class="btn btn-sm d-flex" th:href="@{/library}">
                             <div class="square-33-center-item rotate-on-hover">
                                 <i class="fas fa-list"></i>
                             </div>
@@ -275,8 +275,8 @@
                             </div>
                         </a>
                     </li>
-                    <li class="nav-link w-100 p-0 rounded-1">
-                        <a class="btn btn-sm d-flex" href="quiz/quiz-list.html">
+                    <li class="nav-link w-100 p-0 rounded-1 active">
+                        <a class="btn btn-sm d-flex" th:href="@{/quiz/my-quiz}">
                             <div class="square-33-center-item rotate-on-hover">
                                 <i class="fas fa-graduation-cap"></i>
                             </div>
@@ -311,6 +311,32 @@
                     </li>
                 </ul>
                 <div class="divider left-content-divider"></div>
+            </div>
+            <div class="container mt-5">
+                <!-- Content -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="container mt-3">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{${'my-quiz'}(sortOrder=${sort}, draft=${isDraft}, page=0)}">First</a>
+                        </li>
+                        <li class="page-item" th:class="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{${'my-quiz'}(sortOrder=${sort}, draft=${isDraft}, page=${currentPage - 1})}">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="page : ${#numbers.sequence(0, totalPages - 1)}" th:class="${currentPage == page ? 'active' : ''}">
+                            <a class="page-link" th:href="@{${'my-quiz'}(sortOrder=${sort}, draft=${isDraft}, page=${page})}" th:text="${page + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{${'my-quiz'}(sortOrder=${sort}, draft=${isDraft}, page=${currentPage + 1})}">Next</a>
+                        </li>
+                        <li class="page-item" th:class="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{${'my-quiz'}(sortOrder=${sort}, draft=${isDraft}, page=${totalPages - 1})}">Last</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
             <!-- </Left Nav> -->
 

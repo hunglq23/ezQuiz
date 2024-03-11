@@ -1,14 +1,13 @@
 package com.group3.ezquiz.service.impl;
 
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.utils.Utility;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -102,29 +101,19 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public List<QuizDto> getQuizByCreator(HttpServletRequest http, String sortOrder, Boolean isDraft) {
+  public Page<QuizDto> getQuizByCreator(HttpServletRequest http,
+                                        String sortOrder,
+                                        Boolean isDraft,
+                                        Pageable pageable) {
     User userRequesting = userService.getUserRequesting(http);
-    List<Quiz> quizByCreator;
+    Page<Quiz> quizByCreator;
     if (isDraft != null) {
-      quizByCreator = quizRepo.findByCreatorAndIsDraft(userRequesting, isDraft);
+      quizByCreator = quizRepo.findByCreatorAndIsDraftAndSort(userRequesting, isDraft, sortOrder, pageable);
     } else {
-      quizByCreator = quizRepo.findByCreator(userRequesting);
+      quizByCreator = quizRepo.findByCreatorAndSort(userRequesting, sortOrder, pageable);
     }
-    List<QuizDto> quizDtoList = new ArrayList<>();
-    for (Quiz quiz : quizByCreator) {
-      quizDtoList.add(mapToQuizDto(quiz));
-    }
-    Comparator<QuizDto> comparator;
-    switch (sortOrder){
-      case "latest":
-        comparator = Comparator.comparing(QuizDto::getTimeString).reversed();
-        quizDtoList.sort(comparator);
-        break;
-      case "oldest":
-        comparator = Comparator.comparing(QuizDto::getTimeString);
-        quizDtoList.sort(comparator);
-        break;
-    }
+    Page<QuizDto> quizDtoList = quizByCreator.map(this::mapToQuizDto);
+
     quizDtoList.forEach(objectDto -> objectDto.setTimeString(
             Utility.calculateTimeElapsed(
                     Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
