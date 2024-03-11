@@ -7,19 +7,15 @@ import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.IQuizService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -106,33 +102,30 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/my-quiz")
   public String showQuizList(
-          HttpServletRequest http,
-          Model model,
-          @RequestParam(required = false, defaultValue = "latest") String sortOrder,
-          @RequestParam(required = false, defaultValue = "") String draft,
-          @PageableDefault(size = 3) Pageable pageable) {
-    String[] availableSortList = {"latest", "oldest"};
-//    if(Arrays.asList(availableSortList).contains(sortOrder)){
-//      return "redirect://my-quiz?sortOrder=latest";
-//    }
-    if(availableSortList.equals(sortOrder)){
-      return "redirect://my-quiz?sortOrder=latest";
-    }
-    Boolean isDraft = null;
-    if(!draft.isEmpty()){
-      try {
-        isDraft = Boolean.parseBoolean(draft);
-      } catch (NumberFormatException e){
-        return "redirect://my-quiz";
-      }
-    }
-    Page<QuizDto> quizDtoList = quizService.getQuizByCreator(http, sortOrder, isDraft, pageable);
-    model.addAttribute("quiz", quizDtoList);
+      HttpServletRequest request,
+      @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
+      @RequestParam(required = false, value = "draft") Boolean isDraft,
+      @RequestParam(required = false, value = "page") Optional<Integer> page,
+      @RequestParam(required = false, value = "size") Optional<Integer> size,
+      Model model) {
+
+    String sort = sortOrder.orElse("latest");
+    Integer currentPage = page.orElse(1);
+    Integer pageSize = size.orElse(3);
+
+    Page<QuizDto> quizPage = quizService.getQuizInLibrary(
+        request, sort, isDraft,
+        PageRequest.of(currentPage - 1, pageSize));
+
+    int maxPage = quizPage.getTotalPages();
+    int curPage = quizPage.getNumber() + 1;
+
+    model.addAttribute("quiz", quizPage);
     model.addAttribute("isDraft", isDraft);
     model.addAttribute("sort", sortOrder);
-    model.addAttribute("currentPage", quizDtoList.getNumber());
-    model.addAttribute("pageSize", quizDtoList.getSize());
-    model.addAttribute("totalPages", quizDtoList.getTotalPages());
-    return "quiz/created-quiz-list";
+    model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
+    model.addAttribute("pageSize", quizPage.getSize());
+    model.addAttribute("max", maxPage);
+    return "quiz/quiz-list";
   }
 }
