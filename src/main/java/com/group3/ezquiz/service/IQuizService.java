@@ -1,6 +1,5 @@
 package com.group3.ezquiz.service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,5 +24,5 @@ public interface IQuizService {
 
   ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
 
-  Page<QuizDto> getQuizByCreator(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
+  Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
 }

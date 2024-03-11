@@ -101,10 +101,11 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public Page<QuizDto> getQuizByCreator(HttpServletRequest http,
-                                        String sortOrder,
-                                        Boolean isDraft,
-                                        Pageable pageable) {
+  public Page<QuizDto> getQuizInLibrary(
+      HttpServletRequest http,
+      String sortOrder,
+      Boolean isDraft,
+      Pageable pageable) {
     User userRequesting = userService.getUserRequesting(http);
     Page<Quiz> quizByCreator;
     if (isDraft != null) {
@@ -115,20 +116,20 @@ public class QuizServiceImpl implements IQuizService {
     Page<QuizDto> quizDtoList = quizByCreator.map(this::mapToQuizDto);
 
     quizDtoList.forEach(objectDto -> objectDto.setTimeString(
-            Utility.calculateTimeElapsed(
-                    Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+        Utility.calculateTimeElapsed(
+            Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
     return quizDtoList;
   }
 
   private QuizDto mapToQuizDto(Quiz quiz) {
     return QuizDto.builder()
-            .type("Quiz")
-            .title(quiz.getTitle())
-            .description(quiz.getDescription())
-            .image(quiz.getImageUrl())
-            .isDraft(quiz.getIsDraft())
-            .itemNumber(quiz.getQuestions().size())
-            .timeString(quiz.getCreatedAt().toString())
-            .build();
+        .type("Quiz")
+        .title(quiz.getTitle())
+        .description(quiz.getDescription())
+        .image(quiz.getImageUrl())
+        .isDraft(quiz.getIsDraft())
+        .itemNumber(quiz.getQuestions().size())
+        .timeString(quiz.getCreatedAt().toString())
+        .build();
   }
 }
