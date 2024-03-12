@@ -154,4 +154,11 @@ public class UserServiceImpl implements IUserService {
   public boolean checkEmail(String email) {
     return userRepo.existsByEmail(email);
   }
+
+  @Override
+  public User findUserByEmail(String email) {
+    return userRepo.findByEmail(email).orElse(null);
+  }
+
+  
 }

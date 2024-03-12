@@ -1,14 +1,27 @@
 package com.group3.ezquiz.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.group3.ezquiz.exception.InvalidClassroomException;
+import com.group3.ezquiz.exception.ResourceNotFoundException;
+import com.group3.ezquiz.model.ClassJoining;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.ClassroomDto;
@@ -37,8 +50,8 @@ public class ClassroomServiceImpl implements IClassroomService {
   @Override
   public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDto dto) {
     User creator = userService.getUserRequesting(request);
-    if( classroomRepo.findByCreatorAndName(creator, dto.getName()).isPresent()){
-       throw new InvalidClassroomException("Classroom name existed!");
+    if (classroomRepo.findByCreatorAndName(creator, dto.getName()).isPresent()) {
+      throw new InvalidClassroomException("Classroom name existed!");
     }
     Classroom classroom = Classroom.builder()
         .name(dto.getName())
@@ -64,10 +77,111 @@ public class ClassroomServiceImpl implements IClassroomService {
         HttpStatus.BAD_REQUEST);
   };
 
+  @Override
+  public Classroom getClassroomByRequestAndId(HttpServletRequest request, Long id) {
+    User creator = userService.getUserRequesting(request);
+    return classroomRepo.findByIdAndCreator(id, creator)
+        .orElseThrow(() -> new ResourceNotFoundException("Not found classroom"));
+  }
+
   private String generateClassCode() {
     UUID codeUUID = UUID.randomUUID();
     String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
     return codeClass;
   }
+
+  @Override
+  public void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile file) {
+    User userRequesting = userService.getUserRequesting(request);
+
+    List<Classroom> classrooms = new ArrayList<>();
+
+    try (InputStream inputStream = file.getInputStream()) {
+      Workbook workbook = WorkbookFactory.create(inputStream);
+
+      for (Sheet sheet : workbook) { // loop through all the sheet
+        Classroom newClassroom = processSheet(
+            sheet,
+            Classroom.builder()
+                .creator(userRequesting)
+                .isEnable(true)
+                .code(generateClassCode())
+                .build());
+        classrooms.add(newClassroom);
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+   private Classroom processSheet(Sheet sheet, Classroom classroom) {
+    List<ClassJoining> classJoinings = new ArrayList<>();
+
+    Iterator<Row> rowIterator = sheet.iterator();
+
+    // Skip the the first and second row
+    rowIterator.next();
+    rowIterator.next();
+
+    if (classroom.getName() == null && rowIterator.hasNext()) { // Check the 3rd row,
+      // which contains the name and desc of the classroom
+      Row thirdRow = rowIterator.next();
+      // Get the classroom name at the 5th cell of the third row
+      String classroomName = (thirdRow.getCell(4).getStringCellValue()).trim();
+      log.info("Class name: " + classroomName);
+      classroom.setName(classroomName);
+
+      if (thirdRow.getCell(5) != null) { // Check the description at the 6th cell exist or not
+        // Get the classroom name at the 6th cell of the third row
+        String description = (thirdRow.getCell(5).getStringCellValue()).trim();
+        log.info("Description: " + description);
+        classroom.setDescription(description);
+      }
+
+    } else if (rowIterator.hasNext()) {
+      rowIterator.next(); // skip the third row
+      classJoinings = classroom.getClassJoinings();
+    }
+
+    int curMemberNum = 1;
+    // Loop through all the remain rows
+    while (rowIterator.hasNext() && curMemberNum <= MAX_MEMBER_PER_CLASS) {
+      Row currentRow = rowIterator.next();
+
+      // Get the student email at the 3th cell of the current row
+      String email = (currentRow.getCell(2).getStringCellValue()).trim();
+      log.info("Student email: " + email);
+      User userByEmail = userService.findUserByEmail(email);
+      ClassJoining classJoining = null;
+      if (userByEmail != null) {
+        classJoining = ClassJoining.builder()
+            .learner(userByEmail)
+            .build();
+
+        // Get the learner displayed name at the 2th cell of the current row
+        String displayedName = (currentRow.getCell(1).getStringCellValue()).trim();
+        if (displayedName != null && !displayedName.isEmpty()) {
+          classJoining.setLearnerDisplayedName(displayedName);
+        }
+
+        // Get the student phone at the 4th cell of the current row
+        String displayedPhone = (currentRow.getCell(3).getStringCellValue()).trim();
+        if (displayedPhone != null && !displayedPhone.isEmpty()) {
+          classJoining.setLearnerDisplayedPhone(displayedPhone.substring(1));
+        }
+      }
+      if (classJoining != null) {
+        classJoinings.add(classJoining);
+      }
+      curMemberNum++;
+    }
+    classroom.setClassJoinings(classJoinings);
+    Classroom saved = classroomRepo.save(classroom);
+    return saved;
+  }
+
+  
 
 }
