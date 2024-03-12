@@ -88,7 +88,10 @@
           <div class="right-content p-3 bg-white rounded">
             <form th:action="@{/login}" method="post" role="form">
               <div th:if="${param.error}" class="text-danger fs-6 mx-4 fw-bold">
-                <i class="error-icon"></i> Invalid password or Account is inactive!
+                <i class="error-icon"></i> Your account cannot log in via reasons:
+                <br>- Invalid email or password
+                <br>- Account's not VERIFIED, check EMAIL for ACTIVATION
+                <br>- Account's not available, contact Admin for support!!!
               </div>
               <div th:if="${param.logout}" class="alert alert-info">
                 <svg
@@ -301,6 +304,22 @@
                     Email error!
                   </span>
                 </div>
+                <input
+                        type="radio"
+                        id="role1"
+                        name="role"
+                        value="LEARNER"
+                        checked
+                />
+                <label for="role1">LEARNER</label>
+
+                <input
+                        type="radio"
+                        id="role2"
+                        name="role"
+                        value="TEACHER"
+                />
+                <label for="role2">TEACHER</label>
               </div>
               <div class="form-group">
                 <div class="register-input-custom password-input">
@@ -401,7 +420,7 @@
         <use id="failAlertIcon" xlink:href="#exclamation-triangle-fill" />
       </svg>
       <div>
-        <span id="alertMsg">Your account was created successfully!</span>
+        <span id="alertMsg">Your account was created successfully!, Please check your email for VERIFICATION</span>
         (<span id="counter">5</span>)
       </div>
     </div>
@@ -416,7 +435,7 @@
         <use xlink:href="#check-circle-fill" />
       </svg>
       <div>
-        <span id="alertMsg">Your account was created successfully!</span>
+        <span id="alertMsg">Your account was created successfully!, Please check your email for VERIFICATION</span>
       </div>
     </div>
     <div

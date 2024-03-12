@@ -22,6 +22,8 @@ public class RegisterRequest {
   @Pattern(message = "Invalid! Try again. (ex. abc@email.com)", regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
   private String email;
 
+  private String role;
+
   @Size(message = "At least 1 chars!", min = 1)
   private String password;
 

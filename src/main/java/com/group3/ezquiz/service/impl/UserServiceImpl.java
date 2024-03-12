@@ -4,6 +4,11 @@ import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
+import com.group3.ezquiz.service.EmailService;
+import com.group3.ezquiz.service.JwtService;
+import jakarta.mail.MessagingException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +26,11 @@ import com.group3.ezquiz.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +38,8 @@ public class UserServiceImpl implements IUserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepo userRepo;
+  private final JwtService jwtService;
+  private final EmailService emailService;
 
   @Override
   public ResponseEntity<?> registerUser(RegisterRequest regUser) {
@@ -45,18 +55,39 @@ public class UserServiceImpl implements IUserService {
             .password(encodedPass)
             .isEnable(true)
             .isVerified(false)
-            .role(Role.LEARNER)
+            .role(Role.valueOf(regUser.getRole()))
             .build());
-
+    sendMail(regUser);
     return ResponseEntity.ok(
         MessageResponse.builder()
-            .message("Your account was created successfully!")
+            .message("Your account was created successfully!, Please check your email for VERIFICATION")
             .timestamp(LocalDateTime.now())
             .build());
   }
 
+  private void sendMail(RegisterRequest user){
+    String email = user.getEmail();
+    String subject = "ezQuiz Verify Account";
+    Resource resource = new ClassPathResource("static/email/email-verify.html");
+      Scanner scanner = null;
+      try {
+          scanner = new Scanner(resource.getInputStream(), StandardCharsets.UTF_8);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+      String content = scanner.useDelimiter("\\A").next();
+    scanner.close();
+    String token = jwtService.generateToken(email);
+    content = content.replace("[token]", token);
+      try {
+          emailService.sendSimpleMessage(email, subject, content);
+      } catch (MessagingException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
   private void validateEmail(String email) {
-    Boolean emailExisted = userRepo.findByEmailAndIsEnableIsTrue(email).isPresent();
+    Boolean emailExisted = userRepo.findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(email).isPresent();
     if (emailExisted) {
       throw new InvalidEmailException("Email existed!");
     } else {
@@ -139,19 +170,29 @@ public class UserServiceImpl implements IUserService {
   }
 
   private User getUserByEmail(String email) {
-    return userRepo.findByEmailAndIsEnableIsTrue(email)
+    return userRepo.findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(email)
         .orElseThrow(() -> new UsernameNotFoundException(email));
   }
 
   @Override
   public void updatePassword(String email, String pass) {
     String encodedPass = passwordEncoder.encode(pass);
-    User user = userRepo.findByEmailAndIsEnableIsTrue(email).get();
+    User user = userRepo.findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(email).get();
     user.setPassword(encodedPass);
     userRepo.save(user);
   }
 
   public boolean checkEmail(String email) {
     return userRepo.existsByEmail(email);
+  }
+
+  @Override
+  public User findUserByEmail(String email) {
+    return userRepo.findUserByEmail(email).get();
+  }
+
+  @Override
+  public void save(User user) {
+    userRepo.save(user);
   }
 }

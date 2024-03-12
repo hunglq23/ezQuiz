@@ -1,6 +1,9 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.service.JwtService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,13 +16,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 @Controller
 @RequiredArgsConstructor
 public class UserController {
 
   private final IUserService userService;
-    private final PasswordEncoder passwordEncoder;
-
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
   @GetMapping("/home")
   public String getHomePage(HttpServletRequest http, Model model) {
     User userRequesting = userService.getUserRequesting(http);
@@ -51,5 +58,15 @@ public class UserController {
     }
     redirectAttributes.addFlashAttribute("successMessage", successMessage);
     return "redirect:/change-password";
+  }
+
+  @GetMapping("/verify-account")
+  public String verifyAccount(HttpServletRequest request, Model model,
+                                    @RequestParam(value = "token") String token) throws IOException {
+    String email = jwtService.getEmailFromToken(token);
+    User user = userService.findUserByEmail(email);
+    user.setIsVerified(true);
+    userService.save(user);
+    return "login";
   }
 }

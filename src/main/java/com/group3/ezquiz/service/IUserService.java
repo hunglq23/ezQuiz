@@ -29,4 +29,7 @@ public interface IUserService {
   void updatePassword(String email, String pass);
 
   boolean checkEmail(String email);
+  User findUserByEmail(String email);
+
+  void save(User user);
 }
