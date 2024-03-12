@@ -3,6 +3,8 @@ package com.group3.ezquiz.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import org.apache.poi.ss.formula.functions.Mode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -14,12 +16,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ClassroomDto;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.service.IClassroomService;
+import com.group3.ezquiz.service.IUserService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ClassroomController {
 
     private final IClassroomService classroomService;
+    private final IUserService userService;
 
     private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
     private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
@@ -85,6 +91,25 @@ public class ClassroomController {
         return "redirect:/classroom/created-list";
     }
 
+    @PreAuthorize(LEARNER_AUTHORITY)
+    @GetMapping("/joined-list")
+    public String JoinClassroomForm(
+            HttpServletRequest request,
+            Model model) {
+        model.addAttribute("classrooms", userService.getUserRequesting(request).getClassJoinings());
+        return "classroom/classroom-list";
+    }
+
+    @PreAuthorize(LEARNER_AUTHORITY)
+    @PostMapping("/join")
+    public String JoinedClassroom(
+            HttpServletRequest request,
+            @RequestParam String code, Model model) {
+        boolean success = classroomService.joinClassroom(request, code);
+        
+        return null;
+    }
+
     @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/download")
     public ResponseEntity<InputStreamResource> getNewClassroomTemplate() throws IOException {
@@ -114,21 +139,21 @@ public class ClassroomController {
                 HttpStatus.OK);
     }
 
-    // @PreAuthorize(TEACHER_AUTHORITY)
-    // @PostMapping("/{id}/import")
-    // public ResponseEntity<?> importMemberClassroomData(
-    //         HttpServletRequest request,
-    //         @PathVariable Long id,
-    //         @RequestParam("file") MultipartFile excelFile,
-    //         Model model) throws BindException {
-
-    //     classroomService.importLearnerDataFromExcel(excelFile, null);
-    //     return new ResponseEntity<>(
-    //             MessageResponse.builder()
-    //                     .message("Import Successfully")
-    //                     .build(),
-    //             HttpStatus.OK);
-    // }
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @PostMapping("/{id}/import")
+    public ResponseEntity<?> importMemberClassroomData(
+            HttpServletRequest request,
+            @PathVariable Long id,
+            @ModelAttribute ExcelFileDto excelFile,
+            Model model) throws BindException {
+        Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
+        classroomService.importLearnerDataFromExcel(excelFile.getExcelFile(), classroom);
+        return new ResponseEntity<>(
+                MessageResponse.builder()
+                        .message("Import Successfully")
+                        .build(),
+                HttpStatus.OK);
+    }
 
     @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/{id}/download")
