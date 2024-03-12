@@ -24,4 +24,8 @@ public interface IClassroomService {
     Classroom updateClassroom(Long id, Classroom updatedClassroom);
 
     void deleteClassById(Long id);
+
+    boolean joinClassroom(HttpServletRequest request, String code);
+
+    
 }
