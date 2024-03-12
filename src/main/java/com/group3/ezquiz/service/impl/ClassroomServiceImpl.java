@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.slf4j.Logger;	
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,20 +83,16 @@ public class ClassroomServiceImpl implements IClassroomService {
         .orElseThrow(() -> new ResourceNotFoundException("Not found classroom"));
   }
 
-
-  
-
   @Override
   public Classroom updateClassroom(Long id, Classroom updatedClassroom) {
     Optional<Classroom> optional = classroomRepo.findById(id);
 
     if (optional.isPresent()) {
       Classroom classroomToUpdate = optional.get();
-      
+
       classroomToUpdate.setName(updatedClassroom.getName());
       classroomToUpdate.setDescription(updatedClassroom.getDescription());
 
-      
       classroomRepo.save(classroomToUpdate);
       System.out.println("Classroom updated sucessfully");
       return classroomToUpdate;
@@ -105,15 +101,25 @@ public class ClassroomServiceImpl implements IClassroomService {
     }
   }
 
-  
-
-  
   @Override
   public void deleteClassById(Long id) {
     Classroom existClassroom = classroomRepo.findClassById(id);
     if (existClassroom != null) {
       classroomRepo.delete(existClassroom);
     }
+  }
+
+  @Override
+  public boolean joinClassroom(HttpServletRequest request, String code) {
+    User learner = userService.getUserRequesting(request);
+    Classroom classroom = classroomRepo.findByCode(code);
+    ClassJoining classJoining = new ClassJoining();
+    if (classroom != null && learner != null) {
+      classJoining.setLearner(learner);
+      classJoining.setClassroom(classroom);
+      
+    }
+    return false;
   }
 
   private String generateClassCode() {
@@ -148,12 +154,8 @@ public class ClassroomServiceImpl implements IClassroomService {
 
   }
 
-    
-  
-
-
   @Override
-  public boolean importLearnerDataFromExcel( MultipartFile excelFile, Classroom classroom) {
+  public boolean importLearnerDataFromExcel(MultipartFile excelFile, Classroom classroom) {
     try (InputStream inputStream = excelFile.getInputStream()) {
       Workbook workbook = WorkbookFactory.create(inputStream);
       classroom = processSheet(workbook.getSheetAt(0), classroom); // only get the first sheet
@@ -233,7 +235,5 @@ public class ClassroomServiceImpl implements IClassroomService {
     Classroom saved = classroomRepo.save(classroom);
     return saved;
   }
-
-  
 
 }
