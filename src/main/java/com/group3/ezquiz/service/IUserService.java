@@ -28,9 +28,7 @@ public interface IUserService {
 
   void updatePassword(String email, String pass);
 
-  boolean checkEmail(String email);
+  boolean checkEmailExist(String email);
 
-User findUserByEmail(String email);
-
-User findLearnerByEmail(String email);
+  User findLearnerByEmail(String email);
 }

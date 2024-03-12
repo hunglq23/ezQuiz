@@ -42,7 +42,7 @@ public class PasswordController {
       @Valid @ModelAttribute("username") String email) throws IOException, MessagingException {
     System.out.println(email);
 
-    boolean isExistEmail = userService.checkEmail(email);
+    boolean isExistEmail = userService.checkEmailExist(email);
     if (!isExistEmail) {
       return "redirect:/forgot-password?error";
     }

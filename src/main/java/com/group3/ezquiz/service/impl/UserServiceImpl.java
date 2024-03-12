@@ -151,19 +151,16 @@ public class UserServiceImpl implements IUserService {
     userRepo.save(user);
   }
 
-  public boolean checkEmail(String email) {
-    return userRepo.existsByEmail(email);
+  @Override
+  public boolean checkEmailExist(String email) {
+    return userRepo.findByEmail(email).isPresent();
   }
 
-  @Override
-  public User findUserByEmail(String email) {
-    return userRepo.findByEmail(email).orElse(null);
-  }
   @Override
   public User findLearnerByEmail(String email) {
     return userRepo
         .findByEmailAndRole(email, Role.LEARNER)
         .orElse(null);
   }
-  
+
 }
