@@ -1,78 +1,51 @@
 package com.group3.ezquiz.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.RequestMapping;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ClassroomDto;
-import com.group3.ezquiz.service.ClassroomService;
+import com.group3.ezquiz.service.IClassroomService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+@RequiredArgsConstructor
+@RequestMapping("/classroom")
 public class ClassroomController {
-    @Autowired
-    private ClassroomService classroomService;
 
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @GetMapping("/classrooms/created")
-    public String getCreatedClassrooms(Model model,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "") String name) {
-        Page<Classroom> classrooms = classroomService.getClassListByPageAndSearchName(page, name);
-        model.addAttribute("classroom", classrooms.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", classrooms.getTotalPages());
-        model.addAttribute("search", name);
-        return "classroom/class-list";
+    private final IClassroomService classroomService;
+
+    private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
+    private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
+
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/created-list")
+    public String getCreatedClassroomPage(HttpServletRequest request, Model model) {
+        List<Classroom> classrooms = classroomService.getCreatedClassroomList(request);
+        model.addAttribute("classrooms", classrooms);
+        return "classroom/classroom-list";
     }
 
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @GetMapping("/classroom/create")
-    public String getClassCreatingForm(Model model) {
-        model.addAttribute("classroom", new ClassroomDto());
-        return "classroom/classroom-creating"; // den file html
+   @PreAuthorize(TEACHER_AUTHORITY)
+    @PostMapping("/create")
+    public ResponseEntity<?> ClassCreating(
+            HttpServletRequest request,
+            @Valid ClassroomDto classroomDto) throws BindException {
+
+        return classroomService.createClass(request, classroomDto); 
     }
+    
 
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @PostMapping("/classroom/create")
-    public String ClassCreating(HttpServletRequest hRequest,
-            @ModelAttribute("classroom") ClassroomDto classroomDto) {
-        classroomService.createClass(hRequest, classroomDto);
-        return "redirect:/classrooms/created"; // den dia chi
-    }
 
-    @GetMapping("/classroom/update/{id}")
-    public String getClassroomCreatingForm(@PathVariable(value = "id") Long id, Model model) {
-        Classroom classroom = classroomService.getClassroomById(id)
-                .orElseThrow(() -> new RuntimeException("Classroom not be found id " + id));
-        ;
-        model.addAttribute(("classroom"), classroom);
-        return "/classroom/classroom-updating";
-    }
 
-    @PostMapping("/classroom/update/{id}")
-
-    public String ClassroomUpdating(@PathVariable(value = "id") Long id,
-            @ModelAttribute("classroom") Classroom updatedClassroom) {
-        classroomService.updateClassroom(id, updatedClassroom);
-        return "redirect:/classrooms/created";
-
-    }
-
-    @GetMapping("/classroom/delete/{id}")
-    public String ClassroomDeleting(@PathVariable(value = "id") Long id) {
-        classroomService.deleteClassroomById(id);
-        return "redirect:/classrooms/created";
-    }
 
 }

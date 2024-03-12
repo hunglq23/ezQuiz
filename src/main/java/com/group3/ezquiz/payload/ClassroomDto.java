@@ -1,14 +1,25 @@
 package com.group3.ezquiz.payload;
 
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Setter
-@NoArgsConstructor
+@Builder
 public class ClassroomDto {
-    private String className;
+
+    @Size(min = 3, message = "Name at lease 3 characters!")
+    private String name;
     private String description;
-    private Long userId;
+
+    public void setName(final String name) {
+        this.name = name.trim().replaceAll("\\s+", " ");
+    }
+
+    public void setDescription(String description) {
+        this.description = description.trim().isEmpty() ? null : description;
+    }
+ 
+    
+    
 }

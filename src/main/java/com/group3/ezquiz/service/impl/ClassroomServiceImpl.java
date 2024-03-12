@@ -1,85 +1,73 @@
 package com.group3.ezquiz.service.impl;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.ClassroomDto;
+import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.repository.ClassroomRepo;
-import com.group3.ezquiz.service.ClassroomService;
+import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
-
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Service
-public class ClassroomServiceImpl implements ClassroomService {
-    @Autowired
-    private ClassroomRepo classroomRepo;
-    @Autowired
-    private IUserService userService;
+@RequiredArgsConstructor
+public class ClassroomServiceImpl implements IClassroomService {
 
-    @Override
-    public void deleteClassroomById(Long id) {
-        Optional<Classroom> optional = classroomRepo.findById(id);
-        if (optional.isPresent()) {
-            Classroom classroom = optional.get();
-            classroomRepo.delete(classroom);
-        } else {
-            throw new EntityNotFoundException("Classroom with id " + id + " not found");
-        }
+  private final Integer MAX_MEMBER_PER_CLASS = 30;
+  private final static Logger log = LoggerFactory.getLogger(ClassroomServiceImpl.class);
+  private final ClassroomRepo classroomRepo;
+  private final IUserService userService;
+
+  @Override
+  public List<Classroom> getCreatedClassroomList(HttpServletRequest request) {
+    User creator = userService.getUserRequesting(request);
+    return classroomRepo.findByCreator(creator);
+  }
+
+  @Override
+  public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDto dto) {
+    User creator = userService.getUserRequesting(request);
+    if( classroomRepo.findByCreatorAndName(creator, dto.getName()).isPresent()){
+       throw new InvalidClassroomException("Classroom name existed!");
     }
-
-    @Override
-    public Optional<Classroom> getClassroomById(Long id) {
-        return classroomRepo.findById(id);
+    Classroom classroom = Classroom.builder()
+        .name(dto.getName())
+        .description(dto.getDescription())
+        .code(generateClassCode())
+        .creator(userService.getUserRequesting(request))
+        .isEnable(true)
+        .build();
+    if (classroom != null) {
+      classroomRepo.save(classroom);
+      return new ResponseEntity<>(
+          MessageResponse.builder()
+              .message("Created class successfully!")
+              .timestamp(LocalDateTime.now())
+              .build(),
+          HttpStatus.OK);
     }
+    return new ResponseEntity<>(
+        MessageResponse.builder()
+            .message("Created fail!")
+            .timestamp(LocalDateTime.now())
+            .build(),
+        HttpStatus.BAD_REQUEST);
+  };
 
-    @Override
-    public Classroom updateClassroom(Long id, Classroom updatedClassroom) {
-        Optional<Classroom> optional = classroomRepo.findById(id);
+  private String generateClassCode() {
+    UUID codeUUID = UUID.randomUUID();
+    String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
+    return codeClass;
+  }
 
-        if (optional.isPresent()) {
-            Classroom classroomToUpdate = optional.get();
-            // Cập nhật thông tin lớp học với dữ liệu mới
-            classroomToUpdate.setClassName(updatedClassroom.getClassName());
-            classroomToUpdate.setDescription(updatedClassroom.getDescription());
-
-            // Lưu lớp học đã cập nhật vào cơ sở dữ liệu và trả về kết quả
-            classroomRepo.save(classroomToUpdate);
-            System.out.println("Classroom updated sucessfully");
-            return classroomToUpdate;
-        } else {
-            throw new RuntimeException("Classroom not found for id: " + id);
-        }
-    }
-
-    @Override
-    public void createClass(HttpServletRequest request, ClassroomDto dto) {
-        String code = generateClassCode(); // Fix cung code "CODE123456"
-
-        // Tiếp tục xử lý khi có người dùng xác thực
-        classroomRepo.save(
-                Classroom.builder()
-                        .className(dto.getClassName())
-                        .description(dto.getDescription())
-                        .code(code)
-                        .isEnable(true)
-                        .creator(userService.getUserRequesting(request))
-                        .build());
-    }
-
-    @Override
-    public Page<Classroom> getClassListByPageAndSearchName(Integer page, String searchName) {
-
-        return classroomRepo.getAllClassroom(searchName, PageRequest.of(page, 5));
-    }
-
-    private String generateClassCode() {
-        return "CODE123456";
-    }
 }

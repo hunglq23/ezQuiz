@@ -78,6 +78,7 @@ public class GlobalExceptionHandler {
         HttpStatus.BAD_REQUEST);
   }
 
+
   @ExceptionHandler(InvalidQuestionException.class)
   public ResponseEntity<ErrorDetails> handleInvalidQuestionException(
       InvalidQuestionException ex,
@@ -88,6 +89,20 @@ public class GlobalExceptionHandler {
             .message("Invalid Question Exception.")
             .details(webRequest.getDescription(false))
             .errors(Map.of("questionError", ex.getMessage()))
+            .build(),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(InvalidClassroomException.class)
+  public ResponseEntity<ErrorDetails> handleInvalidClassroomException(
+    InvalidClassroomException ex,
+      WebRequest webRequest) {
+    return new ResponseEntity<>(
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Invalid Classroom Exception.")
+            .details(webRequest.getDescription(false))
+            .errors(Map.of("nameError", ex.getMessage()))
             .build(),
         HttpStatus.BAD_REQUEST);
   }

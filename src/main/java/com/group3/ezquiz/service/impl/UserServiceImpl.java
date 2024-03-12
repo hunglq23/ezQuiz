@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.group3.ezquiz.exception.InvalidEmailException;
+import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
@@ -58,7 +58,7 @@ public class UserServiceImpl implements IUserService {
   private void validateEmail(String email) {
     Boolean emailExisted = userRepo.findByEmail(email).isPresent();
     if (emailExisted) {
-      throw new InvalidEmailException("Email existed!");
+      throw new InvalidClassroomException("Email existed!");
     } else {
       String[] permitedEmailDomains = { "@gmail.com", "@fpt.edu.vn", "@email" };
       boolean permited = false;
@@ -69,7 +69,7 @@ public class UserServiceImpl implements IUserService {
       }
       if (!permited) {
         String invalidDomain = email.substring(email.indexOf('@') + 1);
-        throw new InvalidEmailException("'" + invalidDomain + "' is invalid domain!");
+        throw new InvalidClassroomException("'" + invalidDomain + "' is invalid domain!");
       }
     }
   }
