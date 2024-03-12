@@ -1,5 +1,6 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.service.EmailService;
 import com.group3.ezquiz.service.JwtService;
 import com.group3.ezquiz.service.IUserService;
@@ -9,12 +10,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +30,7 @@ public class PasswordController {
   private final IUserService userService;
   private final EmailService emailService;
   private final JwtService jwtService;
+  private final PasswordEncoder passwordEncoder;
 
   @GetMapping("/forgot-password")
   public String getForgotPasswordPage(HttpServletRequest request, Model model) {
@@ -75,5 +79,30 @@ public class PasswordController {
     String emailForgot = jwtService.getEmailFromToken(token);
     userService.updatePassword(emailForgot, password);
     return "redirect:/login?passwordChanged";
+  }
+
+  @GetMapping("/change-password")
+  public String getProfilePage(HttpServletRequest http, Model model) {
+    User userRequesting = userService.getUserRequesting(http);
+    model.addAttribute("user", userRequesting);
+    return "password-change";
+  }
+
+  @PostMapping("/update-password")
+  public String updatePass(HttpServletRequest http, Model model,
+      @Valid @ModelAttribute("oldPass") String oldPass,
+      @Valid @ModelAttribute("newPass") String newPass,
+      @Valid @ModelAttribute("reNewPass") String reNewPass, RedirectAttributes redirectAttributes) {
+    User userRequesting = userService.getUserRequesting(http);
+    boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
+    model.addAttribute("user", userRequesting);
+    String successMessage = "updated fail!";
+    if (isPasswordCorrect && newPass.equals(reNewPass)) {
+      userService.updatePassword(userRequesting.getEmail(), newPass);
+      model.addAttribute("message", "success");
+      successMessage = "updated successfully!";
+    }
+    redirectAttributes.addFlashAttribute("successMessage", successMessage);
+    return "redirect:/change-password";
   }
 }
