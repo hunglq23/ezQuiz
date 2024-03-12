@@ -44,9 +44,9 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/{id}/edit")
   public String getQuizEditPage(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      Model model) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     model.addAttribute("quiz", quiz);
     return "quiz/quiz-editing";
@@ -55,10 +55,10 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/{id}/edit/create-question")
   public String getQuestionCreatingForm(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @RequestParam(required = false, defaultValue = "") String type,
-      Model model) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @RequestParam(required = false, defaultValue = "") String type,
+          Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     if (!Quiz.AVAILABLE_TYPES.contains(type)) {
       return "redirect:/quiz/" + id + "/edit/create-question?type=single-choice";
@@ -71,11 +71,11 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @PostMapping("/{id}/add-question")
   public ResponseEntity<?> submitQuestionCreatingInQuiz(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @RequestParam String type,
-      @RequestParam(name = "qText") String questionText,
-      @RequestParam Map<String, String> params) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @RequestParam String type,
+          @RequestParam(name = "qText") String questionText,
+          @RequestParam Map<String, String> params) {
 
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     Quiz saved = quizService.handleQuestionCreatingInQuiz(quiz, type, questionText, params);
@@ -83,18 +83,18 @@ public class QuizController {
       return ResponseEntity.badRequest().body("Failed!");
     }
     return ResponseEntity.ok(
-        MessageResponse.builder()
-            .message(questionText)
-            .timestamp(LocalDateTime.now())
-            .build());
+            MessageResponse.builder()
+                    .message(questionText)
+                    .timestamp(LocalDateTime.now())
+                    .build());
   }
 
   @PreAuthorize(TEACHER_AUTHORITY)
   @PutMapping("/{id}/edit")
   public ResponseEntity<?> updateQuizDetails(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
 
     return quizService.handleQuizUpdatingRequest(request, id, dto);
   }
@@ -102,27 +102,38 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/my-quiz")
   public String showQuizList(
-      HttpServletRequest request,
-      @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
-      @RequestParam(required = false, value = "draft") Boolean isDraft,
-      @RequestParam(required = false, value = "page") Optional<Integer> page,
-      @RequestParam(required = false, value = "size") Optional<Integer> size,
-      Model model) {
+          HttpServletRequest request,
+          @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
+          @RequestParam(required = false, value = "draft") Boolean isDraft,
+          @RequestParam(required = false, value = "page") Optional<Integer> page,
+          @RequestParam(required = false, value = "size") Optional<Integer> size,
+          Model model) {
 
     String sort = sortOrder.orElse("latest");
     Integer currentPage = page.orElse(1);
     Integer pageSize = size.orElse(3);
 
+    String draftParam = isDraft == null ? "" : isDraft.toString();
+    if (currentPage < 1)
+      return "redirect:/quiz/my-quiz?sort=" + sort +
+              "&draft=" + draftParam +
+              "&page=1&size=" + pageSize;
+
     Page<QuizDto> quizPage = quizService.getQuizInLibrary(
-        request, sort, isDraft,
-        PageRequest.of(currentPage - 1, pageSize));
+            request, sort, isDraft, PageRequest.of(currentPage - 1, pageSize));
 
     int maxPage = quizPage.getTotalPages();
+    if (currentPage > maxPage) {
+      return "redirect:/quiz/my-quiz?sort=" + sort +
+              "&draft=" + draftParam +
+              "&page=" + maxPage +
+              "&size=" + pageSize;
+    }
     int curPage = quizPage.getNumber() + 1;
 
     model.addAttribute("quiz", quizPage);
     model.addAttribute("isDraft", isDraft);
-    model.addAttribute("sort", sortOrder);
+    model.addAttribute("sort", sort);
     model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
     model.addAttribute("pageSize", quizPage.getSize());
     model.addAttribute("max", maxPage);
