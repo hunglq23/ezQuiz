@@ -3,7 +3,7 @@ package com.group3.ezquiz.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
+import java.util.UUID;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.ClassroomDto;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
@@ -66,6 +71,25 @@ public class ClassroomController {
         return "classroom/classroom-detail";
     }
 
+    @PostMapping("/{id}/update")
+    public String ClassroomUpdating(
+            @PathVariable(value = "id") Long id,
+            @ModelAttribute("classroom") Classroom updatedClassroom,
+            RedirectAttributes redirectAttributes) {
+        classroomService.updateClassroom(id, updatedClassroom);
+        redirectAttributes.addFlashAttribute("successMessage", "Classroom updated successfully!");
+        return "redirect:/classroom/" + id;
+
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/{id}/delete")
+    public String ClassDeleting(
+            @PathVariable(value = "id") Long id) {
+        classroomService.deleteClassById(id);
+        return "redirect:/classroom/created-list";
+    }
+
     @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/download")
     public ResponseEntity<InputStreamResource> getNewClassroomTemplate() throws IOException {
@@ -100,12 +124,30 @@ public class ClassroomController {
     // public ResponseEntity<?> importMemberClassroomData(
     //         HttpServletRequest request,
     //         @PathVariable Long id,
-
+    //         @RequestParam("file") MultipartFile excelFile,
     //         Model model) throws BindException {
-    //             classroomService.importLearnerDataFromExcel();
-    //     return null;
+
+    //     classroomService.importLearnerDataFromExcel(excelFile, null);
+    //     return new ResponseEntity<>(
+    //             MessageResponse.builder()
+    //                     .message("Import Successfully")
+    //                     .build(),
+    //             HttpStatus.OK);
     // }
 
-   
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/{id}/download")
+    public ResponseEntity<InputStreamResource> getNewLeanerTemplate() throws IOException {
+        ClassPathResource resource = new ClassPathResource("static/classroom/Template.xlsx");
+        InputStream inputStream = resource.getInputStream();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Template.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(new InputStreamResource(inputStream));
+    }
 
 }
