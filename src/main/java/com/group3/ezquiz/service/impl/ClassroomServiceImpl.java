@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.ClassJoining;
@@ -84,6 +83,39 @@ public class ClassroomServiceImpl implements IClassroomService {
         .orElseThrow(() -> new ResourceNotFoundException("Not found classroom"));
   }
 
+
+  
+
+  @Override
+  public Classroom updateClassroom(Long id, Classroom updatedClassroom) {
+    Optional<Classroom> optional = classroomRepo.findById(id);
+
+    if (optional.isPresent()) {
+      Classroom classroomToUpdate = optional.get();
+      
+      classroomToUpdate.setName(updatedClassroom.getName());
+      classroomToUpdate.setDescription(updatedClassroom.getDescription());
+
+      
+      classroomRepo.save(classroomToUpdate);
+      System.out.println("Classroom updated sucessfully");
+      return classroomToUpdate;
+    } else {
+      throw new RuntimeException("Classroom not found for id: " + id);
+    }
+  }
+
+  
+
+  
+  @Override
+  public void deleteClassById(Long id) {
+    Classroom existClassroom = classroomRepo.findClassById(id);
+    if (existClassroom != null) {
+      classroomRepo.delete(existClassroom);
+    }
+  }
+
   private String generateClassCode() {
     UUID codeUUID = UUID.randomUUID();
     String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
@@ -113,6 +145,23 @@ public class ClassroomServiceImpl implements IClassroomService {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+  }
+
+    
+  
+
+
+  @Override
+  public boolean importLearnerDataFromExcel( MultipartFile excelFile, Classroom classroom) {
+    try (InputStream inputStream = excelFile.getInputStream()) {
+      Workbook workbook = WorkbookFactory.create(inputStream);
+      classroom = processSheet(workbook.getSheetAt(0), classroom); // only get the first sheet
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return classroom != null;
 
   }
 
@@ -184,5 +233,7 @@ public class ClassroomServiceImpl implements IClassroomService {
     Classroom saved = classroomRepo.save(classroom);
     return saved;
   }
+
+  
 
 }
