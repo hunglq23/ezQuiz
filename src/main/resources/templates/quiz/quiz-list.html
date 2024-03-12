@@ -411,9 +411,9 @@
                                 >
                                     <span class="fas fa-filter"></span>
                                     <div style="width: 88px">
-                                        <span th:if="${param.draft==null}"> All </span>
+                                        <span th:if="${isDraft == null}"> All </span>
                                         <span
-                                                th:unless="${param.draft==null}"
+                                                th:if="${isDraft != null}"
                                                 th:text="${isDraft == false ? 'Not Draft' : 'Draft' }"
                                                 style="text-transform: capitalize"
                                         ></span>
@@ -503,12 +503,35 @@
                                     >
                                         draft
                                     </div>
-                                    <button
-                                            class="btn btn-sm bg-white position-absolute"
-                                            style="right: 10px; top: 8px; padding: 3px 8px 2px 8px"
-                                    >
-                                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                                    </button>
+                                    <div class="dropdown position-absolute ellipsis-toggle">
+                                        <button
+                                                class="btn"
+                                                aria-expanded="false"
+                                                data-bs-toggle="dropdown"
+                                                style="right: 0"
+                                        >
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" type="button"
+                                                th:href="@{/quiz/{id}/edit(id=${quiz.id})}">
+                                                    <i class="fa-regular fa-pen-to-square"> </i>
+                                                    Edit Quiz Detail
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a
+                                                        type="button"
+                                                        class="dropdown-item"
+                                                        th:href="@{/quiz/delete/{id}(id=${quiz.id})}"
+                                                        onclick="confirm('Are you sure you want to delete this Quiz?')"
+                                                >
+                                                    <i class="fa-solid fa-trash"> </i> Delete Quiz
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 <!-- quiz title -->
                                 <h6 class="my-0" th:text="${quiz.title}">Quiz Title</h6>
@@ -554,7 +577,7 @@
 
                                     <div>
                                         <button class="btn btn-sm btn-primary m-0 py-0">
-                                            Play
+                                            Assign
                                             <i class="fas fa-caret-down"></i>
                                         </button>
                                     </div>

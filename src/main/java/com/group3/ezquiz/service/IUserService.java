@@ -29,5 +29,5 @@ public interface IUserService {
 
   void delete(Long id);
 
-  List<ObjectDto> getQuizAndClassroomByTeacher(HttpServletRequest http, String sortOrder);
+  Page<ObjectDto> getQuizAndClassroomByTeacher(HttpServletRequest http, String sortOrder, Pageable pageable);
 }

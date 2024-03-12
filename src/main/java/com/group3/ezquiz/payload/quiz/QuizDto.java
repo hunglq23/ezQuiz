@@ -2,12 +2,15 @@ package com.group3.ezquiz.payload.quiz;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuizDto {
+    private UUID id;
     private String type;
     private String title;
     private String description;

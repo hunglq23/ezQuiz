@@ -46,8 +46,8 @@
     />
 
     <style>
-        .page-content {
-            min-height: 90vh;
+        .body {
+            height: 100vh;
         }
 
         .sticky-nav {
@@ -108,6 +108,27 @@
             }
             .filter-label {
                 margin-left: 12px;
+            }
+        }
+
+        .pagination {
+            gap: 3px;
+            align-items: center;
+        }
+
+        .page-item .page-link {
+            border: none;
+            background-color: transparent;
+            border-radius: 7px;
+            &:hover {
+                color: #8854c0;
+            }
+        }
+
+        .page-item.active .page-link {
+            background-color: #ac82d8;
+            &:hover {
+                color: #fff;
             }
         }
     </style>
@@ -286,16 +307,6 @@
                         </a>
                     </li>
                     <li class="nav-link w-100 p-0 rounded-1">
-                        <a class="btn btn-sm d-flex" href="question/question-list.html">
-                            <div class="square-33-center-item rotate-on-hover">
-                                <i class="fas fa-clipboard-question"></i>
-                            </div>
-                            <div class="d-flex align-items-center flex-1">
-                                <span>Question</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="nav-link w-100 p-0 rounded-1">
                         <a
                                 class="btn btn-sm d-flex"
                                 href="classroom/class-list.html"
@@ -311,6 +322,89 @@
                     </li>
                 </ul>
                 <div class="divider left-content-divider"></div>
+                <div th:if="${max > 1}" class="mt-2">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center bg-light">
+                            <li class="page-item">
+                                <button
+                                        type="button"
+                                        class="page-link"
+                                        onclick="prevPage()"
+                                        aria-label="Previous"
+                                >
+                                    &lt;&nbsp;Prev
+                                </button>
+                            </li>
+                            <li
+                                    class="page-item"
+                                    th:classappend="${currentPage == 1 ? 'active' : ''}"
+                            >
+                                <a class="page-link page-index" role="button">1</a>
+                            </li>
+                            <div th:if="${max > 3}">
+                                <li
+                                        th:if="${currentPage < 3}"
+                                        class="page-item ms-0 me-3"
+                                        th:classappend="${currentPage == 2 ? 'active' : ''}"
+                                >
+                                    <a class="page-link page-index" role="button">2</a>
+                                </li>
+                                <li
+                                        th:if="${currentPage > 2 && currentPage < max - 1}"
+                                        class="page-item mx-2 active"
+                                >
+                                    <a
+                                            class="page-link page-index"
+                                            role="button"
+                                            th:text="${currentPage}"
+                                    >98</a
+                                    >
+                                </li>
+                                <li
+                                        th:if="${currentPage > max - 2}"
+                                        class="page-item ms-3 me-0"
+                                        th:classappend="${currentPage == max - 1 ? 'active' : ''}"
+                                >
+                                    <a
+                                            class="page-link page-index"
+                                            th:text="${max - 1}"
+                                            role="button"
+                                    >98</a
+                                    >
+                                </li>
+                            </div>
+                            <div th:if="${max == 3}">
+                                <li
+                                        class="page-item"
+                                        th:classappend="${currentPage == 2 ? 'active' : ''}"
+                                >
+                                    <a class="page-link page-index" role="button">2</a>
+                                </li>
+                            </div>
+                            <li
+                                    class="page-item"
+                                    th:classappend="${currentPage == max ? 'active' : ''}"
+                            >
+                                <a
+                                        class="page-link page-index"
+                                        role="button"
+                                        th:text="${max}"
+                                >99</a
+                                >
+                            </li>
+                            <li class="page-item">
+                                <button
+                                        type="button"
+                                        class="page-link"
+                                        aria-label="Next"
+                                        onclick="nextPage()"
+                                >
+                                    Next&nbsp;&gt;
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
             <!-- </Left Nav> -->
 
@@ -329,75 +423,17 @@
                         <div class="navbar-nav d-flex flex-column">
                             <div class="nav-item dropdown">
                                 <button
-                                        class="btn dropdown-toggle btn-sm bg-white p-0"
-                                        role="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                        style="width: 88px"
-                                >
-                                    <span class="fas fa-filter" style="margin: 0 3px"></span>
-                                    <span th:if="${param.sortOrder==null}"> All </span>
-                                    <span
-                                            th:unless="${param.sortOrder==null}"
-                                            th:text="${param.sortOrder}"
-                                            style="text-transform: capitalize"
-                                    ></span>
-                                </button>
-                                <!-- Fitler dropdown -->
-                                <div
-                                        id="filterDropdown"
-                                        class="dropdown-menu bg-white shadow animated--grow-in p-0"
-                                        aria-labelledby="filterDropdown"
-                                        style="min-width: 0; width: 88px"
-                                >
-                                    <input
-                                            type="radio"
-                                            name="draft"
-                                            value="true"
-                                            class="btn-check"
-                                            id="isDraft"
-                                            autocomplete="off"
-                                    />
-                                    <button
-                                            type="submit"
-                                            class="dropdown-item btn btn-sm p-0"
-                                    >
-                                        <label class="filter-label" for="isDraft">Draft</label>
-                                    </button>
-                                    <input
-                                            type="radio"
-                                            name="draft"
-                                            value="false"
-                                            class="btn-check"
-                                            id="notDraft"
-                                            autocomplete="off"
-                                    />
-                                    <button
-                                            type="submit"
-                                            class="dropdown-item btn btn-sm p-0"
-                                    >
-                                        <label class="filter-label" for="notDraft"
-                                        >Not draft</label
-                                        >
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="navbar-nav d-flex flex-column">
-                            <div class="nav-item dropdown">
-                                <button
-                                        class="btn dropdown-toggle btn-sm bg-white p-0"
+                                        class="btn dropdown-toggle btn-sm bg-white p-0 px-2 d-flex align-items-center"
                                         role="button"
                                         data-toggle="dropdown"
                                         aria-haspopup="true"
                                         aria-expanded="false"
                                 >
-                                    <span class="fas fa-sort" style="margin: 0 3px"></span>
-                                    <span th:if="${param.sortOrder==null}"> Latest </span>
+                                    <span class="fas fa-sort me-2"></span>
+                                    <span th:if="${sort==null}"> Latest </span>
                                     <span
-                                            th:unless="${param.sortOrder==null}"
-                                            th:text="${param.sortOrder}"
+                                            th:unless="${sort==null}"
+                                            th:text="${sort}"
                                             style="text-transform: capitalize"
                                     ></span>
                                 </button>
@@ -406,41 +442,18 @@
                                         id="sortDropdown"
                                         class="dropdown-menu bg-white shadow animated--grow-in p-0"
                                         aria-labelledby="sortDropdown"
-                                        style="min-width: 0; width: 88px"
+                                        style="min-width: 0; width: 123px"
                                 >
-                                    <input
-                                            type="radio"
-                                            name="sortOrder"
-                                            value="latest"
-                                            class="btn-check"
-                                            id="sortLatest"
-                                            autocomplete="off"
-                                            checked
-                                    />
-                                    <button
-                                            type="submit"
-                                            class="dropdown-item btn btn-sm p-0"
+                                    <a
+                                            class="dropdown-item btn btn-sm p-0 sort-type text-center"
                                     >
-                                        <label class="sort-label text-center" for="sortLatest"
-                                        >Latest</label
-                                        >
-                                    </button>
-                                    <input
-                                            type="radio"
-                                            name="sortOrder"
-                                            value="oldest"
-                                            class="btn-check"
-                                            id="sortOldest"
-                                            autocomplete="off"
-                                    />
-                                    <button
-                                            type="submit"
-                                            class="dropdown-item btn btn-sm p-0"
+                                        <span class="text-capitalize">latest</span>
+                                    </a>
+                                    <a
+                                            class="dropdown-item btn btn-sm p-0 sort-type text-center"
                                     >
-                                        <label class="sort-label text-center" for="sortOldest"
-                                        >Oldest</label
-                                        >
-                                    </button>
+                                        <span class="text-capitalize">oldest</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -550,5 +563,41 @@
         src="https://kit.fontawesome.com/b16b259998.js"
         crossorigin="anonymous"
 ></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const sort = /*[[${sort == null ? '' : sort.toString()}]]*/ "";
+    const pageSize = /*[[${pageSize}]]*/ 1;
+    const page = /*[[${currentPage}]]*/ 1;
+    $(document).ready(function () {
+        $(".sort-type").each(function () {
+            let sortType = $(this).find("span").text();
+            $(this).on("click", function () {
+                console.log(sortType);
+                location.href = `/library?sort=${sortType}&page=${page}&size=${pageSize}`;
+            });
+        });
+
+        $(".page-index").each(function () {
+            const pageIndex = $(this).text();
+            $(this).on("click", function () {
+                location.href = `/library?sort=${sort}&page=${pageIndex}&size=${pageSize}`;
+            });
+        });
+    });
+
+    function prevPage() {
+        location.href = `/library?sort=${sort}&page=${
+            page - 1
+        }&size=${pageSize}`;
+    }
+
+    function nextPage() {
+        location.href = `/library?sort=${sort}&page=${
+            page + 1
+        }&size=${pageSize}`;
+    }
+    /*]]>*/
+</script>
 </body>
 </html>

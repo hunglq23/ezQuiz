@@ -105,6 +105,7 @@ public class QuizServiceImpl implements IQuizService {
       HttpServletRequest http,
       String sortOrder,
       Boolean isDraft,
+
       Pageable pageable) {
     User userRequesting = userService.getUserRequesting(http);
     Page<Quiz> quizByCreator;
@@ -123,13 +124,34 @@ public class QuizServiceImpl implements IQuizService {
 
   private QuizDto mapToQuizDto(Quiz quiz) {
     return QuizDto.builder()
-        .type("Quiz")
-        .title(quiz.getTitle())
-        .description(quiz.getDescription())
-        .image(quiz.getImageUrl())
-        .isDraft(quiz.getIsDraft())
-        .itemNumber(quiz.getQuestions().size())
-        .timeString(quiz.getCreatedAt().toString())
-        .build();
+            .id(quiz.getId())
+            .type("Quiz")
+            .title(quiz.getTitle())
+            .description(quiz.getDescription())
+            .image(quiz.getImageUrl())
+            .isDraft(quiz.getIsDraft())
+            .itemNumber(quiz.getQuestions().size())
+            .timeString(quiz.getCreatedAt().toString())
+            .build();
+  }
+
+  @Override
+  public Quiz findQuizById(UUID id) {
+    Quiz quizById = quizRepo.findQuizById(id);
+    if (quizById != null) {
+      return quizById;
+    }
+    throw new ResourceNotFoundException("Cannot find quiz with" + id);
+  }
+
+  @Override
+  public void deleteQuiz(UUID id) {
+    Optional<Quiz> optionalQuiz = quizRepo.findById(id);
+    if (optionalQuiz.isPresent()) {
+      Quiz existedQuiz = optionalQuiz.get();
+      quizRepo.delete(existedQuiz);
+    } else {
+      throw new ResourceNotFoundException("Quiz with id " + id + "not found!");
+    }
   }
 }

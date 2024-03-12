@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import com.group3.ezquiz.model.User;
 
@@ -34,6 +35,8 @@ public interface QuizRepo extends JpaRepository<Quiz, UUID> {
                              Pageable pageable);
 
   List<Quiz> findByCreator(User userRequesting);
+
+  Quiz findQuizById(UUID id);
 
   // @Query("SELECT q FROM Quiz q WHERE " +
   // "(:code IS NULL OR q.code LIKE %:code%) OR " +

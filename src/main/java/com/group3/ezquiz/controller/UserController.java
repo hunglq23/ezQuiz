@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,16 +37,31 @@ public class UserController {
 
   @GetMapping("/library")
   public String getLibraryPage(
-          HttpServletRequest http,
-          Model model,
-          @RequestParam(required = false, defaultValue = "latest") String sortOrder) {
-    String[] availableSortList = {"latest", "oldest"};
-    if(availableSortList.equals(sortOrder)){
-      return "redirect:/library?sortOrder=latest";
+          HttpServletRequest request,
+          @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
+          @RequestParam(required = false, value = "page") Optional<Integer> page,
+          @RequestParam(required = false, value = "size") Optional<Integer> size,
+          Model model) {
+    String sort = sortOrder.orElse("latest");
+    Integer currentPage = page.orElse(1);
+    Integer pageSize = size.orElse(3);
+    if (currentPage < 1)
+      return "redirect:/quiz/my-quiz?sort=" + sort +
+              "&page=1&size=" + pageSize;
+    Page<ObjectDto> objectDtoList = userService.getQuizAndClassroomByTeacher(
+            request, sort, PageRequest.of(currentPage -1, pageSize));
+    int maxPage = objectDtoList.getTotalPages();
+    if (currentPage > maxPage) {
+      return "redirect:/quiz/my-quiz?sort=" + sort +
+              "&page=" + maxPage +
+              "&size=" + pageSize;
     }
-    List<ObjectDto> objectDtoList = userService.getQuizAndClassroomByTeacher(http, sortOrder);
+    int curPage = objectDtoList.getNumber() + 1;
     model.addAttribute("object", objectDtoList);
-    model.addAttribute("sort", sortOrder);
+    model.addAttribute("sort", sort);
+    model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
+    model.addAttribute("pageSize", objectDtoList.getSize());
+    model.addAttribute("max", maxPage);
     return "library";
   }
 

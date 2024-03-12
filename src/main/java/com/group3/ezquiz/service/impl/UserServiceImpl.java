@@ -12,6 +12,8 @@ import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.utils.Utility;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -152,7 +154,10 @@ public class UserServiceImpl implements IUserService {
   }
 
   @Override
-  public List<ObjectDto> getQuizAndClassroomByTeacher(HttpServletRequest http, String sortOrder) {
+  public Page<ObjectDto> getQuizAndClassroomByTeacher(
+          HttpServletRequest http,
+          String sortOrder,
+          Pageable pageable) {
     User userRequesting = getUserRequesting(http);
     List<Quiz> quizByUser = quizRepo.findByCreator(userRequesting);
     List<Classroom> classroomByUser = classroomRepo.findByCreator(userRequesting);
@@ -174,7 +179,13 @@ public class UserServiceImpl implements IUserService {
     objectDtoList.forEach(objectDto -> objectDto.setTimeString(
             Utility.calculateTimeElapsed(
                     Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
-    return objectDtoList;
+    int pageSize = pageable.getPageSize();
+    int currentPage = pageable.getPageNumber();
+    int startItem = currentPage * pageSize;
+    List<ObjectDto> pagedObjectDtoList;
+    int toIndex = Math.min(startItem + pageSize, objectDtoList.size());
+    pagedObjectDtoList = objectDtoList.subList(startItem, toIndex);
+    return new PageImpl<>(pagedObjectDtoList, PageRequest.of(currentPage, pageSize), objectDtoList.size());
   }
 
   private ObjectDto createQuizObjectDto(Quiz quiz) {

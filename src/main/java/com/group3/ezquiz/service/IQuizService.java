@@ -25,4 +25,8 @@ public interface IQuizService {
   ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
 
   Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
+
+  Quiz findQuizById(UUID id);
+
+  void deleteQuiz(UUID id);
 }

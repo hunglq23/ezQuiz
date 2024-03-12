@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.BindException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -108,7 +109,6 @@ public class QuizController {
           @RequestParam(required = false, value = "page") Optional<Integer> page,
           @RequestParam(required = false, value = "size") Optional<Integer> size,
           Model model) {
-
     String sort = sortOrder.orElse("latest");
     Integer currentPage = page.orElse(1);
     Integer pageSize = size.orElse(3);
@@ -138,5 +138,11 @@ public class QuizController {
     model.addAttribute("pageSize", quizPage.getSize());
     model.addAttribute("max", maxPage);
     return "quiz/quiz-list";
+  }
+
+  @GetMapping("/delete/{id}")
+  public String deleteQuestion(@PathVariable UUID id) {
+    quizService.deleteQuiz(id);
+    return "redirect:/quiz/my-quiz";
   }
 }

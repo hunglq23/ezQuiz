@@ -79,4 +79,9 @@ public class Quiz {
   @Temporal(TemporalType.TIMESTAMP)
   @UpdateTimestamp
   private Timestamp updatedAt;
+
+  public String getTitle() {
+    return this.title == null ? "" : this.title;
+  }
+
 }
