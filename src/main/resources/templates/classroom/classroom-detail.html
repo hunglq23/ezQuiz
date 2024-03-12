@@ -275,7 +275,9 @@
                   <th scope="col"></th>
                 </tr>
               </thead>
-              <div th:if="${classroom.classJoinings.size() == 0}">Hi No Student</div>
+              <div th:if="${classroom.classJoinings.size() == 0}">
+                Hi No Student
+              </div>
               <tbody
                 th:unless="${classroom.classJoinings.size() == 0}"
                 th:each="classJoining, iStat: ${classroom.classJoinings}"
@@ -285,7 +287,9 @@
                   <th scope="row" th:text="${iStat.index + 1}">1</th>
                   <td th:text="${classJoining.learnerDisplayedName}">Mark</td>
                   <td th:text="${classJoining.getLearner().email}">Otto</td>
-                  <td th:text="${classJoining.learnerDisplayedPhone}">123456799</td>
+                  <td th:text="${classJoining.learnerDisplayedPhone}">
+                    123456799
+                  </td>
                   <td class="action">
                     <a
                       class="btn btn-sm bg-light"
@@ -441,8 +445,6 @@
       </form>
     </div>
 
-    
-
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check-circle-fill" viewBox="0 0 16 16">
         <path
@@ -544,39 +546,12 @@
       </div>
     </div>
 
-    <!-- <script>
-      function removeMember(event) {
-        if (confirm("Are you sure want to remove this student?")) {
-          var row = event.target.closest("tr");
-          var memberId = row
-            .querySelector("[member.id]")
-            .getAttribute("member.id");
-
-          var xhr = new XMLHttpRequest();
-          xhr.open(
-            "POST",
-            "http://localhost:8080/classroom/{id}/remove-member(id=${classroom.id}, memberId={member.id})",
-            true
-          );
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-              if (xhr.status === 200) {
-                row.remove();
-              } else {
-                console.error("Error while remove members");
-              }
-            }
-          };
-          xhr.send(JSON.stringify({ memberId: memberId }));
-        } else {
-          event.preventDefault();
-        }
-      }
-    </script> -->
-
     <script>
-   
+      function clickSaveAndContinue() {
+        handleFormSubmitByIdAndMethod("excelImportForm", function () {
+          window.location.href = "/classroom/{id}?imported";
+        });
+      }
     </script>
   </body>
 </html>
