@@ -2,6 +2,7 @@ package com.group3.ezquiz.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ClassroomDto;
+import com.group3.ezquiz.payload.ExcelFileDto;
+import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -89,7 +93,7 @@ public class ClassroomController {
             Model model) {
         model.addAttribute(
                 "classrooms",
-                userService.getUserRequesting(request).getJoinedClassrooms());
+                userService.getUserRequesting(request).getClassJoinings());
         return "classroom/classroom-list";
     }
 
@@ -100,11 +104,11 @@ public class ClassroomController {
             @RequestParam String code, Model model) {
         boolean success = classroomService.joinClassroom(request, code);
         if (success) {
-            model.addAttribute("classrooms", userService.getUserRequesting(request).getJoinedClassrooms());
+            model.addAttribute("classrooms", userService.getUserRequesting(request).getClassJoinings());
             return "redirect:/classroom/joined-list?joined";
         }
         return "redirect:/error";
-    }
+     }
 
     @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/{id}/remove-member")
@@ -116,6 +120,30 @@ public class ClassroomController {
         Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
         model.addAttribute("classroom", classroomService.removeMemberFromClassroomByMemberId(classroom, memberId));
         return "classroom/classroom-update";
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @PostMapping("/import")
+
+    public ResponseEntity<?> importClassroomData(
+            HttpServletRequest request,
+            @ModelAttribute ExcelFileDto fileDto) throws BindException {
+        classroomService.importClassroomDataFromExcel(request, fileDto.getExcelFile());
+        return new ResponseEntity<>(
+                MessageResponse.builder()
+                        .message("Import Successfully")
+                        .build(),
+                HttpStatus.OK);
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @PostMapping("/{id}/import")
+    public ResponseEntity<?> importMemberClassroomData(
+            HttpServletRequest request,
+            @PathVariable Long id,
+
+            Model model) throws BindException {
+        return null;
     }
 
 }

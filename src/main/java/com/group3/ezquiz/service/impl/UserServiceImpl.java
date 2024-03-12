@@ -143,4 +143,11 @@ public class UserServiceImpl implements IUserService {
         .orElseThrow(() -> new UsernameNotFoundException(email));
   }
 
+  @Override
+  public User findUserByEmail(String email) {
+    return userRepo.findByEmail(email) 
+    .orElse(null);
+  }
+
+ 
 }

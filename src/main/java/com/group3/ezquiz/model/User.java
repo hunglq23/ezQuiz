@@ -64,8 +64,8 @@ public class User {
   @UpdateTimestamp
   private Timestamp updatedAt;
 
-  @ManyToMany(mappedBy = "members")
-  private List<Classroom> joinedClassrooms;
+  @OneToMany(mappedBy = "learner")
+  private List<ClassJoining> classJoinings;
 
   public Boolean isLearner() {
     return role == Role.LEARNER;

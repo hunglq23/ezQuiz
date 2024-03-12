@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -55,11 +56,6 @@ public class Classroom {
         @JoinColumn(name = "created_id")
         private User creator;
 
-        @ManyToMany
-        @JoinTable(name = "_class_joining", joinColumns = {
-                        @JoinColumn(name = "class_id", referencedColumnName = "id")
-        }, inverseJoinColumns = {
-                        @JoinColumn(name = "user_id", referencedColumnName = "id")
-        })
-        private List<User> members;
+        @OneToMany(mappedBy = "classroom")
+        private List<ClassJoining> classJoinings;
 }

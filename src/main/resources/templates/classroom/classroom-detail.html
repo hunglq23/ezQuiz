@@ -488,67 +488,66 @@
     <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
 
     <!-- Add student in excel file -->
-    <!-- <div
-    class="modal fade"
-    id="excelImport"
-    tabindex="-1"
-    aria-labelledby="excelImportLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog mt-5">
-      <div class="modal-content border-0">
-        <div class="modal-header p-2 align-items-start">
-          <div>
-            <h5 class="modal-title" id="excelImportLabel">
-              Import questions from excel file
-            </h5>
-            <p class="fw-lighter fst-italic m-0" style="font-size: small">
-              Please upload questions according to the template below
-            </p>
+    <div
+      class="modal fade"
+      id="excelImport"
+      tabindex="-1"
+      aria-labelledby="excelImportLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog mt-5">
+        <div class="modal-content border-0">
+          <div class="modal-header p-2 align-items-start">
+            <div>
+              <h5 class="modal-title" id="excelImportLabel">
+                Import classrooms and students
+              </h5>
+              <p class="fw-lighter fst-italic m-0" style="font-size: small">
+                Please upload the excel file according to the template below
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn-sm btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
-          <button
-            type="button"
-            class="btn-sm btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <form
-            id="excelImportForm"
-            th:action="@{/classroom/{id}/import(id=${classroom.id})}"
-            enctype="multipart/form-data"
-            class="input-group mb-3"
-          >
-            <input
-              type="file"
-              class="form-control"
-              name="excelFile"
-              id="inputExcelFile"
-            />
-          </form>
-        </div>
-        <div class="modal-footer p-1 d-flex justify-content-between">
-          <a
-            th:href="@{/quiz/download}"
-            download="Book3.xlsx"
-            class="btn btn-sm bg-light px-2 glitter-button"
-          >
-            <i class="fas fa-download me-1"></i>Download template
-          </a>
-          <button
-            class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
-            onclick="handleFormSubmitByIdAndMethod('excelImportForm')"
-          >
-            Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
-          </button>
+          <div class="modal-body">
+            <form
+              id="excelImportForm"
+              th:action="@{/classroom/{id}/import(id=${classroom.id})}"
+              enctype="multipart/form-data"
+              class="input-group mb-3"
+            >
+              <input
+                type="file"
+                class="form-control"
+                name="excelFile"
+                id="inputExcelFile"
+              />
+            </form>
+          </div>
+          <div class="modal-footer p-1 d-flex justify-content-between">
+            <a
+              th:href="@{classroom/download}"
+              download="Template.xlsx"
+              class="btn btn-sm bg-light px-2 glitter-button"
+            >
+              <i class="fas fa-download me-1"></i>Download template
+            </a>
+            <button
+              class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
+              onclick="handleFormSubmitByIdAndMethod('excelImportForm')"
+            >
+              Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
         </div>
       </div>
-      `
     </div>
-  </div>
-  
-    <script>
+
+    <!-- <script>
       function removeMember(event) {
         if (confirm("Are you sure want to remove this student?")) {
           var row = event.target.closest("tr");
@@ -580,45 +579,7 @@
     </script> -->
 
     <script>
-      // function removeMember(event) {
-      //   if (confirm("Are you sure want to remove this student?")) {
-      //     var row = event.target.closest("tr");
-      //     var memberId = row
-      //       .querySelector("[member.id]")
-      //       .getAttribute("member.id");
-
-      //     var classroom = document.querySelector("#classroom"); // Thay ".classroom" bằng selector của lớp học
-      //     var learnerRows = classroom.querySelectorAll("tbody tr");
-      //     if (learnerRows.length === 1) {
-      //       // Nếu chỉ còn một learner (dòng tiêu đề không được tính)
-      //       alert(
-      //         "There's only one learner left in this class. You can't remove it."
-      //       );
-      //       return;
-      //     }
-
-      //     var xhr = new XMLHttpRequest();
-      //     xhr.open(
-      //       "POST",
-      //       "http://localhost:8080/classroom/{id}/remove-member(id=${classroom.id}, memberId={member.id})",
-      //       true
-      //     );
-      //     xhr.setRequestHeader("Content-Type", "application/json");
-      //     xhr.onreadystatechange = function () {
-      //       if (xhr.readyState === XMLHttpRequest.DONE) {
-      //         if (xhr.status === 200) {
-      //           row.remove();
-      //           alert("Remove learner succesfully");
-      //         } else {
-      //           console.error("Error while remove members");
-      //         }
-      //       }
-      //     };
-      //     xhr.send(JSON.stringify({ memberId: memberId }));
-      //   } else {
-      //     event.preventDefault();
-      //   }
-      // }
+   
     </script>
   </body>
 </html>
