@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.slf4j.Logger;
+import org.slf4j.Logger;	
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -116,7 +116,7 @@ public class ClassroomServiceImpl implements IClassroomService {
 
   }
 
-   private Classroom processSheet(Sheet sheet, Classroom classroom) {
+  private Classroom processSheet(Sheet sheet, Classroom classroom) {
     List<ClassJoining> classJoinings = new ArrayList<>();
 
     Iterator<Row> rowIterator = sheet.iterator();
@@ -153,11 +153,11 @@ public class ClassroomServiceImpl implements IClassroomService {
       // Get the student email at the 3th cell of the current row
       String email = (currentRow.getCell(2).getStringCellValue()).trim();
       log.info("Student email: " + email);
-      User userByEmail = userService.findUserByEmail(email);
+      User learnerByEmail = userService.findLearnerByEmail(email);
       ClassJoining classJoining = null;
-      if (userByEmail != null) {
+      if (learnerByEmail != null) {
         classJoining = ClassJoining.builder()
-            .learner(userByEmail)
+            .learner(learnerByEmail)
             .build();
 
         // Get the learner displayed name at the 2th cell of the current row
@@ -171,17 +171,18 @@ public class ClassroomServiceImpl implements IClassroomService {
         if (displayedPhone != null && !displayedPhone.isEmpty()) {
           classJoining.setLearnerDisplayedPhone(displayedPhone.substring(1));
         }
+
+        if (classJoining != null) {
+          classJoining.setClassroom(classroom);
+          classJoinings.add(classJoining);
+        }
       }
-      if (classJoining != null) {
-        classJoinings.add(classJoining);
-      }
+
       curMemberNum++;
     }
     classroom.setClassJoinings(classJoinings);
     Classroom saved = classroomRepo.save(classroom);
     return saved;
   }
-
-  
 
 }

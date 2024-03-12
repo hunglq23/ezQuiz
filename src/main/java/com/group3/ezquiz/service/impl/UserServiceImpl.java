@@ -159,6 +159,11 @@ public class UserServiceImpl implements IUserService {
   public User findUserByEmail(String email) {
     return userRepo.findByEmail(email).orElse(null);
   }
-
+  @Override
+  public User findLearnerByEmail(String email) {
+    return userRepo
+        .findByEmailAndRole(email, Role.LEARNER)
+        .orElse(null);
+  }
   
 }

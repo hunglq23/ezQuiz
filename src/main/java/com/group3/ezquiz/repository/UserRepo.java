@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
 import java.util.List;
 
@@ -27,6 +28,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
   @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email")
   boolean existsByEmail(@Param(value = "email") String email);
 
-
+  Optional<User> findByEmailAndRole(String email, Role role);
   
 }

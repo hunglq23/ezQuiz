@@ -31,4 +31,6 @@ public interface IUserService {
   boolean checkEmail(String email);
 
 User findUserByEmail(String email);
+
+User findLearnerByEmail(String email);
 }
