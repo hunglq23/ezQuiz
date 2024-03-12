@@ -6,13 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
-import java.util.List;
-
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
@@ -25,9 +22,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
       " AND (:status IS NULL OR u.isEnable = :status)")
   Page<User> getAllUser(String email, String name, Boolean status, Pageable page);
 
-  @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email")
-  boolean existsByEmail(@Param(value = "email") String email);
-
   Optional<User> findByEmailAndRole(String email, Role role);
-  
+
 }
