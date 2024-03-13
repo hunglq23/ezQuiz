@@ -643,3 +643,25 @@ input[type="password"]::-webkit-autocomplete {
 .edit-icon:hover {
   color: #007bff; /* Màu xanh khi rê chuột vào */
 }
+.ellipsis-toggle {
+  right: 12px;
+  top: 12px;
+  button {
+    padding: 8px 20px;
+  }
+  &:hover {
+    background-color: #e8e8e8;
+    border-radius: 10px;
+  }
+}
+
+.btn:focus {
+  box-shadow: none;
+}
+
+#data .btn.item {
+  background-color: #fff;
+  &:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+}

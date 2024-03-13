@@ -131,7 +131,7 @@ public class QuizController {
     }
     int curPage = quizPage.getNumber() + 1;
 
-    model.addAttribute("quiz", quizPage);
+    model.addAttribute("quizList", quizPage);
     model.addAttribute("isDraft", isDraft);
     model.addAttribute("sort", sort);
     model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
