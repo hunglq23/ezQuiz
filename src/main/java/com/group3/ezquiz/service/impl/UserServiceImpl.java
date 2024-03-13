@@ -1,10 +1,18 @@
 package com.group3.ezquiz.service.impl;
 
+import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
+import com.group3.ezquiz.repository.ClassroomRepo;
+import com.group3.ezquiz.repository.QuizRepo;
+import com.group3.ezquiz.utils.Utility;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +31,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +42,8 @@ public class UserServiceImpl implements IUserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepo userRepo;
+  // private final QuizRepo quizRepo;
+  // private final ClassroomRepo classroomRepo;
 
   @Override
   public ResponseEntity<?> registerUser(RegisterRequest regUser) {
@@ -136,6 +150,69 @@ public class UserServiceImpl implements IUserService {
   @Override
   public void delete(Long id) {
     userRepo.deleteById(id);
+  }
+
+  @Override
+  public Page<ObjectDto> getQuizAndClassroomByTeacher(
+      HttpServletRequest http,
+      String sortOrder,
+      Pageable pageable) {
+    // User userRequesting = getUserRequesting(http);
+    // List<Quiz> quizByUser = quizRepo.findByCreator(userRequesting);
+    // List<Classroom> classroomByUser =
+    // classroomRepo.findByCreator(userRequesting);
+    // List<ObjectDto> objectDtoList = Stream.concat(
+    // quizByUser.stream().map(this::createQuizObjectDto),
+    // classroomByUser.stream().map(this::createClassroomObjectDto))
+    // .collect(Collectors.toList());
+    // Comparator<ObjectDto> comparator;
+    // switch (sortOrder) {
+    // case "latest":
+    // comparator = Comparator.comparing(ObjectDto::getTimeString).reversed();
+    // objectDtoList.sort(comparator);
+    // break;
+    // case "oldest":
+    // comparator = Comparator.comparing(ObjectDto::getTimeString);
+    // objectDtoList.sort(comparator);
+    // break;
+    // }
+    // objectDtoList.forEach(objectDto -> objectDto.setTimeString(
+    // Utility.calculateTimeElapsed(
+    // Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd
+    // HH:mm:ss"))));
+    // int pageSize = pageable.getPageSize();
+    // int currentPage = pageable.getPageNumber();
+    // int startItem = currentPage * pageSize;
+    // List<ObjectDto> pagedObjectDtoList;
+    // int toIndex = Math.min(startItem + pageSize, objectDtoList.size());
+    // pagedObjectDtoList = objectDtoList.subList(startItem, toIndex);
+    // return new PageImpl<>(pagedObjectDtoList, PageRequest.of(currentPage,
+    // pageSize), objectDtoList.size());
+    return null;
+  }
+
+  private ObjectDto createQuizObjectDto(Quiz quiz) {
+    return ObjectDto.builder()
+        .type("Quiz")
+        .name(quiz.getTitle())
+        .description(quiz.getDescription())
+        .image(quiz.getImageUrl())
+        .isDraft(quiz.getIsDraft())
+        .itemNumber(quiz.getQuestions().size())
+        .timeString(quiz.getCreatedAt().toString())
+        .build();
+  }
+
+  private ObjectDto createClassroomObjectDto(Classroom classroom) {
+    return ObjectDto.builder()
+        .type("Classroom")
+        .name(classroom.getName())
+        .description(classroom.getDescription())
+        .image(classroom.getImageURL())
+        .isDraft(classroom.getIsDraft())
+        .itemNumber(classroom.getClassJoinings().size())
+        .timeString(classroom.getCreatedAt().toString())
+        .build();
   }
 
   private User getUserByEmail(String email) {

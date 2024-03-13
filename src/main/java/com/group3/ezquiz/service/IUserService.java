@@ -1,6 +1,7 @@
 package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
@@ -31,4 +32,7 @@ public interface IUserService {
   boolean checkEmailExist(String email);
 
   User findLearnerByEmail(String email);
+
+  Page<ObjectDto> getQuizAndClassroomByTeacher(
+      HttpServletRequest http, String sortOrder, Pageable pageable);
 }

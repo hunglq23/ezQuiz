@@ -641,11 +641,7 @@ input[type="password"]::-webkit-autocomplete {
   background-color: #f8f9fa; /* Màu nền cho trạng thái disabled */
   border: 1px solid #dee2e6; /* Biên cho trạng thái disabled */
 }
-.pagination li.active {
-  background-color: #007bff; /* Màu nền cho trạng thái active */
-  color: #fff; /* Màu chữ cho trạng thái active */
-  border-color: #007bff; /* Biên cho trạng thái active */
-}
+
 .delete-icon {
   color: #000; /* Màu mặc định của biểu tượng */
   cursor: pointer;

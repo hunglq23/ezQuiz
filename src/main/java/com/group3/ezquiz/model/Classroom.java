@@ -47,6 +47,11 @@ public class Classroom {
 
   @Column(length = 128)
   private String description;
+  @Column(nullable = true)
+  private String imageURL;
+
+  @Column(nullable = true)
+  private Boolean isDraft;
 
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp

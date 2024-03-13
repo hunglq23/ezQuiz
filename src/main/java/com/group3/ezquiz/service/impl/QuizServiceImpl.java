@@ -14,6 +14,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import java.util.*;
+
+import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.utils.Utility;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -380,4 +386,57 @@ public class QuizServiceImpl implements IQuizService {
     }
   }
 
+  public Page<QuizDto> getQuizInLibrary(
+      HttpServletRequest http,
+      String sortOrder,
+      Boolean isDraft,
+
+      Pageable pageable) {
+    User userRequesting = userService.getUserRequesting(http);
+    Page<Quiz> quizByCreator;
+    if (isDraft != null) {
+      quizByCreator = quizRepo.findByCreatorAndIsDraftAndSort(userRequesting, isDraft, sortOrder, pageable);
+    } else {
+      quizByCreator = quizRepo.findByCreatorAndSort(userRequesting, sortOrder, pageable);
+    }
+    Page<QuizDto> quizDtoList = quizByCreator.map(this::mapToQuizDto);
+
+    quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+        Utility.calculateTimeElapsed(
+            Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    return quizDtoList;
+  }
+
+  private QuizDto mapToQuizDto(Quiz quiz) {
+    return QuizDto.builder()
+        .id(quiz.getId())
+        .type("Quiz")
+        .title(quiz.getTitle())
+        .description(quiz.getDescription())
+        .image(quiz.getImageUrl())
+        .isDraft(quiz.getIsDraft())
+        .itemNumber(quiz.getQuestions().size())
+        .timeString(quiz.getCreatedAt().toString())
+        .build();
+  }
+
+  @Override
+  public Quiz findQuizById(UUID id) {
+    Quiz quizById = quizRepo.findQuizById(id);
+    if (quizById != null) {
+      return quizById;
+    }
+    throw new ResourceNotFoundException("Cannot find quiz with" + id);
+  }
+
+  @Override
+  public void deleteQuiz(UUID id) {
+    Optional<Quiz> optionalQuiz = quizRepo.findById(id);
+    if (optionalQuiz.isPresent()) {
+      Quiz existedQuiz = optionalQuiz.get();
+      quizRepo.delete(existedQuiz);
+    } else {
+      throw new ResourceNotFoundException("Quiz with id " + id + "not found!");
+    }
+  }
 }

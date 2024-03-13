@@ -1055,6 +1055,21 @@
         });
       })();
 
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
+
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
+
       $(document).ready(function () {
         // Gọi hàm khi trang được tải
         delayedSearch();
