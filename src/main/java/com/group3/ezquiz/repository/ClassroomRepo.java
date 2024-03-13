@@ -14,4 +14,6 @@ public interface ClassroomRepo extends JpaRepository<Classroom, Long> {
   Optional<Classroom> findByCreatorAndName(User creator, String name);
 
   Optional<Classroom> findByIdAndCreator(Long id, User creator);
+
+  Optional<Classroom> findByCode(String code);
 }

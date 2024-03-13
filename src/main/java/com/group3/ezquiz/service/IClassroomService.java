@@ -18,4 +18,14 @@ public interface IClassroomService {
     void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile excelFile);
 
     Classroom getClassroomByRequestAndId(HttpServletRequest request, Long id);
+
+    boolean importLearnerDataFromExcel( MultipartFile multipartFile, Classroom classroom);
+
+    Classroom updateClassroom(Long id, Classroom updatedClassroom);
+
+    void deleteClassById(Long id);
+
+    boolean joinClassroom(HttpServletRequest request, String code);
+
+    
 }

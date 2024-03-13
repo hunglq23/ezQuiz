@@ -32,30 +32,30 @@ import lombok.Setter;
 @Entity
 @Table(name = "_classroom")
 public class Classroom {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-        @Column(nullable = false, length = 8, unique = true)
-        private String code;
+  @Column(nullable = false, length = 8, unique = true)
+  private String code;
 
-        @Column(nullable = false, length = 64)
-        private String name;
+  @Column(nullable = false, length = 64)
+  private String name;
 
-        @Column(nullable = false)
-        private Boolean isEnable;
+  @Column(nullable = false)
+  private Boolean isEnable;
 
-        @Column(length = 128)
-        private String description;
+  @Column(length = 128)
+  private String description;
 
-        @Temporal(TemporalType.TIMESTAMP)
-        @CreationTimestamp
-        private Timestamp createdAt;
+  @Temporal(TemporalType.TIMESTAMP)
+  @CreationTimestamp
+  private Timestamp createdAt;
 
-        @ManyToOne
-        @JoinColumn(name = "created_id")
-        private User creator;
+  @ManyToOne
+  @JoinColumn(name = "created_id")
+  private User creator;
 
-        @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
-        private List<ClassJoining> classJoinings;
+  @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
+  private List<ClassJoining> classJoinings;
 }

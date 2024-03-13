@@ -24,25 +24,25 @@ import lombok.NoArgsConstructor;
 
 public class ClassJoining {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "learner_id")
-    private User learner;
+  @ManyToOne
+  @JoinColumn(name = "learner_id")
+  private User learner;
 
-    @ManyToOne
-    @JoinColumn(name = "class_id")
-    private Classroom classroom;
+  @ManyToOne
+  @JoinColumn(name = "class_id")
+  private Classroom classroom;
 
-    @CreationTimestamp
-    private Timestamp joinedAt;
+  @CreationTimestamp
+  private Timestamp joinedAt;
 
-    @Column()
-    private String learnerDisplayedName;
+  @Column()
+  private String learnerDisplayedName;
 
-    @Column()
-    private String learnerDisplayedPhone;
+  @Column()
+  private String learnerDisplayedPhone;
 
 }

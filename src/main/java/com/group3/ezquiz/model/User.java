@@ -64,7 +64,7 @@ public class User {
   @UpdateTimestamp
   private Timestamp updatedAt;
 
-  @OneToMany(mappedBy = "learner", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "learner")
   private List<ClassJoining> classJoinings;
 
   public Boolean isLearner() {
