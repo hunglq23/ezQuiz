@@ -694,11 +694,7 @@ input[type="password"]::-webkit-autocomplete {
   background-color: #f8f9fa; /* Màu nền cho trạng thái disabled */
   border: 1px solid #dee2e6; /* Biên cho trạng thái disabled */
 }
-.pagination li.active {
-  background-color: #007bff; /* Màu nền cho trạng thái active */
-  color: #fff; /* Màu chữ cho trạng thái active */
-  border-color: #007bff; /* Biên cho trạng thái active */
-}
+
 .delete-icon {
   color: #000; /* Màu mặc định của biểu tượng */
   cursor: pointer;
@@ -716,4 +712,27 @@ input[type="password"]::-webkit-autocomplete {
 
 .edit-icon:hover {
   color: #007bff; /* Màu xanh khi rê chuột vào */
+}
+
+.ellipsis-toggle {
+  right: 12px;
+  top: 12px;
+  button {
+    padding: 8px 20px;
+  }
+  &:hover {
+    background-color: #e8e8e8;
+    border-radius: 10px;
+  }
+}
+
+.btn:focus {
+  box-shadow: none;
+}
+
+#data .btn.item {
+  background-color: #fff;
+  &:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
 }

@@ -42,8 +42,8 @@ public class UserServiceImpl implements IUserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepo userRepo;
-  // private final QuizRepo quizRepo;
-  // private final ClassroomRepo classroomRepo;
+  private final QuizRepo quizRepo;
+  private final ClassroomRepo classroomRepo;
 
   @Override
   public ResponseEntity<?> registerUser(RegisterRequest regUser) {
@@ -157,38 +157,34 @@ public class UserServiceImpl implements IUserService {
       HttpServletRequest http,
       String sortOrder,
       Pageable pageable) {
-    // User userRequesting = getUserRequesting(http);
-    // List<Quiz> quizByUser = quizRepo.findByCreator(userRequesting);
-    // List<Classroom> classroomByUser =
-    // classroomRepo.findByCreator(userRequesting);
-    // List<ObjectDto> objectDtoList = Stream.concat(
-    // quizByUser.stream().map(this::createQuizObjectDto),
-    // classroomByUser.stream().map(this::createClassroomObjectDto))
-    // .collect(Collectors.toList());
-    // Comparator<ObjectDto> comparator;
-    // switch (sortOrder) {
-    // case "latest":
-    // comparator = Comparator.comparing(ObjectDto::getTimeString).reversed();
-    // objectDtoList.sort(comparator);
-    // break;
-    // case "oldest":
-    // comparator = Comparator.comparing(ObjectDto::getTimeString);
-    // objectDtoList.sort(comparator);
-    // break;
-    // }
-    // objectDtoList.forEach(objectDto -> objectDto.setTimeString(
-    // Utility.calculateTimeElapsed(
-    // Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd
-    // HH:mm:ss"))));
-    // int pageSize = pageable.getPageSize();
-    // int currentPage = pageable.getPageNumber();
-    // int startItem = currentPage * pageSize;
-    // List<ObjectDto> pagedObjectDtoList;
-    // int toIndex = Math.min(startItem + pageSize, objectDtoList.size());
-    // pagedObjectDtoList = objectDtoList.subList(startItem, toIndex);
-    // return new PageImpl<>(pagedObjectDtoList, PageRequest.of(currentPage,
-    // pageSize), objectDtoList.size());
-    return null;
+    User userRequesting = getUserRequesting(http);
+    List<Quiz> quizByUser = quizRepo.findByCreator(userRequesting);
+    List<Classroom> classroomByUser = classroomRepo.findByCreator(userRequesting);
+    List<ObjectDto> objectDtoList = Stream.concat(
+        quizByUser.stream().map(this::createQuizObjectDto),
+        classroomByUser.stream().map(this::createClassroomObjectDto))
+        .collect(Collectors.toList());
+    Comparator<ObjectDto> comparator;
+    switch (sortOrder) {
+      case "latest":
+        comparator = Comparator.comparing(ObjectDto::getTimeString).reversed();
+        objectDtoList.sort(comparator);
+        break;
+      case "oldest":
+        comparator = Comparator.comparing(ObjectDto::getTimeString);
+        objectDtoList.sort(comparator);
+        break;
+    }
+    objectDtoList.forEach(objectDto -> objectDto.setTimeString(
+        Utility.calculateTimeElapsed(
+            Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    int pageSize = pageable.getPageSize();
+    int currentPage = pageable.getPageNumber();
+    int startItem = currentPage * pageSize;
+    List<ObjectDto> pagedObjectDtoList;
+    int toIndex = Math.min(startItem + pageSize, objectDtoList.size());
+    pagedObjectDtoList = objectDtoList.subList(startItem, toIndex);
+    return new PageImpl<>(pagedObjectDtoList, PageRequest.of(currentPage, pageSize), objectDtoList.size());
   }
 
   private ObjectDto createQuizObjectDto(Quiz quiz) {
