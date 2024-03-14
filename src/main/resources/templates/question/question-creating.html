@@ -58,6 +58,7 @@
           <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
             >ezQuiz</a
           >
+
           <div
             class="mx-2 px-3"
             style="
@@ -66,15 +67,22 @@
               border-left: 1px solid rgba(0, 0, 0, 0.1);
             "
           >
-            New question
+            <div style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+              <ol class="breadcrumb mt-2">
+                <li class="breadcrumb-item">
+                  <a
+                    href="../edit"
+                    th:with="t = ${quiz.title}"
+                    th:text="${t == null || t.isEmpty() ? 'Untitled Quiz' : t}"
+                    >Home</a
+                  >
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  New question
+                </li>
+              </ol>
+            </div>
           </div>
-          <a
-            th:unless="${quiz.title == null}"
-            class="btn btn-sm mx-2 px-3 bd-left"
-            data-bs-toggle="modal"
-            data-bs-target="#quizInfo"
-            th:text="${quiz.title}"
-          ></a>
 
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto me-2"></ul>
@@ -129,7 +137,7 @@
             </ul>
           </div>
 
-          <div class="p-3 pt-1">
+          <div class="p-3">
             <div class="text-center">
               <span class="error-icon text-danger questionError d-none"
                 >Select at least 1 answer!</span
@@ -211,6 +219,13 @@
       let nameProp = "";
       let hiddenFalseInput = "";
 
+      $(document).ready(function () {
+        addAnswer();
+        addAnswer();
+        addAnswer();
+        addAnswer();
+      });
+
       function addAnswer() {
         if (questionType === "single-choice") {
           inputType = "radio";
@@ -263,12 +278,6 @@
           ansNum++;
         }
       }
-
-      (function initAnswer() {
-        addAnswer();
-        addAnswer();
-        addAnswer();
-      })();
 
       function removeAns(ansIdSelector) {
         if (ansNum > MIN_ANS_NUM) {

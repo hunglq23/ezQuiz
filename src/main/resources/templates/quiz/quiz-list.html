@@ -673,6 +673,9 @@
 
         $(".page-index").each(function () {
           const pageIndex = $(this).text();
+          if (pageIndex > 9) {
+            $(this).css("padding", "5px 5px");
+          }
           $(this).on("click", function () {
             location.href = `/quiz/my-quiz?sort=${sort}&draft=${isDraft}&page=${pageIndex}&size=${pageSize}`;
           });
