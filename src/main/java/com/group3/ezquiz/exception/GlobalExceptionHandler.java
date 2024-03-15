@@ -18,6 +18,14 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<?> handleRuntimeException(
+      RuntimeException exception) {
+    return new ResponseEntity<>(
+        "An error occured! (Runtime Error Handled.)",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
   @ExceptionHandler(ResourceNotFoundException.class)
   public String handleResourceNotFoundException(
       ResourceNotFoundException exception, Model model) {
@@ -78,7 +86,6 @@ public class GlobalExceptionHandler {
         HttpStatus.BAD_REQUEST);
   }
 
-
   @ExceptionHandler(InvalidQuestionException.class)
   public ResponseEntity<ErrorDetails> handleInvalidQuestionException(
       InvalidQuestionException ex,
@@ -95,7 +102,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(InvalidClassroomException.class)
   public ResponseEntity<ErrorDetails> handleInvalidClassroomException(
-    InvalidClassroomException ex,
+      InvalidClassroomException ex,
       WebRequest webRequest) {
     return new ResponseEntity<>(
         ErrorDetails.builder()

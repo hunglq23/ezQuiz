@@ -1,7 +1,6 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.payload.ObjectDto;
-import com.group3.ezquiz.payload.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;

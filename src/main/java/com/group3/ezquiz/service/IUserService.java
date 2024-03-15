@@ -6,33 +6,37 @@ import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 
 public interface IUserService {
 
-  ResponseEntity<?> registerUser(RegisterRequest user);
+        BindingResult registerUser(RegisterRequest user, BindingResult bindingResult);
 
-  User getUserRequesting(HttpServletRequest http);
+        User getUserRequesting(HttpServletRequest http);
 
-  Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
-      Pageable page);
+        Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
+                        Pageable page);
 
-  void createUser(HttpServletRequest request, UserDto userDto);
+        void createUser(HttpServletRequest request, UserDto userDto);
 
-  User getUserById(Long id);
+        User getUserById(Long id);
 
-  void update(HttpServletRequest request, UserDto user, Long id);
+        void update(HttpServletRequest request, UserDto user, Long id);
 
-  void delete(Long id);
+        void delete(Long id);
 
-  void updatePassword(String email, String pass);
+        void updatePassword(String email, String pass);
 
-  boolean checkEmailExist(String email);
+        boolean checkEmailExist(String email);
 
-  User findLearnerByEmail(String email);
+        User findLearnerByEmail(String email);
 
-  Page<ObjectDto> getQuizAndClassroomByTeacher(
-      HttpServletRequest http, String sortOrder, Pageable pageable);
+        Page<ObjectDto> getQuizAndClassroomByTeacher(
+                        HttpServletRequest http, String sortOrder, Pageable pageable);
+
+        User getByEmail(String email);
+
 }

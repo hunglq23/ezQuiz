@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import com.group3.ezquiz.exception.InvalidUserException;
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.repository.UserRepo;
@@ -29,9 +30,17 @@ public class CustomOAuth2User implements OAuth2User {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     String email = oAuth2User.getAttribute("email");
-    User user = userRepo.findByEmail(email)
+    User userByEmail = userRepo.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException(email));
-    Role role = user.getRole();
+
+    if (userByEmail.getIsVerified() == false) {
+      throw new InvalidUserException("Please check your email to verify!");
+    }
+    if (userByEmail.getIsEnable() == false) {
+      throw new InvalidUserException("Sorry, your account was blocked!");
+    }
+
+    Role role = userByEmail.getRole();
     return Collections
         .singleton(new SimpleGrantedAuthority("ROLE_" + role));
   }

@@ -1,7 +1,6 @@
 package com.group3.ezquiz.payload.auth;
 
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +21,7 @@ public class RegisterRequest {
   @Pattern(message = "Invalid! Try again. (ex. abc@email.com)", regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
   private String email;
 
-  @Size(message = "At least 1 chars!", min = 1)
+  @Pattern(message = "Invalid! Try again.", regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,16}$")
   private String password;
 
   public void setFullName(String fullName) {

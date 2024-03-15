@@ -1,15 +1,21 @@
 package com.group3.ezquiz.controller;
 
-import java.net.BindException;
+import java.time.LocalDateTime;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.group3.ezquiz.exception.InvalidUserException;
+import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 import com.group3.ezquiz.service.IUserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +34,25 @@ public class AuthController {
     return "index";
   }
 
+  @GetMapping("/login")
+  public String getLoginPage(HttpServletRequest request, Model model) {
+    if (request.getUserPrincipal() != null) {
+      return "redirect:/home";
+    }
+    HttpSession session = request.getSession();
+    Object attribute = session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+    if (attribute != null) {
+      try {
+        InvalidUserException error = (InvalidUserException) attribute;
+        model.addAttribute("errMsg", error.getMessage());
+      } catch (RuntimeException e) {
+        model.addAttribute("errMsg", "Invalid username or password!");
+      }
+    }
+    session.removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+    return "login";
+  }
+
   @GetMapping("/register")
   public String getRegisterPage(HttpServletRequest request) {
     if (request.getUserPrincipal() != null) {
@@ -38,17 +63,17 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<?> submitRegisterForm(
-      @Valid RegisterRequest user) throws BindException {
+      @Valid RegisterRequest user, BindingResult result) throws BindException {
 
-    return userService.registerUser(user);
-  }
-
-  @GetMapping("/login")
-  public String getLoginPage(HttpServletRequest request) {
-    if (request.getUserPrincipal() != null) {
-      return "redirect:/home";
+    if (userService.registerUser(user, result).hasErrors()) {
+      throw new BindException(result);
     }
-    return "login";
+
+    return ResponseEntity.ok(
+        MessageResponse.builder()
+            .message("Your account was created successfully!")
+            .timestamp(LocalDateTime.now())
+            .build());
   }
 
 }

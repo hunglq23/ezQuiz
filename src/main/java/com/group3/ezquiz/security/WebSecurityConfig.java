@@ -2,6 +2,9 @@ package com.group3.ezquiz.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,7 +35,11 @@ public class WebSecurityConfig {
                 // static resources permission
                 .requestMatchers("/vendor/**", "/css/**", "/images/**", "/js/**").permitAll()
                 // landing page, login page, registration end-point
-                .requestMatchers("/", "/login/**", "/register/**", "/forgot-password", "/send-forgot-password", "/reset-forgot-password","/update-forgot-password").permitAll()
+                .requestMatchers("/", "/login", "/register/**").permitAll()
+                // authentication end-point
+                .requestMatchers("/forgot-password", "/send-forgot-password",
+                    "/reset-forgot-password", "/update-forgot-password")
+                .permitAll()
                 // other requests
                 .anyRequest().authenticated())
 
@@ -42,14 +49,14 @@ public class WebSecurityConfig {
                 .loginPage("/login")
                 .userInfoEndpoint(
                     userInfo -> userInfo.userService(oAuth2UserService))
-                .defaultSuccessUrl("/home", false))
+                .defaultSuccessUrl("/home", true))
 
         // login form config
         .formLogin(
             form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/home", false)
+                .defaultSuccessUrl("/home", true)
                 .permitAll())
         // logout config
         .logout(
@@ -63,6 +70,16 @@ public class WebSecurityConfig {
   @Bean
   PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  AuthenticationManager authenticationManager(
+      HttpSecurity http,
+      AuthenticationProvider authProvider) throws Exception {
+    AuthenticationManagerBuilder authenticationManagerBuilder = http
+        .getSharedObject(AuthenticationManagerBuilder.class);
+    authenticationManagerBuilder.authenticationProvider(authProvider);
+    return authenticationManagerBuilder.build();
   }
 
 }

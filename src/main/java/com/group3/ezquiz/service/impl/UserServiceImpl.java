@@ -2,7 +2,6 @@ package com.group3.ezquiz.service.impl;
 
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.Quiz;
-import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
@@ -10,29 +9,39 @@ import com.group3.ezquiz.payload.auth.RegisterRequest;
 import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.utils.Utility;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
-import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.repository.UserRepo;
+import com.group3.ezquiz.service.EmailService;
 import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.JwtService;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,52 +49,47 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
 
+  private final String[] PERMITED_EMAIL_DOMAINS = { "gmail.com", "fpt.edu.vn" };
+
+  private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
   private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final EmailService emailService;
   private final UserRepo userRepo;
+
   private final QuizRepo quizRepo;
   private final ClassroomRepo classroomRepo;
 
   @Override
-  public ResponseEntity<?> registerUser(RegisterRequest regUser) {
+  public BindingResult registerUser(RegisterRequest regUser, BindingResult result) {
 
-    validateEmail(regUser.getEmail());
-
-    String encodedPass = passwordEncoder.encode(regUser.getPassword());
-
-    userRepo.save(
-        User.builder()
-            .email(regUser.getEmail())
-            .fullName(regUser.getFullName())
-            .password(encodedPass)
-            .isEnable(true)
-            .isVerified(false)
-            .role(Role.LEARNER)
-            .build());
-
-    return ResponseEntity.ok(
-        MessageResponse.builder()
-            .message("Your account was created successfully!")
-            .timestamp(LocalDateTime.now())
-            .build());
+    FieldError emailError = validateEmail(regUser.getEmail());
+    if (emailError != null && result.getFieldError("email") == null) {
+      result.addError(emailError);
+    }
+    if (!result.hasErrors()) {
+      log.info("Register info ok!");
+      sendMailTo(regUser.getEmail());
+      String encodedPass = passwordEncoder.encode(regUser.getPassword());
+      userRepo.save(
+          User.builder()
+              .email(regUser.getEmail())
+              .fullName(regUser.getFullName())
+              .password(encodedPass)
+              .isEnable(true)
+              .isVerified(false)
+              .role(Role.LEARNER)
+              .build());
+    }
+    return result;
   }
 
-  private void validateEmail(String email) {
-    Boolean emailExisted = userRepo.findByEmail(email).isPresent();
-    if (emailExisted) {
-      throw new InvalidClassroomException("Email existed!");
-    } else {
-      String[] permitedEmailDomains = { "@gmail.com", "@fpt.edu.vn", "@email" };
-      boolean permited = false;
-      for (String domain : permitedEmailDomains) {
-        if (email.endsWith(domain)) {
-          permited = true;
-        }
-      }
-      if (!permited) {
-        String invalidDomain = email.substring(email.indexOf('@') + 1);
-        throw new InvalidClassroomException("'" + invalidDomain + "' is invalid domain!");
-      }
-    }
+  @Override
+  public User getByEmail(String email) {
+    User user = userRepo.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Not found email: " + email));
+    return user;
   }
 
   @Override
@@ -211,11 +215,6 @@ public class UserServiceImpl implements IUserService {
         .build();
   }
 
-  private User getUserByEmail(String email) {
-    return userRepo.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException(email));
-  }
-
   @Override
   public void updatePassword(String email, String pass) {
     String encodedPass = passwordEncoder.encode(pass);
@@ -234,6 +233,50 @@ public class UserServiceImpl implements IUserService {
     return userRepo
         .findByEmailAndRole(email, Role.LEARNER)
         .orElse(null);
+  }
+
+  private User getUserByEmail(String email) {
+    return userRepo.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException(email));
+  }
+
+  private FieldError validateEmail(String email) {
+
+    boolean permited = false;
+    for (String domain : PERMITED_EMAIL_DOMAINS) {
+      if (email.endsWith(domain)) {
+        permited = true;
+      }
+    }
+    if (!permited) {
+      String invalidDomain = email.substring(email.indexOf('@') + 1);
+      return new FieldError("RegisterRequest", "email", "'" + invalidDomain + "' is invalid domain!");
+    }
+    Boolean emailExisted = userRepo.findByEmail(email).isPresent();
+    if (emailExisted) {
+      return new FieldError("RegisterRequest", "email", "Email existed!");
+    }
+    return null;
+  }
+
+  private void sendMailTo(String email) {
+    String subject = "ezQuiz Verify Account";
+    Resource resource = new ClassPathResource("static/email/email-verify.html");
+    Scanner scanner = null;
+    try {
+      scanner = new Scanner(resource.getInputStream(), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    String content = scanner.useDelimiter("\\A").next();
+    scanner.close();
+    String token = jwtService.generateToken(email);
+    content = content.replace("[token]", token);
+    try {
+      emailService.sendSimpleMessage(email, subject, content);
+    } catch (MessagingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

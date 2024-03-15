@@ -78,6 +78,18 @@ const tooltipList = [...tooltipTriggerList].map(
 );
 
 // Login - Register
+$("a[data-bs-target='#registerModal']").on("click", function () {
+  $("#registerForm").trigger("reset");
+  $("#registerForm")
+    .find("input")
+    .each(function () {
+      $(this).removeClass("is-invalid");
+    });
+  $(".error-area").each(function () {
+    $(this).find("span").addClass("d-none");
+  });
+});
+
 function togglePasswordVisibility(passwordFieldId) {
   const passwordField = document.getElementById(passwordFieldId);
   const passwordToggleIcon = document.getElementById(`${passwordFieldId}Icon`);
@@ -99,6 +111,7 @@ function togglePasswordVisibility(passwordFieldId) {
 
   let confirmPassErr = document.getElementById("passwordConfirmError");
   if (firstPass && confirmPass) {
+    const signUpBtn = document.getElementById("signUpButton");
     firstPass.addEventListener("keyup", () => {
       if (firstPass.value !== confirmPass.value) {
         confirmPass.classList.add("is-invalid");
@@ -138,8 +151,15 @@ function togglePasswordVisibility(passwordFieldId) {
   }
 })();
 
+$(document).ready(function () {
+  $(".spinner-border").hide();
+});
+
 function handleSignUpClick() {
   console.log("clicked... ");
+  const loading = setTimeout(function () {
+    $(".spinner-border").show();
+  }, 100);
 
   const form = $("#registerForm");
 
@@ -148,7 +168,8 @@ function handleSignUpClick() {
     method: "post",
     data: form.serialize(),
     success: () => {
-      window.location = "/login?signUpSuccessfully";
+      localStorage.setItem("registered", "true");
+      window.location = "/login";
     },
     error: (xhr) => {
       if (xhr.status === 400) {
@@ -170,6 +191,8 @@ function handleSignUpClick() {
       } else {
         console.error("Other error, not 400...");
       }
+      clearTimeout(loading);
+      $(".spinner-border").hide();
     },
   });
 }
@@ -241,3 +264,11 @@ function handleFormSubmitByIdAndMethod(formId, onSuccess, method = "post") {
     });
   }
 }
+
+$(document).ready(function () {
+  window.setTimeout(function () {
+    $(".alert").each(function () {
+      $(this).alert("close");
+    });
+  }, 3333);
+});

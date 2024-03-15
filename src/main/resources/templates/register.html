@@ -115,7 +115,12 @@
               </span>
             </div>
           </div>
-          <div class="form-group">
+          <div
+            class="form-group"
+            data-bs-toggle="tooltip"
+            data-bs-placement="left"
+            data-bs-title="Must consist of only digit (0-9) and alphabetical letters (a-z, A-Z); at least 1 digit, 1 lowercase letter, 1 uppercase letter and it must be 8-16 characters long without space!"
+          >
             <div class="register-input-custom password-input">
               <input
                 class="form-control passwordInput"
@@ -171,13 +176,19 @@
           </p>
           <div class="d-flex justify-content-center">
             <button
-              id="registerSubmitButton"
+              id="signUpButton"
               type="button"
               onclick="handleSignUpClick()"
               class="btn btn-sm btn-primary"
               style="padding: 3px 23px"
             >
               SIGN UP
+              <div
+                class="spinner-border spinner-border-sm m-0 ms-1"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </button>
           </div>
         </form>
