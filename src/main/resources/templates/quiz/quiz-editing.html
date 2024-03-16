@@ -1056,130 +1056,6 @@
       th:src="@{/js/quiz/search-quiz.js}"
     ></script> -->
 
-    <script>
-      (function handleInputError() {
-        const IDs = [
-          "imageUrl",
-          "title",
-          "description",
-          "titleInput1",
-          "descriptionInput1",
-        ];
-        for (let id of IDs) {
-          let input = document.getElementById(id);
-          let inputErrors = document.getElementsByClassName(id + "Error");
-          input.addEventListener("keyup", () => {
-            for (let inputErr of inputErrors) {
-              inputErr.classList.add("d-none");
-            }
-          });
-        }
-      })();
-
-      function handleClickSearchButton() {
-        document.getElementById("searchQuizInput").focus();
-      }
-
-      (function () {
-        const input = document.getElementById("titleInput1");
-        const detail = document.getElementsByClassName("quiz-detail")[0];
-
-        input.addEventListener("focus", function () {
-          detail.classList.remove("title-out-focus");
-          detail.classList.add("title-on-focus");
-        });
-
-        input.addEventListener("focusout", function () {
-          detail.classList.remove("title-on-focus");
-          detail.classList.add("title-out-focus");
-        });
-      })();
-
-      (function () {
-        const input = document.getElementById("titleInput1");
-        const detail = document.getElementsByClassName("quiz-detail")[0];
-
-        input.addEventListener("focus", function () {
-          detail.classList.remove("title-out-focus");
-          detail.classList.add("title-on-focus");
-        });
-
-        input.addEventListener("focusout", function () {
-          detail.classList.remove("title-on-focus");
-          detail.classList.add("title-out-focus");
-        });
-      })();
-
-      // $(document).ready(function () {
-      //   // Gọi hàm khi trang được tải
-      //   delayedSearch();
-      // });
-      // // search
-      // var delayTimer;
-
-      // function delayedSearch() {
-      //   clearTimeout(delayTimer);
-      //   delayTimer = setTimeout(function () {
-      //     search();
-      //   }, 100);
-      // }
-      // function search() {
-      //   var searchTerm = $("#searchQuizInput").val();
-      //   $("#data-search").text(searchTerm);
-      //   $.ajax({
-      //     type: "GET",
-      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
-      //     success: function (data) {
-      //       displayResults(data);
-      //     },
-      //     error: function (error) {
-      //       console.error("Error during search:", error);
-      //     },
-      //   });
-      // }
-
-      function displayResults(results) {
-        var resultsContainer = $("#searchResults");
-        resultsContainer.empty();
-        results.forEach(function (result) {
-          var dataItem = $("<a>", { class: "data-item" });
-          var itemDetail = $("<div>", { class: "item-detail" });
-          var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
-          var title = $("<strong>", { text: result.title });
-          detailHeader.append(title);
-          var itemTag = $("<div>", { class: "item-tag", text: result.tag });
-          detailHeader.append(itemTag);
-          itemDetail.append(detailHeader);
-          var ul = $("<ul>", { class: "fa-ul" });
-          var questionsLi = $("<li>", {
-            html:
-              '<i class="fa-li fa fa-list"></i>' +
-              result.questions +
-              " questions",
-          });
-          ul.append(questionsLi);
-          var creatorLi = $("<li>", {
-            html:
-              '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
-              result.creator.fullName,
-          });
-          ul.append(creatorLi);
-          itemDetail.append(ul);
-          var itemImage = $("<div>", { class: "item-image" });
-
-          var image = $("<img>", {
-            class: "bg-success",
-            src: result.quizImageUrl,
-            alt: "Quiz Image",
-          });
-          itemImage.append(image);
-          dataItem.append(itemDetail);
-          dataItem.append(itemImage);
-          resultsContainer.append(dataItem);
-        });
-      }
-    </script>
-
     <script th:inline="javascript">
       /*<![CDATA[*/
       const inputIDs = ["imageUrl", "title", "examOnly", "description"];
@@ -1289,6 +1165,199 @@
         }
       }
       /*]]>*/
+    </script>
+
+    <script>
+      (function handleInputError() {
+        const IDs = [
+          "imageUrl",
+          "title",
+          "description",
+          "titleInput1",
+          "descriptionInput1",
+        ];
+        for (let id of IDs) {
+          let input = document.getElementById(id);
+          let inputErrors = document.getElementsByClassName(id + "Error");
+          input.addEventListener("keyup", () => {
+            for (let inputErr of inputErrors) {
+              inputErr.classList.add("d-none");
+            }
+          });
+        }
+      })();
+
+      function handleClickSearchButton() {
+        document.getElementById("searchQuizInput").focus();
+      }
+
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
+
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
+
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
+
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
+
+      // $(document).ready(function () {
+      //   // Gọi hàm khi trang được tải
+      //   delayedSearch();
+      // });
+      // // search
+      // var delayTimer;
+
+      // function delayedSearch() {
+      //   clearTimeout(delayTimer);
+      //   delayTimer = setTimeout(function () {
+      //     search();
+      //   }, 100);
+      // }
+      // function search() {
+      //   var searchTerm = $("#searchQuizInput").val();
+      //   $("#data-search").text(searchTerm);
+      //   $.ajax({
+      //     type: "GET",
+      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
+      //     success: function (data) {
+      //       displayResults(data);
+      //     },
+      //     error: function (error) {
+      //       console.error("Error during search:", error);
+      //     },
+      //   });
+      // }
+
+      // function displayResults(results) {
+      //   var resultsContainer = $("#searchResults");
+      //   resultsContainer.empty();
+      //   results.forEach(function (result) {
+      //     var dataItem = $("<a>", { class: "data-item" });
+      //     var itemDetail = $("<div>", { class: "item-detail" });
+      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+      //     var title = $("<strong>", { text: result.title });
+      //     detailHeader.append(title);
+      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
+      //     detailHeader.append(itemTag);
+      //     itemDetail.append(detailHeader);
+      //     var ul = $("<ul>", { class: "fa-ul" });
+      //     var questionsLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-list"></i>' +
+      //         result.questions +
+      //         " questions",
+      //     });
+      //     ul.append(questionsLi);
+      //     var creatorLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+      //         result.creator.fullName,
+      //     });
+      //     ul.append(creatorLi);
+      //     itemDetail.append(ul);
+      //     var itemImage = $("<div>", { class: "item-image" });
+
+      //     var image = $("<img>", {
+      //       class: "bg-success",
+      //       src: result.quizImageUrl,
+      //       alt: "Quiz Image",
+      //     });
+      //     itemImage.append(image);
+      //     dataItem.append(itemDetail);
+      //     dataItem.append(itemImage);
+      //     resultsContainer.append(dataItem);
+      //   });
+      // }
+
+      // $(document).ready(function () {
+      //   // Gọi hàm khi trang được tải
+      //   delayedSearch();
+      // });
+      // // search
+      // var delayTimer;
+
+      // function delayedSearch() {
+      //   clearTimeout(delayTimer);
+      //   delayTimer = setTimeout(function () {
+      //     search();
+      //   }, 100);
+      // }
+      // function search() {
+      //   var searchTerm = $("#searchQuizInput").val();
+      //   $("#data-search").text(searchTerm);
+      //   $.ajax({
+      //     type: "GET",
+      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
+      //     success: function (data) {
+      //       displayResults(data);
+      //     },
+      //     error: function (error) {
+      //       console.error("Error during search:", error);
+      //     },
+      //   });
+      // }
+
+      // function displayResults(results) {
+      //   var resultsContainer = $("#searchResults");
+      //   resultsContainer.empty();
+      //   results.forEach(function (result) {
+      //     var dataItem = $("<a>", { class: "data-item" });
+      //     var itemDetail = $("<div>", { class: "item-detail" });
+      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+      //     var title = $("<strong>", { text: result.title });
+      //     detailHeader.append(title);
+      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
+      //     detailHeader.append(itemTag);
+      //     itemDetail.append(detailHeader);
+      //     var ul = $("<ul>", { class: "fa-ul" });
+      //     var questionsLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-list"></i>' +
+      //         result.questions +
+      //         " questions",
+      //     });
+      //     ul.append(questionsLi);
+      //     var creatorLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+      //         result.creator.fullName,
+      //     });
+      //     ul.append(creatorLi);
+      //     itemDetail.append(ul);
+      //     var itemImage = $("<div>", { class: "item-image" });
+
+      //     var image = $("<img>", {
+      //       class: "bg-success",
+      //       src: result.quizImageUrl,
+      //       alt: "Quiz Image",
+      //     });
+      //     itemImage.append(image);
+      //     dataItem.append(itemDetail);
+      //     dataItem.append(itemImage);
+      //     resultsContainer.append(dataItem);
+      //   });
+      // }
     </script>
   </body>
 </html>

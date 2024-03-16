@@ -35,10 +35,10 @@ public class WebSecurityConfig {
                 // static resources permission
                 .requestMatchers("/vendor/**", "/css/**", "/images/**", "/js/**").permitAll()
                 // landing page, login page, registration end-point
-                .requestMatchers("/", "/login", "/register/**").permitAll()
+                .requestMatchers("/", "/login/**", "/register/**").permitAll()
                 // authentication end-point
                 .requestMatchers("/forgot-password", "/send-forgot-password",
-                    "/reset-forgot-password", "/update-forgot-password")
+                    "/reset-forgot-password", "/update-forgot-password", "/verify-account")
                 .permitAll()
                 // other requests
                 .anyRequest().authenticated())

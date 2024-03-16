@@ -40,8 +40,6 @@ public class PasswordController {
   @PostMapping("/send-forgot-password")
   public String sendForgotPassword(HttpServletRequest request, Model model,
       @Valid @ModelAttribute("username") String email) throws IOException, MessagingException {
-    System.out.println(email);
-
     boolean isExistEmail = userService.checkEmailExist(email);
     if (!isExistEmail) {
       return "redirect:/forgot-password?error";
@@ -58,7 +56,9 @@ public class PasswordController {
   }
 
   @GetMapping("/reset-forgot-password")
-  public String resetForgotPassword(HttpServletRequest request, Model model,
+  public String resetForgotPassword(
+      HttpServletRequest request,
+      Model model,
       @RequestParam(value = "token") String token) {
     String email = jwtService.getEmailFromToken(token);
     model.addAttribute("email", email);
@@ -69,10 +69,10 @@ public class PasswordController {
   @PostMapping("/update-forgot-password")
   public String updateForgotPasswordPage(
       HttpServletRequest request, Model model,
-      @Valid @RequestParam("email") String email,
-      @Valid @RequestParam("token") String token,
-      @Valid @ModelAttribute("password") String password,
-      @Valid @ModelAttribute("re_password") String rePassword) {
+      @RequestParam("email") String email,
+      @RequestParam("token") String token,
+      @ModelAttribute("password") String password,
+      @ModelAttribute("re_password") String rePassword) {
     if (!password.equals(rePassword)) {
       return "redirect:/forgot-password?fail";
     }
@@ -96,11 +96,11 @@ public class PasswordController {
     User userRequesting = userService.getUserRequesting(http);
     boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
     model.addAttribute("user", userRequesting);
-    String successMessage = "updated fail!";
+    String successMessage = "Updated failed please check your password again!";
     if (isPasswordCorrect && newPass.equals(reNewPass)) {
       userService.updatePassword(userRequesting.getEmail(), newPass);
       model.addAttribute("message", "success");
-      successMessage = "updated successfully!";
+      successMessage = "Updated successfully!";
     }
     redirectAttributes.addFlashAttribute("successMessage", successMessage);
     return "redirect:/change-password";

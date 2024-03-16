@@ -417,7 +417,16 @@
         <use xlink:href="#check-circle-fill" />
       </svg>
       <div>
-        <span>Your password was changed successfully!</span>
+        <span>Your password was changed!</span>
+      </div>
+    </div>
+
+    <div th:if="${param.verified}" class="alert alert-success" role="alert">
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span>Your account was verified!</span>
       </div>
     </div>
 

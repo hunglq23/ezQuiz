@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminController {
   private final IUserService userService;
 
@@ -67,13 +69,6 @@ public class AdminController {
   public String update(HttpServletRequest http, Model model,
       @PathVariable(name = "id") Long id, UserDto user) {
     userService.update(http, user, id);
-    return "redirect:/admin/list";
-  }
-
-  @GetMapping("/delete/{id}")
-  public String delete(
-      @PathVariable(name = "id") Long id) {
-    userService.delete(id);
     return "redirect:/admin/list";
   }
 
