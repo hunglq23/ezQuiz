@@ -51,15 +51,12 @@
       <a th:href="@{/admin/list}">BACK TO USER LIST</a>
       <form th:action="@{/admin/create}" th:object="${user}" method="post">
         <div class="form-group">
-          <label for="email">Role</label>
-          <input
-            th:field="*{role}"
-            type="text"
-            class="form-control"
-            id="role"
-            placeholder="Enter Role"
-            style="align-content: center; width: 450px"
-          />
+          <label for="role">Role</label>
+          <select th:field="*{role}" class="form-select" id="role" style="width: 450px">
+            <option value="ADMIN">Admin</option>
+            <option value="TEACHER">Teacher</option>
+            <option value="LEARNER">Learner</option>
+          </select>
         </div>
         <div class="form-group">
           <label for="full_name">Full Name</label>

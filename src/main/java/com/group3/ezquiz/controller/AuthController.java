@@ -1,5 +1,6 @@
 package com.group3.ezquiz.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import org.springframework.http.ResponseEntity;
@@ -13,18 +14,21 @@ import com.group3.ezquiz.exception.InvalidUserException;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
 
   private final IUserService userService;
+  private final JwtService jwtService;
 
   @GetMapping("/")
   public String getLandingPage(HttpServletRequest request) {
@@ -74,6 +78,15 @@ public class AuthController {
             .message("Your account was created successfully!")
             .timestamp(LocalDateTime.now())
             .build());
+  }
+
+  @GetMapping("/verify-account")
+  public String verifyAccount(
+      HttpServletRequest request,
+      @RequestParam String token) throws IOException {
+    String email = jwtService.getEmailFromToken(token);
+    userService.verifyAccount(email);
+    return "redirect:/login?verified";
   }
 
 }

@@ -16,6 +16,10 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
   Optional<User> findByEmail(String email);
 
+  Optional<User> findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(String email);
+
+  Optional<User> findUserByEmail(String email);
+
   @Query("SELECT u FROM User u WHERE " +
       "((:email IS NULL OR u.email LIKE %:email%) OR " +
       "(:name IS NULL OR u.fullName LIKE %:name%)) " +

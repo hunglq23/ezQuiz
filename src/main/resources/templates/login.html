@@ -37,6 +37,7 @@
   <style>
     body {
       height: 95vh;
+      padding-right: 45px;
     }
 
     .left-content {
@@ -45,7 +46,8 @@
 
     .right-content {
       height: fit-content;
-      min-width: 488px;
+      min-width: 456px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
     }
 
     .modal-dialog .form-control {
@@ -417,7 +419,16 @@
         <use xlink:href="#check-circle-fill" />
       </svg>
       <div>
-        <span>Your password was changed successfully!</span>
+        <span>Your password was changed!</span>
+      </div>
+    </div>
+
+    <div th:if="${param.verified}" class="alert alert-success" role="alert">
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span>Your account was verified!</span>
       </div>
     </div>
 

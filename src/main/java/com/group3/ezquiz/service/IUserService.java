@@ -13,30 +13,30 @@ import org.springframework.validation.BindingResult;
 
 public interface IUserService {
 
-        BindingResult registerUser(RegisterRequest user, BindingResult bindingResult);
+  BindingResult registerUser(RegisterRequest user, BindingResult bindingResult);
 
-        User getUserRequesting(HttpServletRequest http);
+  User getByEmail(String email);
 
-        Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
-                        Pageable page);
+  User getUserRequesting(HttpServletRequest http);
 
-        void createUser(HttpServletRequest request, UserDto userDto);
+  void verifyAccount(String email);
 
-        User getUserById(Long id);
+  boolean checkEmailExist(String email);
 
-        void update(HttpServletRequest request, UserDto user, Long id);
+  User findLearnerByEmail(String email);
 
-        void delete(Long id);
+  Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
+      Pageable page);
 
-        void updatePassword(String email, String pass);
+  void createUser(HttpServletRequest request, UserDto userDto);
 
-        boolean checkEmailExist(String email);
+  User getUserById(Long id);
 
-        User findLearnerByEmail(String email);
+  void update(HttpServletRequest request, UserDto user, Long id);
 
-        Page<ObjectDto> getQuizAndClassroomByTeacher(
-                        HttpServletRequest http, String sortOrder, Pageable pageable);
+  void updatePassword(String email, String pass);
 
-        User getByEmail(String email);
+  Page<ObjectDto> getQuizAndClassroomByTeacher(
+      HttpServletRequest http, String sortOrder, Pageable pageable);
 
 }

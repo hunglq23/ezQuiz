@@ -12,6 +12,9 @@ import com.group3.ezquiz.utils.Utility;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.group3.ezquiz.service.EmailService;
+import com.group3.ezquiz.service.JwtService;
+import jakarta.mail.MessagingException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -28,11 +31,8 @@ import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.repository.UserRepo;
-import com.group3.ezquiz.service.EmailService;
 import com.group3.ezquiz.service.IUserService;
-import com.group3.ezquiz.service.JwtService;
 
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -87,17 +87,15 @@ public class UserServiceImpl implements IUserService {
 
   @Override
   public User getByEmail(String email) {
-    User user = userRepo.findByEmail(email)
+    return userRepo.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Not found email: " + email));
-    return user;
   }
 
   @Override
   public User getUserRequesting(HttpServletRequest http) {
-
     Principal userPrincipal = http.getUserPrincipal();
     String email = userPrincipal.getName();
-    return getUserByEmail(email);
+    return getByEmail(email);
   }
 
   @Override
@@ -136,7 +134,6 @@ public class UserServiceImpl implements IUserService {
         // unchangeable
         .id(existedUser.getId())
         .createdAt(existedUser.getCreatedAt())
-        // .createdBy(existedUser.getCreatedBy())
         // to update
         .role(user.getRole())
         .email(user.getEmail())
@@ -146,14 +143,8 @@ public class UserServiceImpl implements IUserService {
         .isEnable(user.getIsEnable())
         .phone(user.getPhone())
         .note(user.getNote())
-        // .updatedBy(userRequesting.getId())
         .build();
     userRepo.save(saveUser);
-  }
-
-  @Override
-  public void delete(Long id) {
-    userRepo.deleteById(id);
   }
 
   @Override
@@ -218,7 +209,7 @@ public class UserServiceImpl implements IUserService {
   @Override
   public void updatePassword(String email, String pass) {
     String encodedPass = passwordEncoder.encode(pass);
-    User user = userRepo.findByEmail(email).get();
+    User user = userRepo.findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(email).get();
     user.setPassword(encodedPass);
     userRepo.save(user);
   }
@@ -235,9 +226,11 @@ public class UserServiceImpl implements IUserService {
         .orElse(null);
   }
 
-  private User getUserByEmail(String email) {
-    return userRepo.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException(email));
+  @Override
+  public void verifyAccount(String email) {
+    User byEmail = getByEmail(email);
+    byEmail.setIsVerified(true);
+    userRepo.save(byEmail);
   }
 
   private FieldError validateEmail(String email) {
