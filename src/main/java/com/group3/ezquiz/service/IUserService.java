@@ -34,6 +34,8 @@ public interface IUserService {
 
   void update(HttpServletRequest request, UserDto user, Long id);
 
+  void updateStatus(Long id);
+
   void updatePassword(String email, String pass);
 
   Page<ObjectDto> getQuizAndClassroomByTeacher(

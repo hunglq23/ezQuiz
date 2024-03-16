@@ -72,4 +72,11 @@ public class AdminController {
     return "redirect:/admin/list";
   }
 
+  @GetMapping("/update-status/{id}")
+  public String updateStatus(HttpServletRequest http, Model model,
+                       @PathVariable(name = "id") Long id) {
+    userService.updateStatus(id);
+    return "redirect:/admin/list";
+  }
+
 }

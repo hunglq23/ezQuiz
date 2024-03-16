@@ -589,111 +589,112 @@
                   class="d-flex flex-column justify-content-center"
                   style="line-height: 1.23"
                 >
-                  <strong>Biology</strong>
-                  <small class="fw-lighter">10 questions</small>
+                  <strong id="title-quiz"></strong>
+                  <small class="fw-lighter total-question" ></small>
                 </div>
               </div>
               <a
                 class="btn btn-sm bg-light glitter-button"
                 style="padding: 3px 8px"
-                >Add all <span>3</span> question(s)</a
+                >Add all <span class="total-question"></span></a
               >
             </div>
           </div>
-          <div class="data data-right">
-            <div class="bg-white data-item d-flex flex-column">
-              <div class="item-header">
-                <div class="item-tag">single-choice</div>
-                <a
-                  class="btn btn-sm bg-light"
-                  style="
-                    font-size: 12px;
-                    color: #a3a3a3;
-                    border: solid 1px #e8e8e8;
-                    padding: 3px 5px;
-                  "
-                  title="Add this question"
-                  >Add <span><i class="fas fa-plus"></i></span
-                ></a>
-              </div>
-              <div class="item-detail flex-fill p-1 pt-0">
-                <h6 style="margin-bottom: 5px">
-                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
-                </h6>
-                <ul
-                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"
-                  style="list-style-type: none"
-                >
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Enim sint nulla corporis rerum odit?
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Consequatur esse ipsum, nemo quia laudantium harum aliquam
-                    nostrum accusantium odio! Placeat eveniet voluptatum alias
-                    commodi maiores vitae veniam fugiat fugit dicta.
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    List icons can
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    be used to
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="bg-white data-item d-flex flex-column">
-              <div class="item-header">
-                <div class="item-tag">single-choice</div>
-                <a
-                  class="btn btn-sm bg-light"
-                  style="
-                    font-size: 12px;
-                    color: #a3a3a3;
-                    border: solid 1px #e8e8e8;
-                    padding: 3px 5px;
-                  "
-                  title="Add this question"
-                  >Add <span><i class="fas fa-plus"></i></span
-                ></a>
-              </div>
-              <div class="item-detail flex-fill p-1 pt-0">
-                <h6 style="margin-bottom: 5px">
-                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
-                </h6>
-                <ul
-                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"
-                  style="list-style-type: none"
-                >
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Enim sint nulla corporis rerum odit?
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Consequatur esse ipsum, nemo quia laudantium harum aliquam
-                    nostrum accusantium odio! Placeat eveniet voluptatum alias
-                    commodi maiores vitae veniam fugiat fugit dicta.
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    List icons can
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    be used to
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <div id="data-quiz"></div>
+          <div class="data data-right"></div>
+<!--            <div class="bg-white data-item d-flex flex-column">-->
+<!--              <div class="item-header">-->
+<!--                <div class="item-tag">single-choice</div>-->
+<!--                <a-->
+<!--                  class="btn btn-sm bg-light"-->
+<!--                  style="-->
+<!--                    font-size: 12px;-->
+<!--                    color: #a3a3a3;-->
+<!--                    border: solid 1px #e8e8e8;-->
+<!--                    padding: 3px 5px;-->
+<!--                  "-->
+<!--                  title="Add this question"-->
+<!--                  >Add <span><i class="fas fa-plus"></i></span-->
+<!--                ></a>-->
+<!--              </div>-->
+<!--              <div class="item-detail flex-fill p-1 pt-0">-->
+<!--                <h6 style="margin-bottom: 5px">-->
+<!--                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?-->
+<!--                </h6>-->
+<!--                <ul-->
+<!--                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"-->
+<!--                  style="list-style-type: none"-->
+<!--                >-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: green">&#10003;</span>-->
+<!--                    Lorem ipsum dolor sit amet consectetur adipisicing elit.-->
+<!--                    Enim sint nulla corporis rerum odit?-->
+<!--                  </li>-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: red">&#x2715;</span>-->
+<!--                    Lorem ipsum dolor sit amet consectetur adipisicing elit.-->
+<!--                    Consequatur esse ipsum, nemo quia laudantium harum aliquam-->
+<!--                    nostrum accusantium odio! Placeat eveniet voluptatum alias-->
+<!--                    commodi maiores vitae veniam fugiat fugit dicta.-->
+<!--                  </li>-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: green">&#10003;</span>-->
+<!--                    List icons can-->
+<!--                  </li>-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: red">&#x2715;</span>-->
+<!--                    be used to-->
+<!--                  </li>-->
+<!--                </ul>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="bg-white data-item d-flex flex-column">-->
+<!--              <div class="item-header">-->
+<!--                <div class="item-tag">single-choice</div>-->
+<!--                <a-->
+<!--                  class="btn btn-sm bg-light"-->
+<!--                  style="-->
+<!--                    font-size: 12px;-->
+<!--                    color: #a3a3a3;-->
+<!--                    border: solid 1px #e8e8e8;-->
+<!--                    padding: 3px 5px;-->
+<!--                  "-->
+<!--                  title="Add this question"-->
+<!--                  >Add <span><i class="fas fa-plus"></i></span-->
+<!--                ></a>-->
+<!--              </div>-->
+<!--              <div class="item-detail flex-fill p-1 pt-0">-->
+<!--                <h6 style="margin-bottom: 5px">-->
+<!--                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?-->
+<!--                </h6>-->
+<!--                <ul-->
+<!--                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"-->
+<!--                  style="list-style-type: none"-->
+<!--                >-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: green">&#10003;</span>-->
+<!--                    Lorem ipsum dolor sit amet consectetur adipisicing elit.-->
+<!--                    Enim sint nulla corporis rerum odit?-->
+<!--                  </li>-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: red">&#x2715;</span>-->
+<!--                    Lorem ipsum dolor sit amet consectetur adipisicing elit.-->
+<!--                    Consequatur esse ipsum, nemo quia laudantium harum aliquam-->
+<!--                    nostrum accusantium odio! Placeat eveniet voluptatum alias-->
+<!--                    commodi maiores vitae veniam fugiat fugit dicta.-->
+<!--                  </li>-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: green">&#10003;</span>-->
+<!--                    List icons can-->
+<!--                  </li>-->
+<!--                  <li class="col p-0">-->
+<!--                    <span style="color: red">&#x2715;</span>-->
+<!--                    be used to-->
+<!--                  </li>-->
+<!--                </ul>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
@@ -1221,13 +1222,141 @@
         });
       })();
 
+      $(document).ready(function () {
+        // Gọi hàm khi trang được tải
+        delayedSearch();
+      });
+      // search
+      var delayTimer;
+
+      function delayedSearch() {
+        clearTimeout(delayTimer);
+        delayTimer = setTimeout(function () {
+          searchQuiz();
+        }, 100);
+      }
+      function searchQuiz() {
+        var searchTerm = $("#searchQuizInput").val();
+        $("#data-search").text(searchTerm);
+        $.ajax({
+          type: "GET",
+          url: "/rest-quiz/search?search=" + searchTerm.trim(),
+          success: function (data) {
+            displayResults(data);
+          },
+          error: function (error) {
+            console.error("Error during search:", error);
+          },
+        });
+      }
+
+      function displayQuizSearch(id) {
+        $.ajax({
+          type: "GET",
+          url: "/rest-quiz/" + id,
+          success: function (data) {
+            displayQuizData(data);
+          },
+          error: function (error) {
+            console.error("Error during search:", error);
+          },
+        });
+      }
+
+      function displayQuizData(data) {
+        // Hiển thị tiêu đề và số lượng câu hỏi
+        $("#title-quiz").text(data.title);
+        $(".total-question").text(data.questions.length + " questions");
+        var listquestion = data.questions;
+        $(".data-right").empty();
+        listquestion.forEach(function(question) {
+          var dataItem = $("<div>", { class: "bg-white data-item d-flex flex-column" });
+          var itemHeader = $("<div>", { class: "item-header" });
+          var itemTag = $("<div>", { class: "item-tag" }).text("single-choice");
+          itemHeader.append(itemTag);
+          var addButton = $("<a>", {
+            class: "btn btn-sm bg-light",
+            style: "font-size: 12px; color: #a3a3a3; border: solid 1px #e8e8e8; padding: 3px 5px;",
+            title: "Add this question"
+          }).text("Add ");
+          var plusIcon = $("<span>").append($("<i>", { class: "fas fa-plus" }));
+          addButton.append(plusIcon);
+          itemHeader.append(addButton);
+          dataItem.append(itemHeader);
+          var itemDetail = $("<div>", { class: "item-detail flex-fill p-1 pt-0" });
+          var heading = $("<h6>", { style: "margin-bottom: 5px" }).text(question.text);
+          itemDetail.append(heading);
+          dataItem.append(itemDetail);
+          $(".data-right").append(dataItem);
+        })
+
+
+
+          // Hiển thị chi tiết câu hỏi đầu tiên
+        // $(".item-detail h6").text(data.questions[0].text);
+
+        // Hiển thị chi tiết các câu trả lời của câu hỏi đầu tiên
+        // var ul = $(".item-detail ul");
+        // ul.empty();
+        // data.questions[0].answers.forEach(function(answer) {
+        //   var icon = answer.correct ? '<span style="color: green">&#10003;</span>' : '<span style="color: red">&#x2715;</span>';
+        //   var li = $("<li>", { class: "col p-0", html: icon + " " + answer.text });
+        //   ul.append(li);
+        // });
+      }
+
+
+      function displayResults(results) {
+        var resultsContainer = $("#searchResults");
+        resultsContainer.empty();
+        results.forEach(function (result) {
+          var dataItem = $("<a>", { class: "data-item"});
+          dataItem.on("click", () => {
+            displayQuizSearch(result.id);
+          });
+          var itemDetail = $("<div>", { class: "item-detail" });
+          var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+          var title = $("<strong>", { text: result.title });
+          detailHeader.append(title);
+          var itemTag = $("<div>", { class: "item-tag", text: result.title });
+          detailHeader.append(itemTag);
+          itemDetail.append(detailHeader);
+          var ul = $("<ul>", { class: "fa-ul" });
+          var questionsLi = $("<li>", {
+            html:
+              '<i class="fa-li fa fa-list"></i>' +
+                    result.itemNumber +
+              " questions",
+          });
+          ul.append(questionsLi);
+          var creatorLi = $("<li>", {
+            html:
+              '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+              result,
+          });
+          ul.append(creatorLi);
+          itemDetail.append(ul);
+          var itemImage = $("<div>", { class: "item-image" });
+
+          var image = $("<img>", {
+            class: "bg-success",
+            src: result.image,
+            alt: "Quiz Image",
+          });
+          itemImage.append(image);
+          dataItem.append(itemDetail);
+          dataItem.append(itemImage);
+          resultsContainer.append(dataItem);
+        });
+      }
+
       // $(document).ready(function () {
       //   // Gọi hàm khi trang được tải
       //   delayedSearch();
       // });
       // // search
       // var delayTimer;
-
+      //
       // function delayedSearch() {
       //   clearTimeout(delayTimer);
       //   delayTimer = setTimeout(function () {
@@ -1248,7 +1377,7 @@
       //     },
       //   });
       // }
-
+      //
       // function displayResults(results) {
       //   var resultsContainer = $("#searchResults");
       //   resultsContainer.empty();
@@ -1277,76 +1406,7 @@
       //     ul.append(creatorLi);
       //     itemDetail.append(ul);
       //     var itemImage = $("<div>", { class: "item-image" });
-
-      //     var image = $("<img>", {
-      //       class: "bg-success",
-      //       src: result.quizImageUrl,
-      //       alt: "Quiz Image",
-      //     });
-      //     itemImage.append(image);
-      //     dataItem.append(itemDetail);
-      //     dataItem.append(itemImage);
-      //     resultsContainer.append(dataItem);
-      //   });
-      // }
-
-      // $(document).ready(function () {
-      //   // Gọi hàm khi trang được tải
-      //   delayedSearch();
-      // });
-      // // search
-      // var delayTimer;
-
-      // function delayedSearch() {
-      //   clearTimeout(delayTimer);
-      //   delayTimer = setTimeout(function () {
-      //     search();
-      //   }, 100);
-      // }
-      // function search() {
-      //   var searchTerm = $("#searchQuizInput").val();
-      //   $("#data-search").text(searchTerm);
-      //   $.ajax({
-      //     type: "GET",
-      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
-      //     success: function (data) {
-      //       displayResults(data);
-      //     },
-      //     error: function (error) {
-      //       console.error("Error during search:", error);
-      //     },
-      //   });
-      // }
-
-      // function displayResults(results) {
-      //   var resultsContainer = $("#searchResults");
-      //   resultsContainer.empty();
-      //   results.forEach(function (result) {
-      //     var dataItem = $("<a>", { class: "data-item" });
-      //     var itemDetail = $("<div>", { class: "item-detail" });
-      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
-      //     var title = $("<strong>", { text: result.title });
-      //     detailHeader.append(title);
-      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
-      //     detailHeader.append(itemTag);
-      //     itemDetail.append(detailHeader);
-      //     var ul = $("<ul>", { class: "fa-ul" });
-      //     var questionsLi = $("<li>", {
-      //       html:
-      //         '<i class="fa-li fa fa-list"></i>' +
-      //         result.questions +
-      //         " questions",
-      //     });
-      //     ul.append(questionsLi);
-      //     var creatorLi = $("<li>", {
-      //       html:
-      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
-      //         result.creator.fullName,
-      //     });
-      //     ul.append(creatorLi);
-      //     itemDetail.append(ul);
-      //     var itemImage = $("<div>", { class: "item-image" });
-
+      //
       //     var image = $("<img>", {
       //       class: "bg-success",
       //       src: result.quizImageUrl,

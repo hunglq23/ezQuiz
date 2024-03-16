@@ -272,4 +272,10 @@ public class UserServiceImpl implements IUserService {
     }
   }
 
+  @Override
+  public void updateStatus(Long id) {
+    User user = userRepo.findById(id).get();
+    user.setIsEnable(!user.getIsEnable());
+    userRepo.save(user);
+  }
 }

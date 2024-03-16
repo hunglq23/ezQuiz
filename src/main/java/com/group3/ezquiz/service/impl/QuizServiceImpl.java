@@ -15,7 +15,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import com.group3.ezquiz.payload.QuestionDto;
+import com.group3.ezquiz.payload.quiz.QuizDetail;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.utils.Utility;
 import org.springframework.data.domain.Page;
@@ -88,6 +91,36 @@ public class QuizServiceImpl implements IQuizService {
         .findByIdAndCreator(id, userRequesting)
         .orElseThrow(
             () -> new ResourceNotFoundException("Not found your quiz with ID " + id));
+  }
+
+  @Override
+  public QuizDetail getQuizWhenSearch(UUID id) {
+
+    return quizToQuizDTO(quizRepo
+            .findById(id)
+            .orElseThrow(
+                    () -> new ResourceNotFoundException("Not found your quiz with ID " + id)));
+  }
+
+  public static QuizDetail quizToQuizDTO(Quiz quiz) {
+    QuizDetail quizDTO = new QuizDetail();
+    quizDTO.setId(quiz.getId());
+    quizDTO.setTitle(quiz.getTitle());
+    quizDTO.setIsDraft(quiz.getIsDraft());
+    quizDTO.setIsEnable(quiz.getIsEnable());
+    quizDTO.setIsExam(quiz.getIsExam());
+    quizDTO.setImageUrl(quiz.getImageUrl());
+    quizDTO.setDescription(quiz.getDescription());
+    List<Question> questions = quiz.getQuestions();
+    List<QuestionDto> questionDtoList = questions.stream().map(question -> {
+      QuestionDto questionDto  = new QuestionDto();
+      questionDto.setText(question.getText());
+      return questionDto;
+    }).collect(Collectors.toList());
+    quizDTO.setQuestions(questionDtoList);
+    quizDTO.setCreatedAt(quiz.getCreatedAt());
+    quizDTO.setUpdatedAt(quiz.getUpdatedAt());
+    return quizDTO;
   }
 
   @Override
@@ -441,9 +474,9 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public List<Quiz> searchQuizUUID(HttpServletRequest request, String search) {
+  public List<QuizDto> searchQuizUUID(HttpServletRequest request, String search) {
     List<Quiz> data = quizRepo.searchQuizUUID(search);
-    return data;
+    return data.stream().map(this::mapToQuizDto).collect(Collectors.toList());
   }
 
   @Override
