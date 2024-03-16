@@ -20,19 +20,31 @@ public interface QuizRepo extends JpaRepository<Quiz, UUID> {
   Optional<Quiz> findByIdAndCreator(UUID id, User creator);
 
   @Query("SELECT q FROM Quiz q WHERE q.creator = :creator AND ( q.isDraft = :isDraft) " +
-      "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
-      "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
+          "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
+          "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
   Page<Quiz> findByCreatorAndIsDraftAndSort(@Param("creator") User creator,
-      @Param("isDraft") Boolean isDraft,
-      @Param("sort") String sortOrder,
-      Pageable pageable);
+                                            @Param("isDraft") Boolean isDraft,
+                                            @Param("sort") String sortOrder,
+                                            Pageable pageable);
 
   @Query("SELECT q FROM Quiz q WHERE q.creator = :creator " +
-      "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
-      "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
+          "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
+          "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
   Page<Quiz> findByCreatorAndSort(@Param("creator") User creator,
-      @Param("sort") String sortOrder,
-      Pageable pageable);
+                                  @Param("sort") String sortOrder,
+                                  Pageable pageable);
+
+  // @Query("SELECT TOP 2 FROM Quiz q WHERE q.creator = :creator " +
+  // "AND q.title LIKE %:search%" +
+  // "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
+  // "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
+  // List<Quiz> findByCreatorAndSearchAndSortAndNum(User creator, String search,
+  // String sort, Integer itemNum);
+
+  // findByCreatorAndCreatedAtAsc();
+  // Page<Quiz> findByCreator(User creator, PageRequest.of(0, 1,
+  // Sort.by(Sort.Direction.ASC, "seatNumber"));
+  Page<Quiz> findByCreatorAndTitleContaining(User creator, String title, Pageable pageable);
 
   List<Quiz> findByCreator(User userRequesting);
 

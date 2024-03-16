@@ -1,7 +1,8 @@
 package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.payload.ObjectDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.LibraryResponse;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
@@ -26,7 +27,7 @@ public interface IUserService {
   User findLearnerByEmail(String email);
 
   Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
-      Pageable page);
+                         Pageable page);
 
   void createUser(HttpServletRequest request, UserDto userDto);
 
@@ -36,7 +37,6 @@ public interface IUserService {
 
   void updatePassword(String email, String pass);
 
-  Page<ObjectDto> getQuizAndClassroomByTeacher(
-      HttpServletRequest http, String sortOrder, Pageable pageable);
+  LibraryResponse getQuizAndClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
 
 }
