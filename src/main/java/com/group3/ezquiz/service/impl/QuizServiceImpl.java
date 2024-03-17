@@ -72,6 +72,7 @@ public class QuizServiceImpl implements IQuizService {
   public Quiz getDraftQuiz(HttpServletRequest request) {
     User userRequesting = userService.getUserRequesting(request);
     Quiz quiz = Quiz.builder()
+        .title("")
         .isDraft(true)
         .isEnable(true)
         .isExam(false)
@@ -418,15 +419,6 @@ public class QuizServiceImpl implements IQuizService {
         .itemNumber(quiz.getQuestions().size())
         .timeString(quiz.getCreatedAt().toString())
         .build();
-  }
-
-  @Override
-  public Quiz findQuizById(UUID id) {
-    Quiz quizById = quizRepo.findQuizById(id);
-    if (quizById != null) {
-      return quizById;
-    }
-    throw new ResourceNotFoundException("Cannot find quiz with" + id);
   }
 
   @Override

@@ -734,8 +734,9 @@ input[type="password"]::-webkit-autocomplete {
   }
 }
 
-.btn:focus {
-  box-shadow: none;
+.btn:focus,
+.page-link {
+  box-shadow: none !important;
 }
 
 #data .btn.item {

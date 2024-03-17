@@ -38,12 +38,13 @@ public interface IQuizService {
   List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
 
   ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
-        List<Quiz> getListQuizUUID(HttpServletRequest request);
-        List<Quiz> searchQuizUUID(HttpServletRequest request, String search);
+
+  List<Quiz> getListQuizUUID(HttpServletRequest request);
+
+  List<Quiz> searchQuizUUID(HttpServletRequest request, String search);
 
   Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
 
-  Quiz findQuizById(UUID id);
-
   void deleteQuiz(UUID id);
+
 }
