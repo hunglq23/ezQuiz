@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.group3.ezquiz.exception.InvalidUserException;
-import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.model.enums.Role;
 import com.group3.ezquiz.repository.UserRepo;
 
 import lombok.RequiredArgsConstructor;

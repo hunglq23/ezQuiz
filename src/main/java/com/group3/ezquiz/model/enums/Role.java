@@ -1,4 +1,4 @@
-package com.group3.ezquiz.model;
+package com.group3.ezquiz.model.enums;
 
 public enum Role {
   LEARNER,

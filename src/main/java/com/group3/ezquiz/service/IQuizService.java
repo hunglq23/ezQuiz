@@ -31,7 +31,7 @@ public interface IQuizService {
 
   ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
 
-  QuizToLearner getQuizByLearnerForQuizTaking(UUID id);
+  QuizToLearner getQuizByLearnerForTaking(UUID id);
 
   ResponseEntity<?> handleAnswersChecking(UUID quizId, Long questId, String questIndex, Map<String, String> params);
 

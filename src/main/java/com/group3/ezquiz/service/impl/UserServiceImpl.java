@@ -31,8 +31,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import com.group3.ezquiz.exception.ResourceNotFoundException;
-import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.model.enums.Role;
 import com.group3.ezquiz.repository.UserRepo;
 import com.group3.ezquiz.service.IUserService;
 

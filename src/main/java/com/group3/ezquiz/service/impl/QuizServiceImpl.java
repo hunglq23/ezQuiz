@@ -136,7 +136,7 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public QuizToLearner getQuizByLearnerForQuizTaking(UUID id) {
+  public QuizToLearner getQuizByLearnerForTaking(UUID id) {
     Quiz quizById = getQuizById(id);
 
     List<QuestionToLearner> questions = new ArrayList<>();
@@ -154,7 +154,7 @@ public class QuizServiceImpl implements IQuizService {
               .text(quest.getText())
               .answers(answers)
               .numberOfCorrect(questionService
-                  .getTrueOrFalseAnswerNumberInQuestion(quest.getId(), true))
+                  .getCorrectAnswerNumberInQuestion(quest.getId()))
               .build());
     }
 
