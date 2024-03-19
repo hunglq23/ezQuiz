@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Optional;
 import java.util.UUID;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
-import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,13 +45,6 @@ public class ClassroomServiceImpl implements IClassroomService {
   private final Integer MAX_MEMBER_PER_CLASS = 30;
   private final ClassroomRepo classroomRepo;
   private final IUserService userService;
-
-  @Override
-  public List<Classroom> getCreatedClassroomList(HttpServletRequest request) {
-    // User creator = userService.getUserRequesting(request);
-    // return classroomRepo.findByCreator(creator);
-    return null;
-  }
 
   @Override
   public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDetailDto dto) {
@@ -121,8 +113,7 @@ public class ClassroomServiceImpl implements IClassroomService {
   @Override
   public boolean joinClassroom(HttpServletRequest request, String code) {
     User learner = userService.getUserRequesting(request);
-    Classroom classroom = classroomRepo.findByCode(code)
-        .orElseThrow(() -> new ResourceNotFoundException("Code not found!"));
+    Classroom classroom = classroomRepo.findByCode(code);
     ClassJoining classJoining = new ClassJoining();
     if (classroom != null && learner != null) {
       classJoining.setLearner(learner);
@@ -133,9 +124,6 @@ public class ClassroomServiceImpl implements IClassroomService {
     }
     return false;
   }
-
- 
-
 
   // @Override
   // public void removeLearnerFromClassroomLearnerId(Classroom classroom, Long
@@ -272,10 +260,10 @@ public class ClassroomServiceImpl implements IClassroomService {
     }
     User userRequest = userService.getUserRequesting(request);
     Page<Classroom> classroomPage = classroomRepo.findByCreatorAndNameContaining(userRequest,
-     libraryDto.getSearch(),
-     PageRequest.of(libraryDto.getPage() - 1, 
-     libraryDto.getSize(), 
-     Sort.by(sortDirection, "createdAt")));
+        libraryDto.getSearch(),
+        PageRequest.of(libraryDto.getPage() - 1,
+            libraryDto.getSize(),
+            Sort.by(sortDirection, "createdAt")));
     return classroomPage;
   }
 
