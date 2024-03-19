@@ -101,6 +101,45 @@
           border-radius: 10px;
         }
       }
+
+      .pagination {
+        gap: 3px;
+        align-items: center;
+      }
+
+      .page-item .page-link {
+        border: none;
+        background-color: transparent;
+        border-radius: 7px;
+        &:hover {
+          color: #8854c0;
+        }
+      }
+
+      .page-item.active .page-link {
+        background-color: #ac82d8;
+        &:hover {
+          color: #fff;
+        }
+      }
+      #content {
+        padding: 8px;
+        min-width: 488px;
+        max-width: 678px;
+      }
+
+      #content .dropdown-menu {
+        position: absolute;
+        .filter-label,
+        .sort-label {
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+        }
+        .filter-label {
+          margin-left: 12px;
+        }
+      }
     </style>
   </head>
 
@@ -122,6 +161,8 @@
                 id="navSearchInput"
                 class="form-control"
                 placeholder="Search in Library"
+                autocomplete="off"
+                th:value="${search}"
               />
               <button
                 id="navSearchButton"
@@ -258,7 +299,7 @@
             <header>
               <div><h4>Library</h4></div>
             </header>
-            <ul class="nav d-flex flex-column align-items-center">
+            <ul class="nav d-flex flex-column align-items-center mb-3">
               <li class="nav-link w-100 p-0 rounded-1">
                 <a class="btn btn-sm d-flex" th:href="@{/library}">
                   <div class="square-33-center-item rotate-on-hover">
@@ -294,73 +335,174 @@
                   </div>
                 </a>
               </li>
+              <li class="nav-link w-100 p-0 rounded-1 active">
+                <div class="divider left-content-divider"></div>
+                <div class="mt-2" sec:authorize="hasRole('ROLE_TEACHER')">
+                  <div class="w-100">
+                    <strong>Import Class:</strong>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary mt-1 px-3"
+                    style="border: #999 solid 1px"
+                    data-bs-toggle="modal"
+                    data-bs-target="#excelImport"
+                  >
+                    <i class="fas fa-file-excel me-1"></i> Excel file
+                  </button>
+                </div>
+              </li>
+              <li class="nav-link w-100 p-0 rounded-1 active"></li>
             </ul>
-            <div class="divider left-content-divider"></div>
-            <div class="mt-2">
-              <div class="w-100">
-                <strong>Import Class:</strong>
+            <div sec:authorize="hasRole('ROLE_TEACHER')">
+              <div class="divider left-content-divider"></div>
+              <!-- Pagination -->
+              <div th:if="${max > 1}" class="mt-2">
+                <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-center bg-light">
+                    <li class="page-item">
+                      <button
+                        type="button"
+                        class="page-link"
+                        onclick="prevPage()"
+                        aria-label="Previous"
+                      >
+                        &lt;&nbsp;Prev
+                      </button>
+                    </li>
+                    <li
+                      class="page-item"
+                      th:classappend="${page == 1 ? 'active' : ''}"
+                    >
+                      <a class="page-link page-index" role="button">1</a>
+                    </li>
+                    <div th:if="${max > 3}">
+                      <li
+                        th:if="${page < 3}"
+                        class="page-item ms-0 me-3"
+                        th:classappend="${page == 2 ? 'active' : ''}"
+                      >
+                        <a class="page-link page-index" role="button">2</a>
+                      </li>
+                      <li
+                        th:if="${page > 2 && page < max - 1}"
+                        class="page-item mx-2 active"
+                      >
+                        <a
+                          class="page-link page-index"
+                          role="button"
+                          th:text="${page}"
+                          >98</a
+                        >
+                      </li>
+                      <li
+                        th:if="${page > max - 2}"
+                        class="page-item ms-3 me-0"
+                        th:classappend="${page == max - 1 ? 'active' : ''}"
+                      >
+                        <a
+                          class="page-link page-index"
+                          th:text="${max - 1}"
+                          role="button"
+                          >98</a
+                        >
+                      </li>
+                    </div>
+                    <div th:if="${max == 3}">
+                      <li
+                        class="page-item"
+                        th:classappend="${page == 2 ? 'active' : ''}"
+                      >
+                        <a class="page-link page-index" role="button">2</a>
+                      </li>
+                    </div>
+                    <li
+                      class="page-item"
+                      th:classappend="${page == max ? 'active' : ''}"
+                    >
+                      <a
+                        class="page-link page-index"
+                        role="button"
+                        th:text="${max}"
+                        >99</a
+                      >
+                    </li>
+                    <li class="page-item">
+                      <button
+                        type="button"
+                        class="page-link"
+                        aria-label="Next"
+                        onclick="nextPage()"
+                      >
+                        Next&nbsp;&gt;
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary mt-1 px-3"
-                style="border: #999 solid 1px"
-                data-bs-toggle="modal"
-                data-bs-target="#excelImport"
-              >
-                <i class="fas fa-file-excel me-1"></i> Excel file
-              </button>
             </div>
           </div>
+
           <!-- </Left Nav> -->
 
           <!-- <right content> -->
-          <div id="content" class="d-flex flex-column" style="gap: 0.456789rem">
-            <div class="section d-flex justify-content-between">
-              <ul class="navbar-nav align-items-center ms-auto">
-                <!-- <li class="nav-item dropdown">
-                  <a
-                    class="btn dropdown-toggle btn-sm bg-white p-0"
-                    id="filterDropdown"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <i class="fas fa-sort" style="margin-right: 5px"></i>
-                    <span th:if="${param.sortOrder==null}">Latest</span>
-                    <span
-                      th:unless="${param.sortOrder==null}"
-                      th:text="${param.sortOrder}"
-                      style="text-transform: capitalize"
-                    ></span>
-                  </a>
-                  <div
-                    id="sortDropdown"
-                    class="dropdown-menu position-absolute bg-white shadow animated--grow-in p-0"
-                    aria-labelledby="sortDropdown"
-                    style="min-width: 0; width: 88px"
-                  >
-                    <a
-                      class="dropdown-item btn btn-sm p-0 px-1"
-                      href="?sortOrder=latest"
+          <div
+            id="content"
+            class="d-flex flex-column"
+            style="gap: 0.456789rem; min-width: 699px"
+          >
+            <div
+              class="d-flex justify-content-between"
+              sec:authorize="hasRole('ROLE_TEACHER')"
+            >
+              <div style="opacity: 0.69; line-height: 2">
+                <span>Displaying of "a"</span>
+                (69 results)
+              </div>
+              <div class="d-flex gap-1">
+                <div class="navbar-nav d-flex flex-column">
+                  <div class="nav-item dropdown">
+                    <button
+                      class="btn dropdown-toggle btn-sm bg-white p-0 px-2 d-flex align-items-center"
+                      role="button"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
                     >
-                      Latest
-                    </a>
-                    <a
-                      class="dropdown-item btn btn-sm p-0 px-1"
-                      href="?sortOrder=oldest"
+                      <span class="fas fa-sort me-2"></span>
+                      <span th:if="${sort==null}"> Latest </span>
+                      <span
+                        th:unless="${sort==null}"
+                        th:text="${sort}"
+                        style="text-transform: capitalize"
+                      ></span>
+                    </button>
+                    <!-- Sort dropdown -->
+                    <div
+                      id="sortDropdown"
+                      class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                      aria-labelledby="sortDropdown"
+                      style="min-width: 0; width: 123px"
                     >
-                      Oldest
-                    </a>
+                      <a
+                        class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                      >
+                        <span class="text-capitalize">latest</span>
+                      </a>
+                      <a
+                        class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                      >
+                        <span class="text-capitalize">oldest</span>
+                      </a>
+                    </div>
                   </div>
-                </li> -->
-              </ul>
+                </div>
+              </div>
             </div>
 
-            <div id="data" class="section">
+            <div id="data" class="section d-flex">
               <div class="d-flex flex-column gap-2">
-                <div th:each="classroom : ${classrooms}">
+                <div th:each="classroom : ${classroom}">
                   <div
                     sec:authorize="hasRole('ROLE_TEACHER')"
                     class="position-relative"
@@ -394,32 +536,36 @@
                       </ul>
                     </div>
                   </div>
-                  <a
-                    sec:authorize="hasRole('ROLE_TEACHER')"
-                    th:href="@{./{id}(id=${classroom.id})}"
-                    class="btn p-1 d-flex gap-1 rounded-1 classroom-item"
-                    style="min-width: 678px; height: 170px"
-                  >
-                    <div class="h-100 w-20">
-                      <img
-                        class="h-100"
-                        src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                      />
-                    </div>
-                    <div
-                      class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1"
+                  <div sec:authorize="hasRole('ROLE_TEACHER')">
+                    <a
+                      th:href="@{./{id}(id=${classroom.id})}"
+                      class="btn p-1 d-flex gap-1 rounded-1 classroom-item"
+                      style="min-width: 678px; height: 170px"
                     >
-                      <div class="my-0 h5" th:text="${classroom.name}">
-                        Class Name
+                      <div class="h-100 w-20">
+                        <img
+                          class="h-100"
+                          src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                        />
                       </div>
-                      <p
-                        class="text-small m-0 flex-fill fw-light"
-                        th:text="${classroom.description}"
+                      <div
+                        class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1"
                       >
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      </p>
-                    </div>
-                  </a>
+                        <div class="my-0 h5" th:text="${classroom.name}">
+                          Class Name
+                        </div>
+                        <p
+                          class="text-small m-0 flex-fill fw-light"
+                          th:text="${classroom.description}"
+                        >
+                          Lorem ipsum dolor sit amet consectetur adipisicing
+                          elit.
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+                <div th:each="classroom: ${classrooms}">
                   <div
                     sec:authorize="hasRole('ROLE_LEARNER')"
                     class="p-1 d-flex gap-1 rounded-1 classroom-item"
@@ -434,12 +580,16 @@
                     <div
                       class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1"
                     >
-                      <div class="my-0 h5" th:text="${classroom.name}">
+                      <div
+                        class="my-0 h5"
+                        th:text="${classroom.getClassroom().name}"
+                      >
                         Class Name
                       </div>
                       <p
                         class="text-small m-0 flex-fill fw-light"
-                        th:text="${classroom.description}"
+                        th:text="${classroom.getClassroom().description}"
+                        vbgjmnhh
                       >
                         Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       </p>
@@ -452,7 +602,7 @@
         </div>
       </div>
     </div>
-
+    <!-- Import modal -->
     <div
       sec:authorize="hasRole('ROLE_TEACHER')"
       class="modal fade"
@@ -610,6 +760,7 @@
       </div>
     </div>
 
+    <!-- Modal joinclass -->
     <div
       sec:authorize="hasRole('ROLE_LEARNER')"
       class="modal fade"
@@ -737,6 +888,45 @@
         handleFormSubmitByIdAndMethod("excelImportForm", function () {
           window.location.href = "/classroom/created-list?imported";
         });
+      }
+    </script>
+
+    <script th:inline="javascript">
+      const sort = /*[[${sort == null ? '' : sort.toString()}]]*/ "";
+      const pageSize = /*[[${classroom.size}]]*/ 1;
+      const page = /*[[${page}]]*/ 1;
+      const search = /*[[${search == null ? '' : search.toString()}]]*/ "";
+      $(document).ready(function () {
+        $(".sort-type").each(function () {
+          let sortType = $(this).find("span").text();
+          $(this).on("click", function () {
+            console.log(sortType);
+            location.href = `/classroom/created-list?search=${search}&sort=${sortType}&page=${page}&size=${pageSize}`;
+          });
+        });
+
+        $(".page-index").each(function () {
+          const pageIndex = $(this).text();
+          if (pageIndex <= 9) {
+            $(this).css("padding", "5px 13px");
+          } else if (pageIndex > 9) {
+            $(this).css("padding", "5px 8px");
+          }
+          $(this).on("click", function () {
+            location.href = `/classroom/created-list?search=${search}&sort=${sort}&page=${pageIndex}&size=${pageSize}`;
+          });
+        });
+      });
+      function prevPage() {
+        location.href = `/classroom/created-list?search=${search}&sort=${sort}&page=${
+          page - 1
+        }&size=${pageSize}`;
+      }
+
+      function nextPage() {
+        location.href = `/classroom/created-list?search=${search}&sort=${sort}&page=${
+          page + 1
+        }&size=${pageSize}`;
       }
     </script>
 
