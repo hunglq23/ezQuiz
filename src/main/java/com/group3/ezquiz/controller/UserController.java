@@ -1,20 +1,26 @@
 package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.payload.ObjectDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.LibraryResponse;
+
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.service.IUserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Optional;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,30 +39,45 @@ public class UserController {
   @GetMapping("/library")
   public String getLibraryPage(
       HttpServletRequest request,
-      @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
-      @RequestParam(required = false, value = "page") Optional<Integer> page,
-      @RequestParam(required = false, value = "size") Optional<Integer> size,
-      Model model) {
-    String sort = sortOrder.orElse("latest");
-    Integer currentPage = page.orElse(1);
-    Integer pageSize = size.orElse(3);
-    if (currentPage < 1)
-      return "redirect:/quiz/my-quiz?sort=" + sort +
-          "&page=1&size=" + pageSize;
-    Page<ObjectDto> objectDtoList = userService.getQuizAndClassroomByTeacher(
-        request, sort, PageRequest.of(currentPage - 1, pageSize));
-    int maxPage = objectDtoList.getTotalPages();
-    if (currentPage > maxPage) {
-      return "redirect:/quiz/my-quiz?sort=" + sort +
-          "&page=" + maxPage +
-          "&size=" + pageSize;
+      @Valid @ModelAttribute LibraryReqParam libraryDto,
+      BindingResult bindingResult,
+      Model model, RedirectAttributes redirectAttributes) {
+    if (bindingResult.hasErrors()) {
+      for (ObjectError error : bindingResult.getAllErrors()) {
+        FieldError fieldError = (FieldError) error;
+        if (fieldError.getField().equals("sort")) {
+          libraryDto.setSort("latest");
+        }
+        if (fieldError.getField().equals("page")) {
+          libraryDto.setPage(1);
+        }
+        if (fieldError.getField().equals("size")) {
+          libraryDto.setSize(3);
+        }
+      }
+      redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
+      return "redirect:/library";
     }
-    int curPage = objectDtoList.getNumber() + 1;
+
+    LibraryResponse library = userService.getQuizAndClassroomByTeacher(
+        request, libraryDto);
+    List<ObjectDto> objectDtoList = library.getObjectDtoList();
+
+    if (objectDtoList == null && library.getExceedMaxPage() == true) {
+      // case when the current page exceed the max page number
+      if (library.getMaxPage() > 0) {
+        libraryDto.setPage(library.getMaxPage());
+        redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
+        return "redirect:/library";
+      } else {
+
+      }
+    }
+
     model.addAttribute("object", objectDtoList);
-    model.addAttribute("sort", sort);
-    model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
-    model.addAttribute("pageSize", objectDtoList.getSize());
-    model.addAttribute("max", maxPage);
+    model.addAttribute("page", libraryDto);
+    model.addAttribute("max", library.getMaxPage());
+    model.addAttribute("totalItemNumber", library.getTotalItemNumber());
     return "library";
   }
 

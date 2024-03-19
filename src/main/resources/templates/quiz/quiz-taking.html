@@ -117,9 +117,9 @@
     </header>
 
     <div class="container d-flex flex-column gap-2">
-      <div class="flex-fill p-2 bg-white rounded-2">
+      <div class="flex-fill p-2 bg-white rounded-2 custom-box-shadow">
         <div
-          id="initailContent"
+          id="initialContent"
           class="h-100 d-flex align-items-center justify-content-center"
         >
           <button class="btn btn-sm btn-primary p-2 px-5" onclick="startQuiz()">
@@ -234,7 +234,7 @@
         console.log($("#question1").find("input[name = 'answer1']").parent());
 
         console.log("A quiz is starting now...");
-        document.getElementById("initailContent").classList.add("d-none");
+        document.getElementById("initialContent").classList.add("d-none");
         document
           .getElementsByClassName("carousel-item")[0]
           .classList.add("active");

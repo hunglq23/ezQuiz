@@ -34,14 +34,9 @@ public interface QuizRepo extends JpaRepository<Quiz, UUID> {
       @Param("sort") String sortOrder,
       Pageable pageable);
 
+  Page<Quiz> findByCreatorAndTitleContaining(User creator, String title, Pageable pageable);
+
   List<Quiz> findByCreator(User userRequesting);
-
-  Quiz findQuizById(UUID id);
-
-  // @Query("SELECT q FROM Quiz q WHERE " +
-  // "(:code IS NULL OR q.code LIKE %:code%) OR " +
-  // "(:title IS NULL OR q.title LIKE %:title%)")
-  // Page<Quiz> getAllQuiz(String code, String title, Pageable page);
 
   @Query(value = "select q from Quiz q order by q.updatedAt DESC limit 3")
   List<Quiz> findQuizUUID();

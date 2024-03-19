@@ -197,7 +197,7 @@ public class QuizController {
   public String takeQuizByLearner(
       @PathVariable UUID id,
       Model model) {
-    QuizToLearner toLearner = quizService.getQuizByLearnerForQuizTaking(id);
+    QuizToLearner toLearner = quizService.getQuizByLearnerForTaking(id);
     model.addAttribute("quiz", toLearner);
     return "quiz/quiz-taking";
   }

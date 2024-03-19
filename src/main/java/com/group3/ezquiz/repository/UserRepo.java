@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.model.enums.Role;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {

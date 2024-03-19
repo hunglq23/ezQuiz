@@ -1,51 +1,47 @@
 package com.group3.ezquiz.model;
 
 import java.sql.Timestamp;
+import java.util.List;
+
 import org.hibernate.annotations.CreationTimestamp;
-import jakarta.persistence.Column;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "_class_joining")
-
-public class ClassJoining {
+@Entity
+@Table(name = "_attempt")
+public class Attempt {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "learner_id")
-  private User learner;
+  @JoinColumn(name = "taking_id")
+  private QuizTaking quizTaking;
 
-  @ManyToOne
-  @JoinColumn(name = "class_id")
-  private Classroom classroom;
+  @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL)
+  private List<UserResponse> userResponse;
+
+  private String result;
 
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp
-  private Timestamp joinedAt;
+  private Timestamp started_at;
 
-  @Column(name = "_displayed_name")
-  private String learnerDisplayedName;
-
-  @Column(name = "_displayed_phone")
-  private String learnerDisplayedPhone;
+  private Timestamp ended_at;
 
 }
