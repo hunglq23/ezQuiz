@@ -1,5 +1,7 @@
 package com.group3.ezquiz.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.group3.ezquiz.model.Classroom;
@@ -18,4 +20,6 @@ public interface ClassroomRepo extends JpaRepository<Classroom, Long> {
         Classroom findClassById(Long id);
 
         Classroom findByCode(String code);
+
+        Page<Classroom> findByCreatorAndNameContaining(User userRequest, String search, PageRequest of);
 }
