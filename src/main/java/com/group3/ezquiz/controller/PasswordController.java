@@ -2,8 +2,8 @@ package com.group3.ezquiz.controller;
 
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.service.EmailService;
-import com.group3.ezquiz.service.JwtService;
 import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.JwtService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,13 +91,18 @@ public class PasswordController {
 
   @PostMapping("/update-password")
   public String updatePass(HttpServletRequest http, Model model,
+                           @Valid @ModelAttribute("fullName") String fullName,
+                           @Valid @ModelAttribute("note") String note,
       @Valid @ModelAttribute("oldPass") String oldPass,
-      @Valid @ModelAttribute("newPass") String newPass,
-      @Valid @ModelAttribute("reNewPass") String reNewPass, RedirectAttributes redirectAttributes) {
+                           @Valid   @ModelAttribute("newPass") String newPass,
+      @Valid @ModelAttribute("reNewPass") String reNewPass, RedirectAttributes redirectAttributes, BindingResult result) {
     User userRequesting = userService.getUserRequesting(http);
+    userRequesting.setFullName(fullName);
+    userRequesting.setNote(note);
+    userService.save(userRequesting);
     boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
     model.addAttribute("user", userRequesting);
-    String successMessage = "Updated failed please check your password again!";
+    String successMessage = "Updated information successfully! Check your password again!";
     if (isPasswordCorrect && newPass.equals(reNewPass)) {
       userService.updatePassword(userRequesting.getEmail(), newPass);
       model.addAttribute("message", "success");

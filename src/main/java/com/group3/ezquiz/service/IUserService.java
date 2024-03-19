@@ -40,4 +40,5 @@ public interface IUserService {
 
   LibraryResponse getQuizAndClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
 
+  void save(User user);
 }

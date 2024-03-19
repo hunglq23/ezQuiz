@@ -314,4 +314,9 @@ public class UserServiceImpl implements IUserService {
     user.setIsEnable(!user.getIsEnable());
     userRepo.save(user);
   }
+
+  @Override
+  public void save(User user) {
+    userRepo.save(user);
+  }
 }
