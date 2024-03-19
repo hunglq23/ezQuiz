@@ -1,6 +1,7 @@
 package com.group3.ezquiz.payload;
 
-import com.group3.ezquiz.model.Role;
+import com.group3.ezquiz.model.enums.Role;
+
 import lombok.*;
 
 @Getter

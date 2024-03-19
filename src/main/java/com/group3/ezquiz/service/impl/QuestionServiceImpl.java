@@ -95,9 +95,9 @@ public class QuestionServiceImpl implements IQuestionService {
   }
 
   @Override
-  public Integer getTrueOrFalseAnswerNumberInQuestion(Long questId, Boolean findValue) {
+  public Integer getCorrectAnswerNumberInQuestion(Long questId) {
 
-    return questionRepo.findTrueOfFlaseAnswerNumberInQuestion(questId, findValue);
+    return questionRepo.countByIdAndAnswers_IsCorrectIsTrue(questId);
   }
 
   @Override

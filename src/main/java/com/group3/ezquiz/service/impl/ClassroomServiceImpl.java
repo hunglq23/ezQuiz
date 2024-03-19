@@ -7,13 +7,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Optional;
 import java.util.UUID;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,8 +29,9 @@ import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.ClassJoining;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.payload.ClassroomDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.ClassroomDetailDto;
 import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
@@ -35,19 +42,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClassroomServiceImpl implements IClassroomService {
 
-  private final Integer MAX_MEMBER_PER_CLASS = 30;
   private final static Logger log = LoggerFactory.getLogger(ClassroomServiceImpl.class);
+  private final Integer MAX_MEMBER_PER_CLASS = 30;
   private final ClassroomRepo classroomRepo;
   private final IUserService userService;
 
   @Override
   public List<Classroom> getCreatedClassroomList(HttpServletRequest request) {
-    User creator = userService.getUserRequesting(request);
-    return classroomRepo.findByCreator(creator);
+    // User creator = userService.getUserRequesting(request);
+    // return classroomRepo.findByCreator(creator);
+    return null;
   }
 
   @Override
-  public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDto dto) {
+  public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDetailDto dto) {
     User creator = userService.getUserRequesting(request);
     if (classroomRepo.findByCreatorAndName(creator, dto.getName()).isPresent()) {
       throw new InvalidClassroomException("Classroom name existed!");
@@ -103,7 +111,8 @@ public class ClassroomServiceImpl implements IClassroomService {
 
   @Override
   public void deleteClassById(Long id) {
-    Classroom existClassroom = classroomRepo.findClassById(id);
+    Classroom existClassroom = classroomRepo.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Not found class ID: " + id));
     if (existClassroom != null) {
       classroomRepo.delete(existClassroom);
     }
@@ -112,21 +121,34 @@ public class ClassroomServiceImpl implements IClassroomService {
   @Override
   public boolean joinClassroom(HttpServletRequest request, String code) {
     User learner = userService.getUserRequesting(request);
-    Classroom classroom = classroomRepo.findByCode(code);
+    Classroom classroom = classroomRepo.findByCode(code)
+        .orElseThrow(() -> new ResourceNotFoundException("Code not found!"));
     ClassJoining classJoining = new ClassJoining();
     if (classroom != null && learner != null) {
       classJoining.setLearner(learner);
       classJoining.setClassroom(classroom);
-      
+      classroom.getClassJoinings().add(classJoining);
+      classroomRepo.save(classroom);
+      return true;
     }
     return false;
   }
 
-  private String generateClassCode() {
-    UUID codeUUID = UUID.randomUUID();
-    String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
-    return codeClass;
-  }
+ 
+
+
+  // @Override
+  // public void removeLearnerFromClassroomLearnerId(Classroom classroom, Long
+  // learnerId) {
+  // Optional<User> learner = userRepo.findUserById(learnerId);
+  // if(learner.isEmpty()){
+  // throw new EntityNotFoundException("Not found learner with id" + learnerId);
+  // }
+  // List<ClassJoining> classJoinings = classroom.getClassJoinings();
+  // classJoinings.removeIf(joining ->
+  // joining.getLearner().getId().equals(learnerId));
+  // classroomRepo.save(classroom);
+  // }
 
   @Override
   public void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile file) {
@@ -190,9 +212,9 @@ public class ClassroomServiceImpl implements IClassroomService {
         log.info("Description: " + description);
         classroom.setDescription(description);
       }
-
+      rowIterator.next();
     } else if (rowIterator.hasNext()) {
-      rowIterator.next(); // skip the third row
+      // skip the third row
       classJoinings = classroom.getClassJoinings();
     }
 
@@ -235,5 +257,27 @@ public class ClassroomServiceImpl implements IClassroomService {
     Classroom saved = classroomRepo.save(classroom);
     return saved;
   }
+
+  private String generateClassCode() {
+    UUID codeUUID = UUID.randomUUID();
+    String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
+    return codeClass;
+  }
+
+  @Override
+  public Page<Classroom> getClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto) {
+    Direction sortDirection = Sort.Direction.DESC;
+    if (libraryDto.getSort().equals("oldest")) {
+      sortDirection = Sort.Direction.ASC;
+    }
+    User userRequest = userService.getUserRequesting(request);
+    Page<Classroom> classroomPage = classroomRepo.findByCreatorAndNameContaining(userRequest,
+     libraryDto.getSearch(),
+     PageRequest.of(libraryDto.getPage() - 1, 
+     libraryDto.getSize(), 
+     Sort.by(sortDirection, "createdAt")));
+    return classroomPage;
+  }
+
 
 }

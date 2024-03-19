@@ -14,6 +14,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import java.util.*;
+
+import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.utils.Utility;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,6 +72,7 @@ public class QuizServiceImpl implements IQuizService {
   public Quiz getDraftQuiz(HttpServletRequest request) {
     User userRequesting = userService.getUserRequesting(request);
     Quiz quiz = Quiz.builder()
+        .title("")
         .isDraft(true)
         .isEnable(true)
         .isExam(false)
@@ -129,7 +136,7 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public QuizToLearner getQuizByLearnerForQuizTaking(UUID id) {
+  public QuizToLearner getQuizByLearnerForTaking(UUID id) {
     Quiz quizById = getQuizById(id);
 
     List<QuestionToLearner> questions = new ArrayList<>();
@@ -147,7 +154,7 @@ public class QuizServiceImpl implements IQuizService {
               .text(quest.getText())
               .answers(answers)
               .numberOfCorrect(questionService
-                  .getTrueOrFalseAnswerNumberInQuestion(quest.getId(), true))
+                  .getCorrectAnswerNumberInQuestion(quest.getId()))
               .build());
     }
 
@@ -380,4 +387,60 @@ public class QuizServiceImpl implements IQuizService {
     }
   }
 
+  public Page<QuizDto> getQuizInLibrary(
+      HttpServletRequest http,
+      String sortOrder,
+      Boolean isDraft,
+
+      Pageable pageable) {
+    User userRequesting = userService.getUserRequesting(http);
+    Page<Quiz> quizByCreator;
+    if (isDraft != null) {
+      quizByCreator = quizRepo.findByCreatorAndIsDraftAndSort(userRequesting, isDraft, sortOrder, pageable);
+    } else {
+      quizByCreator = quizRepo.findByCreatorAndSort(userRequesting, sortOrder, pageable);
+    }
+    Page<QuizDto> quizDtoList = quizByCreator.map(this::mapToQuizDto);
+
+    quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+        Utility.calculateTimeElapsed(
+            Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    return quizDtoList;
+  }
+
+  private QuizDto mapToQuizDto(Quiz quiz) {
+    return QuizDto.builder()
+        .id(quiz.getId())
+        .type("Quiz")
+        .title(quiz.getTitle())
+        .description(quiz.getDescription())
+        .image(quiz.getImageUrl())
+        .isDraft(quiz.getIsDraft())
+        .itemNumber(quiz.getQuestions().size())
+        .timeString(quiz.getCreatedAt().toString())
+        .build();
+  }
+
+  @Override
+  public void deleteQuiz(UUID id) {
+    Optional<Quiz> optionalQuiz = quizRepo.findById(id);
+    if (optionalQuiz.isPresent()) {
+      Quiz existedQuiz = optionalQuiz.get();
+      quizRepo.delete(existedQuiz);
+    } else {
+      throw new ResourceNotFoundException("Quiz with id " + id + "not found!");
+    }
+  }
+
+  @Override
+  public List<Quiz> searchQuizUUID(HttpServletRequest request, String search) {
+    List<Quiz> data = quizRepo.searchQuizUUID(search);
+    return data;
+  }
+
+  @Override
+  public List<Quiz> getListQuizUUID(HttpServletRequest request) {
+    List<Quiz> data = quizRepo.findQuizUUID();
+    return data;
+  }
 }

@@ -37,6 +37,7 @@
   <style>
     body {
       height: 95vh;
+      padding-right: 45px;
     }
 
     .left-content {
@@ -45,7 +46,8 @@
 
     .right-content {
       height: fit-content;
-      min-width: 488px;
+      min-width: 456px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
     }
 
     .modal-dialog .form-control {
@@ -87,19 +89,9 @@
           </div>
           <div class="right-content p-3 bg-white rounded">
             <form th:action="@{/login}" method="post" role="form">
-              <div th:if="${param.error}" class="text-danger fs-6 mx-4 fw-bold">
-                <i class="error-icon"></i> Invalid email and password!
-              </div>
-              <div th:if="${param.logout}" class="alert alert-info">
-                <svg
-                  class="bi flex-shrink-0 me-2"
-                  role="img"
-                  aria-label="Info:"
-                  style="width: 20"
-                >
-                  <use xlink:href="#info-fill" />
-                </svg>
-                <span style="margin-right: 8px">You have been logged out!</span>
+              <div th:if="${errMsg}" class="text-danger fs-6 ms-4 fw-bold">
+                <i class="error-icon"></i>
+                <span th:text="${errMsg}"></span>
               </div>
               <div class="form-group" style="margin-top: 3px">
                 <div class="login-input-custom email-input">
@@ -302,7 +294,12 @@
                   </span>
                 </div>
               </div>
-              <div class="form-group">
+              <div
+                class="form-group"
+                data-bs-toggle="tooltip"
+                data-bs-placement="left"
+                data-bs-title="Must consist of only digit (0-9) and alphabetical letters (a-z, A-Z); at least 1 digit, 1 lowercase letter, 1 uppercase letter and it must be 8-16 characters long without space!"
+              >
                 <div class="register-input-custom password-input">
                   <input
                     class="form-control passwordInput"
@@ -368,7 +365,13 @@
                   class="btn btn-sm btn-primary"
                   style="padding: 3px 23px"
                 >
-                  SIGN UP
+                  <span>SIGN UP</span>
+                  <div
+                    class="spinner-border spinner-border-sm m-0 ms-1"
+                    role="status"
+                  >
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
                 </button>
               </div>
             </form>
@@ -395,20 +398,20 @@
       </symbol>
     </svg>
 
-    <div id="alert" class="alert d-none" role="alert">
+    <div id="registered" class="alert alert-success d-none" role="alert">
       <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
-        <use id="successAlertIcon" xlink:href="#check-circle-fill" />
-        <use id="failAlertIcon" xlink:href="#exclamation-triangle-fill" />
+        <use xlink:href="#check-circle-fill" />
       </svg>
       <div>
-        <span id="alertMsg">Your account was created successfully!</span>
-        (<span id="counter">5</span>)
+        <span
+          >Your account was created.<br />Please check your email to
+          verify!</span
+        >
       </div>
     </div>
 
     <div
-      th:if="${param.signUpSuccessfully}"
-      id="alert"
+      th:if="${param.passwordChanged}"
       class="alert alert-success"
       role="alert"
     >
@@ -416,21 +419,29 @@
         <use xlink:href="#check-circle-fill" />
       </svg>
       <div>
-        <span id="alertMsg">Your account was created successfully!</span>
+        <span>Your password was changed!</span>
       </div>
     </div>
-    <div
-      th:if="${param.passwordChanged}"
-      id="alert"
-      class="alert alert-success"
-      role="alert"
-    >
+
+    <div th:if="${param.verified}" class="alert alert-success" role="alert">
       <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
         <use xlink:href="#check-circle-fill" />
       </svg>
       <div>
-        <span id="alertMsg">Your password was changed successfully!</span>
+        <span>Your account was verified!</span>
       </div>
+    </div>
+
+    <div th:if="${param.logout}" class="alert alert-info">
+      <svg
+        class="bi flex-shrink-0 me-2"
+        role="img"
+        aria-label="Info:"
+        style="width: 20"
+      >
+        <use xlink:href="#info-fill" />
+      </svg>
+      <span style="margin-right: 8px">You have been logged out!</span>
     </div>
 
     <script
@@ -450,43 +461,12 @@
     <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
 
     <script>
-      $(document).ready(function () {
-        window.setTimeout(function () {
-          $(".alert").each(function () {
-            $(this).alert("close");
-          });
-        }, 5000);
-      });
-    </script>
-
-    <script>
-      const signUpBtn = document.getElementById("signUpButton");
-      let isCounting = null;
-      let count = 0;
-
-      function showAlertAndHideAfterSecond(alert, second = 0) {
-        console.log("showing alert...");
-
-        const counter = document.getElementById("counter");
-        count = second;
-
-        counter.textContent = count;
-        alert.classList.remove("d-none");
-
-        if (isCounting) {
-          console.log("counting");
-          clearInterval(isCounting);
-          isCounting = null;
+      (function () {
+        if (localStorage.getItem("registered") === "true") {
+          document.getElementById("registered").classList.remove("d-none");
+          localStorage.removeItem("registered");
         }
-        isCounting = setInterval(() => {
-          count--;
-          counter.textContent = count;
-          if (count === 0) {
-            clearInterval(isCounting);
-            alert.classList.add("d-none");
-          }
-        }, 1000);
-      }
+      })();
     </script>
   </body>
 </html>

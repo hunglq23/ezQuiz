@@ -14,6 +14,9 @@ import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
+import com.group3.ezquiz.payload.quiz.QuizDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,12 +31,20 @@ public interface IQuizService {
 
   ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
 
-  QuizToLearner getQuizByLearnerForQuizTaking(UUID id);
+  QuizToLearner getQuizByLearnerForTaking(UUID id);
 
   ResponseEntity<?> handleAnswersChecking(UUID quizId, Long questId, String questIndex, Map<String, String> params);
 
   List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
 
   ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
+
+  List<Quiz> getListQuizUUID(HttpServletRequest request);
+
+  List<Quiz> searchQuizUUID(HttpServletRequest request, String search);
+
+  Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
+
+  void deleteQuiz(UUID id);
 
 }

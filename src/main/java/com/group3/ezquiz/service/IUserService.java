@@ -1,22 +1,32 @@
 package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.LibraryResponse;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 
 public interface IUserService {
 
-  ResponseEntity<?> registerUser(RegisterRequest user);
+  BindingResult registerUser(RegisterRequest user, BindingResult bindingResult);
+
+  User getByEmail(String email);
 
   User getUserRequesting(HttpServletRequest http);
 
-  Page<User> getListUser(HttpServletRequest http, String email, Boolean status,
-      Pageable page);
+  void verifyAccount(String email);
+
+  boolean checkEmailExist(String email);
+
+  User findLearnerByEmail(String email);
+
+  Page<User> getListUser(HttpServletRequest http, String email, Boolean status, Pageable page);
 
   void createUser(HttpServletRequest request, UserDto userDto);
 
@@ -24,11 +34,8 @@ public interface IUserService {
 
   void update(HttpServletRequest request, UserDto user, Long id);
 
-  void delete(Long id);
-
   void updatePassword(String email, String pass);
 
-  boolean checkEmailExist(String email);
+  LibraryResponse getQuizAndClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
 
-  User findLearnerByEmail(String email);
 }

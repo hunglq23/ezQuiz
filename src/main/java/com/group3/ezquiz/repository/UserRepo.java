@@ -8,13 +8,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.group3.ezquiz.model.Role;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.model.enums.Role;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
 
   Optional<User> findByEmail(String email);
+
+  Optional<User> findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(String email);
+
+  Optional<User> findUserByEmail(String email);
 
   @Query("SELECT u FROM User u WHERE " +
       "((:email IS NULL OR u.email LIKE %:email%) OR " +

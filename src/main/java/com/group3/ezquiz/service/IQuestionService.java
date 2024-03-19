@@ -11,7 +11,7 @@ public interface IQuestionService {
 
   Question createNewQuestionOfQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
 
-  Integer getTrueOrFalseAnswerNumberInQuestion(Long id, Boolean b);
+  Integer getCorrectAnswerNumberInQuestion(Long id);
 
   Question getByIdAndQuiz(Long questId, Quiz quiz);
 

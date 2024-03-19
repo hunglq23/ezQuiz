@@ -1,10 +1,6 @@
 package com.group3.ezquiz.model;
 
-import java.sql.Timestamp;
 import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,9 +22,6 @@ public class Question {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column
-  private Boolean value;
-
   @Column(nullable = false)
   private String type;
 
@@ -44,14 +37,6 @@ public class Question {
   @ManyToOne
   @JoinColumn(name = "created_id")
   private User creator;
-
-  @Temporal(TemporalType.TIMESTAMP)
-  @CreationTimestamp
-  private Timestamp createdAt;
-
-  @Temporal(TemporalType.TIMESTAMP)
-  @UpdateTimestamp
-  private Timestamp updatedAt;
 
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Answer> answers;

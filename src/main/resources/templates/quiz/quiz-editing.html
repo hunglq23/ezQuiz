@@ -44,6 +44,14 @@
           <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
             >ezQuiz</a
           >
+          <a
+            class="btn btn-sm mx-3 px-3 bd-left opa-25"
+            style="font-size: 18px"
+            data-bs-toggle="modal"
+            data-bs-target="#quizInfo"
+            th:with="t = ${quiz.title}"
+            th:text="${t == null || t.isEmpty() ? 'Untitled Quiz' : t}"
+          ></a>
 
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto me-2">
@@ -68,6 +76,14 @@
             </ul>
 
             <button
+              type="button"
+              class="btn btn-sm opa-25 mx-1 btn-cog"
+              data-bs-toggle="modal"
+              data-bs-target="#quizInfo"
+            >
+              <i class="fas fa-cog"></i>
+            </button>
+            <button
               class="btn btn-sm btn-primary px-2"
               onclick="handleSaveButtonClick()"
             >
@@ -85,11 +101,8 @@
       >
         <div class="h-100 d-flex justify-content-center gap-3 gap-lg-5">
           <!-- <left content> -->
-          <div
-            class="border border-1 rounded-1 d-none d-md-block"
-            style="min-width: 258px; height: fit-content"
-          >
-            <div class="p-1 d-flex flex-column h-100">
+          <div class="border border-1 rounded-1 d-none d-md-block left-content">
+            <div class="d-flex flex-column h-100" style="padding: 10px">
               <div id="quiz-image" class="bg-light">
                 <button
                   class="border border-1 rounded-1 w-100 glitter-button p-0"
@@ -103,7 +116,7 @@
                     id="quizImage"
                     class="d-flex flex-column justify-content-center"
                     style="
-                      height: 123px;
+                      height: 159px;
                       background-size: cover;
                       background-position: center center;
                     "
@@ -141,7 +154,9 @@
                         maxlength="16"
                       />
                       <h3 id="quizTitle" class="m-0">
-                        <span th:if="${quiz.title == null}" class="fw-light"
+                        <span
+                          th:if="${quiz.title == null || quiz.title.isEmpty()}"
+                          class="fw-light"
                           >Untitled Quiz</span
                         >
                         <span
@@ -164,7 +179,7 @@
                   </div>
 
                   <p
-                    class="detail-description m-0 mt-1 d-flex flex-column"
+                    class="detail-description m-0 d-flex flex-column"
                     style="height: fit-content"
                   >
                     <textarea
@@ -185,23 +200,13 @@
                   >
                     Description Error!
                   </span>
-
-                  <div
-                    th:if="${quiz.questions.size() == 0}"
-                    style="margin-top: 10px"
-                    class="p-1"
-                  >
-                    <i class="fas fa-list" style="margin: 0 3px"></i>
-                    <span>0 question</span>
-                  </div>
                 </div>
 
                 <div th:if="${quiz.questions.size() > 0}">
-                  <div class="divider left-content-divider mt-2"></div>
+                  <div class="divider left-content-divider mb-1">
+                    <div style="color: #999">Create manually</div>
+                  </div>
                   <div class="m-1 d-flex flex-column gap-1">
-                    <div class="w-100" style="font-weight: 900; color: #8854c0">
-                      <strong>Create manually:</strong>
-                    </div>
                     <a
                       class="btn btn-sm btn-purple w-75"
                       style="color: #8854c0"
@@ -217,21 +222,41 @@
                   </div>
                 </div>
 
-                <div class="divider left-content-divider"></div>
-                <div class="mx-1 pt-1">
-                  <div class="w-100">
-                    <strong>Import from:</strong>
+                <div th:if="${quiz.questions.size() == 0}">
+                  <div style="margin-top: 12px" class="p-1">
+                    <i class="fas fa-list me-1"></i>
+                    <span>0 question</span>
                   </div>
+                  <div class="divider full-divider mb-1"></div>
+                  <div class="mx-1">
+                    <div class="w-100">
+                      <strong>Import from:</strong>
+                    </div>
 
-                  <!-- Excel input trigger button -->
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
-                    data-bs-toggle="modal"
-                    data-bs-target="#excelImport"
-                  >
-                    <i class="fas fa-file-excel me-1"></i> Excel file
-                  </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
+                      data-bs-toggle="modal"
+                      data-bs-target="#excelImport"
+                    >
+                      <i class="fas fa-file-excel me-1"></i> Excel file
+                    </button>
+                  </div>
+                </div>
+                <div th:unless="${quiz.questions.size() == 0}">
+                  <div class="divider mt-1">
+                    <div style="color: #999">Import</div>
+                  </div>
+                  <div class="mx-1">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
+                      data-bs-toggle="modal"
+                      data-bs-target="#excelImport"
+                    >
+                      <i class="fas fa-file-excel me-1"></i> Excel file
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -243,7 +268,7 @@
             class="right-content col-8"
             th:if="${quiz.questions.size() == 0}"
           >
-            <div class="d-flex" style="height: 400px">
+            <div class="d-flex" style="height: 488px">
               <div class="border-1 rounded-1 custom-box-shadow centered w-100">
                 <div class="border-0 left-center" style="width: 69%">
                   <h5 style="font-weight: 900">
@@ -269,7 +294,7 @@
                       <i class="fas fa-arrow-right"></i>
                     </button>
                   </div>
-                  <div class="divider my-2">or</div>
+                  <div class="divider my-4">or</div>
                   <h5 style="font-weight: 900; color: #8854c0">
                     Create a question manually
                   </h5>
@@ -291,13 +316,9 @@
               </div>
             </div>
           </div>
-          <div
-            style="overflow: hidden"
-            class="right-content col-8 d-flex flex-column gap-1"
-            th:if="${quiz.questions.size() > 0}"
-          >
+          <div class="right-content col-8" th:if="${quiz.questions.size() > 0}">
             <div class="section d-flex justify-content-between align-items-end">
-              <strong class="p-1 pt-0">
+              <strong class="pt-1 px-1">
                 <i class="fas fa-list-check mx-1"></i>
                 <span th:text="${quiz.questions.size()}">0</span>
                 question<span th:if="${quiz.questions.size() > 1}">s</span>
@@ -305,8 +326,8 @@
 
               <button
                 type="button"
-                class="btn btn-sm btn-purple rounded-1 border-0"
-                style="margin-right: 3px; padding: 8px 12px; box-shadow: none"
+                class="btn btn-sm btn-purpleee rounded-1 border-0"
+                style="margin-right: 3px; padding: 5px 8px; box-shadow: none"
                 onclick="handleClickSearchButton()"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasRight"
@@ -314,7 +335,7 @@
               >
                 <i class="fas fa-plus" style="margin-right: 5px"></i>
                 Add
-                <span class="d-none d-sm-inline"> more question</span>
+                <span class="d-none d-sm-inline"> more</span> question
               </button>
             </div>
 
@@ -397,19 +418,26 @@
       aria-labelledby="offcanvasRightLabel"
     >
       <form
+        id="searchForm"
         class="offcanvas-header d-flex flex-column gap-1 position-relative p-1"
       >
         <div class="w-100 d-flex gap-2 align-items-center">
           <div class="search-bar">
             <input
               id="searchQuizInput"
+              name="title"
               type="text"
               class="form-control border-0 rounded-1"
-              placeholder="Search in Library"
+              placeholder="Look for any quizzes by title here..."
+              autocomplete="off"
               required
-              onkeyup="delayedSearch()"
             />
-            <button type="submit" class="btn btn-sm btn-purple search-btn">
+            <button
+              id="searchQuizButton"
+              type="button"
+              class="btn btn-sm btn-purple search-btn"
+              onclick="searchQuiz()"
+            >
               Search
             </button>
           </div>
@@ -431,15 +459,20 @@
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                <span>All</span>
+                <input type="hidden" name="origin" />
+                <span>Quiz Origin</span>
               </a>
               <div
-                class="dropdown-menu position-absolute shadow animated--grow-in p-0"
+                class="dropdown-menu position-absolute p-0"
                 aria-labelledby="quizOriginDropdown"
                 style="min-width: 0; width: 123px"
               >
-                <a class="dropdown-item btn btn-sm p-1"> Created by me </a>
-                <a class="dropdown-item btn btn-sm p-1"> The others </a>
+                <a class="dropdown-item btn btn-sm p-1 quizOrigin">
+                  Created by me
+                </a>
+                <a class="dropdown-item btn btn-sm p-1 quizOrigin">
+                  The others
+                </a>
               </div>
             </li>
             <li class="nav-item dropdown">
@@ -452,6 +485,7 @@
                 aria-haspopup="true"
                 aria-expanded="false"
               >
+                <input type="hidden" name="tag" />
                 <span>Quiz Tag</span>
               </a>
               <div
@@ -459,8 +493,8 @@
                 aria-labelledby="quizTagDropdown"
                 style="min-width: 0; width: 99px"
               >
-                <a class="dropdown-item btn btn-sm p-1 px-2"> Quiz </a>
-                <a class="dropdown-item btn btn-sm p-1 px-2"> Exam </a>
+                <a class="dropdown-item btn btn-sm p-1 px-2 quizTag"> Quiz </a>
+                <a class="dropdown-item btn btn-sm p-1 px-2 quizTag"> Exam </a>
               </div>
             </li>
             <li class="nav-item dropdown">
@@ -473,18 +507,23 @@
                 aria-haspopup="true"
                 aria-expanded="false"
               >
+                <input type="hidden" name="questNum" />
                 <span>Number of questions</span>
               </a>
               <div
-                class="dropdown-menu position-absolute shadow animated--grow-in p-0"
+                class="dropdown-menu position-absolute p-0"
                 aria-labelledby="questNumDropdown"
                 style="min-width: 0"
               >
-                <a class="dropdown-item btn btn-sm p-1">
+                <a class="dropdown-item btn btn-sm p-1 questNum">
                   Less than 5 questions
                 </a>
-                <a class="dropdown-item btn btn-sm p-1"> 5 - 10 questions </a>
-                <a class="dropdown-item btn btn-sm p-1"> 10+ questions </a>
+                <a class="dropdown-item btn btn-sm p-1 questNum">
+                  5 - 10 questions
+                </a>
+                <a class="dropdown-item btn btn-sm p-1 questNum">
+                  10+ questions
+                </a>
               </div>
             </li>
           </ul>
@@ -500,7 +539,7 @@
       </form>
       <div class="offcanvas-body bg-white rounded-1">
         <div class="col-5 bg-white p-1 d-flex flex-column">
-          <div class="opa-33-fsz-14-w-100">
+          <div class="opa-25">
             Display the result for
             <strong>"<span id="data-search"></span>"</strong>:
           </div>
@@ -962,11 +1001,7 @@
 
             <div class="divider answer-divider mb-1">
               <div style="color: #999">
-                <span th:if="${question.type.equals('single-choice')}">
-                  Single Choice
-                </span>
-                <span th:if="${question.type.equals('multiple-choice')}">
-                </span>
+                <span th:text="${question.type}"> Single Choice </span>
               </div>
             </div>
 
@@ -1016,114 +1051,10 @@
 
     <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
 
-    <script>
-      (function handleInputError() {
-        const IDs = [
-          "imageUrl",
-          "title",
-          "description",
-          "titleInput1",
-          "descriptionInput1",
-        ];
-        for (let id of IDs) {
-          let input = document.getElementById(id);
-          let inputErrors = document.getElementsByClassName(id + "Error");
-          input.addEventListener("keyup", () => {
-            for (let inputErr of inputErrors) {
-              inputErr.classList.add("d-none");
-            }
-          });
-        }
-      })();
-
-      function handleClickSearchButton() {
-        document.getElementById("searchQuizInput").focus();
-      }
-
-      (function () {
-        const input = document.getElementById("titleInput1");
-        const detail = document.getElementsByClassName("quiz-detail")[0];
-
-        input.addEventListener("focus", function () {
-          detail.classList.remove("title-out-focus");
-          detail.classList.add("title-on-focus");
-        });
-
-        input.addEventListener("focusout", function () {
-          detail.classList.remove("title-on-focus");
-          detail.classList.add("title-out-focus");
-        });
-      })();
-
-      $(document).ready(function () {
-        // Gọi hàm khi trang được tải
-        delayedSearch();
-      });
-      // search
-      var delayTimer;
-
-      function delayedSearch() {
-        clearTimeout(delayTimer);
-        delayTimer = setTimeout(function () {
-          search();
-        }, 100);
-      }
-      function search() {
-        var searchTerm = $("#searchQuizInput").val();
-        $("#data-search").text(searchTerm);
-        $.ajax({
-          type: "GET",
-          url: "/rest-quiz/search?search=" + searchTerm.trim(),
-          success: function (data) {
-            displayResults(data);
-          },
-          error: function (error) {
-            console.error("Error during search:", error);
-          },
-        });
-      }
-
-      function displayResults(results) {
-        var resultsContainer = $("#searchResults");
-        resultsContainer.empty();
-        results.forEach(function (result) {
-          var dataItem = $("<a>", { class: "data-item" });
-          var itemDetail = $("<div>", { class: "item-detail" });
-          var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
-          var title = $("<strong>", { text: result.title });
-          detailHeader.append(title);
-          var itemTag = $("<div>", { class: "item-tag", text: result.tag });
-          detailHeader.append(itemTag);
-          itemDetail.append(detailHeader);
-          var ul = $("<ul>", { class: "fa-ul" });
-          var questionsLi = $("<li>", {
-            html:
-              '<i class="fa-li fa fa-list"></i>' +
-              result.questions +
-              " questions",
-          });
-          ul.append(questionsLi);
-          var creatorLi = $("<li>", {
-            html:
-              '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
-              result.creator.fullName,
-          });
-          ul.append(creatorLi);
-          itemDetail.append(ul);
-          var itemImage = $("<div>", { class: "item-image" });
-
-          var image = $("<img>", {
-            class: "bg-success",
-            src: result.quizImageUrl,
-            alt: "Quiz Image",
-          });
-          itemImage.append(image);
-          dataItem.append(itemDetail);
-          dataItem.append(itemImage);
-          resultsContainer.append(dataItem);
-        });
-      }
-    </script>
+    <!-- <script
+      src="../../static/js/quiz/search-quiz.js"
+      th:src="@{/js/quiz/search-quiz.js}"
+    ></script> -->
 
     <script th:inline="javascript">
       /*<![CDATA[*/
@@ -1234,6 +1165,199 @@
         }
       }
       /*]]>*/
+    </script>
+
+    <script>
+      (function handleInputError() {
+        const IDs = [
+          "imageUrl",
+          "title",
+          "description",
+          "titleInput1",
+          "descriptionInput1",
+        ];
+        for (let id of IDs) {
+          let input = document.getElementById(id);
+          let inputErrors = document.getElementsByClassName(id + "Error");
+          input.addEventListener("keyup", () => {
+            for (let inputErr of inputErrors) {
+              inputErr.classList.add("d-none");
+            }
+          });
+        }
+      })();
+
+      function handleClickSearchButton() {
+        document.getElementById("searchQuizInput").focus();
+      }
+
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
+
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
+
+      (function () {
+        const input = document.getElementById("titleInput1");
+        const detail = document.getElementsByClassName("quiz-detail")[0];
+
+        input.addEventListener("focus", function () {
+          detail.classList.remove("title-out-focus");
+          detail.classList.add("title-on-focus");
+        });
+
+        input.addEventListener("focusout", function () {
+          detail.classList.remove("title-on-focus");
+          detail.classList.add("title-out-focus");
+        });
+      })();
+
+      // $(document).ready(function () {
+      //   // Gọi hàm khi trang được tải
+      //   delayedSearch();
+      // });
+      // // search
+      // var delayTimer;
+
+      // function delayedSearch() {
+      //   clearTimeout(delayTimer);
+      //   delayTimer = setTimeout(function () {
+      //     search();
+      //   }, 100);
+      // }
+      // function search() {
+      //   var searchTerm = $("#searchQuizInput").val();
+      //   $("#data-search").text(searchTerm);
+      //   $.ajax({
+      //     type: "GET",
+      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
+      //     success: function (data) {
+      //       displayResults(data);
+      //     },
+      //     error: function (error) {
+      //       console.error("Error during search:", error);
+      //     },
+      //   });
+      // }
+
+      // function displayResults(results) {
+      //   var resultsContainer = $("#searchResults");
+      //   resultsContainer.empty();
+      //   results.forEach(function (result) {
+      //     var dataItem = $("<a>", { class: "data-item" });
+      //     var itemDetail = $("<div>", { class: "item-detail" });
+      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+      //     var title = $("<strong>", { text: result.title });
+      //     detailHeader.append(title);
+      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
+      //     detailHeader.append(itemTag);
+      //     itemDetail.append(detailHeader);
+      //     var ul = $("<ul>", { class: "fa-ul" });
+      //     var questionsLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-list"></i>' +
+      //         result.questions +
+      //         " questions",
+      //     });
+      //     ul.append(questionsLi);
+      //     var creatorLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+      //         result.creator.fullName,
+      //     });
+      //     ul.append(creatorLi);
+      //     itemDetail.append(ul);
+      //     var itemImage = $("<div>", { class: "item-image" });
+
+      //     var image = $("<img>", {
+      //       class: "bg-success",
+      //       src: result.quizImageUrl,
+      //       alt: "Quiz Image",
+      //     });
+      //     itemImage.append(image);
+      //     dataItem.append(itemDetail);
+      //     dataItem.append(itemImage);
+      //     resultsContainer.append(dataItem);
+      //   });
+      // }
+
+      // $(document).ready(function () {
+      //   // Gọi hàm khi trang được tải
+      //   delayedSearch();
+      // });
+      // // search
+      // var delayTimer;
+
+      // function delayedSearch() {
+      //   clearTimeout(delayTimer);
+      //   delayTimer = setTimeout(function () {
+      //     search();
+      //   }, 100);
+      // }
+      // function search() {
+      //   var searchTerm = $("#searchQuizInput").val();
+      //   $("#data-search").text(searchTerm);
+      //   $.ajax({
+      //     type: "GET",
+      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
+      //     success: function (data) {
+      //       displayResults(data);
+      //     },
+      //     error: function (error) {
+      //       console.error("Error during search:", error);
+      //     },
+      //   });
+      // }
+
+      // function displayResults(results) {
+      //   var resultsContainer = $("#searchResults");
+      //   resultsContainer.empty();
+      //   results.forEach(function (result) {
+      //     var dataItem = $("<a>", { class: "data-item" });
+      //     var itemDetail = $("<div>", { class: "item-detail" });
+      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+      //     var title = $("<strong>", { text: result.title });
+      //     detailHeader.append(title);
+      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
+      //     detailHeader.append(itemTag);
+      //     itemDetail.append(detailHeader);
+      //     var ul = $("<ul>", { class: "fa-ul" });
+      //     var questionsLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-list"></i>' +
+      //         result.questions +
+      //         " questions",
+      //     });
+      //     ul.append(questionsLi);
+      //     var creatorLi = $("<li>", {
+      //       html:
+      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+      //         result.creator.fullName,
+      //     });
+      //     ul.append(creatorLi);
+      //     itemDetail.append(ul);
+      //     var itemImage = $("<div>", { class: "item-image" });
+
+      //     var image = $("<img>", {
+      //       class: "bg-success",
+      //       src: result.quizImageUrl,
+      //       alt: "Quiz Image",
+      //     });
+      //     itemImage.append(image);
+      //     dataItem.append(itemDetail);
+      //     dataItem.append(itemImage);
+      //     resultsContainer.append(dataItem);
+      //   });
+      // }
     </script>
   </body>
 </html>

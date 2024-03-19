@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.group3.ezquiz.model.enums.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,8 +54,6 @@ public class User {
 
   private String note;
 
-  private String token;
-
   private Long createdId;
 
   @Temporal(TemporalType.TIMESTAMP)
@@ -64,8 +64,11 @@ public class User {
   @UpdateTimestamp
   private Timestamp updatedAt;
 
-  @OneToMany(mappedBy = "learner", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "learner")
   private List<ClassJoining> classJoinings;
+
+  @OneToMany(mappedBy = "learner", cascade = CascadeType.ALL)
+  private List<QuizTaking> takenQuizList;
 
   public Boolean isLearner() {
     return role == Role.LEARNER;

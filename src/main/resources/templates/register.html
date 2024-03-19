@@ -42,6 +42,11 @@
       justify-content: center;
     }
 
+    .container {
+      max-width: 456px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
     .form-control.is-invalid {
       border: solid 2px #e9573f !important;
     }
@@ -57,7 +62,7 @@
 
   <body class="bg-light">
     <div class="content pt-3">
-      <div class="container bg-white p-3 rounded" style="max-width: 456px">
+      <div class="container bg-white p-3 rounded">
         <h2 class="m-0">Sign Up</h2>
         <span class="fw-light">It's easy and quick.</span>
         <hr class="my-3 mt-2" />
@@ -115,7 +120,12 @@
               </span>
             </div>
           </div>
-          <div class="form-group">
+          <div
+            class="form-group"
+            data-bs-toggle="tooltip"
+            data-bs-placement="left"
+            data-bs-title="Must consist of only digit (0-9) and alphabetical letters (a-z, A-Z); at least 1 digit, 1 lowercase letter, 1 uppercase letter and it must be 8-16 characters long without space!"
+          >
             <div class="register-input-custom password-input">
               <input
                 class="form-control passwordInput"
@@ -171,13 +181,19 @@
           </p>
           <div class="d-flex justify-content-center">
             <button
-              id="registerSubmitButton"
+              id="signUpButton"
               type="button"
               onclick="handleSignUpClick()"
               class="btn btn-sm btn-primary"
               style="padding: 3px 23px"
             >
               SIGN UP
+              <div
+                class="spinner-border spinner-border-sm m-0 ms-1"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </button>
           </div>
         </form>

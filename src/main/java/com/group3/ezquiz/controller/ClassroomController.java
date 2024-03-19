@@ -2,11 +2,9 @@ package com.group3.ezquiz.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-
-import org.apache.poi.ss.formula.functions.Mode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,16 +13,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.group3.ezquiz.model.Classroom;
-import com.group3.ezquiz.payload.ClassroomDto;
 import com.group3.ezquiz.payload.ExcelFileDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.ClassroomDetailDto;
+import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +48,31 @@ public class ClassroomController {
 
     @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/created-list")
-    public String getCreatedClassroomPage(HttpServletRequest request, Model model) {
-        List<Classroom> classrooms = classroomService.getCreatedClassroomList(request);
-        model.addAttribute("classrooms", classrooms);
+    public String getCreatedClassroomPage(
+            HttpServletRequest request,
+            @Valid @ModelAttribute LibraryReqParam libraryDto,
+            BindingResult bindingResult, RedirectAttributes redirectAttributes,
+            Model model) {
+        if (bindingResult.hasErrors()) {
+            for (ObjectError objectError : bindingResult.getAllErrors()) {
+                FieldError fieldError = (FieldError) objectError;
+                if (fieldError.getField().equals("sort")) {
+                    libraryDto.setSort("latest");
+                }
+                if (fieldError.getField().equals("page")) {
+                    libraryDto.setPage(1);
+                }
+                if (fieldError.getField().equals("size")) {
+                    libraryDto.setSize(3);
+                }
+            }
+            redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
+            return "redirect:/classroom/created-list";
+        }
+        Page<Classroom> classroom = classroomService.getClassroomByTeacher(request, libraryDto);
+        int maxPage = classroom.getTotalPages();
+        model.addAttribute("classroom", classroom);
+        model.addAttribute("max", maxPage);
         return "classroom/classroom-list";
     }
 
@@ -56,7 +80,7 @@ public class ClassroomController {
     @PostMapping("/create")
     public ResponseEntity<?> ClassCreating(
             HttpServletRequest request,
-            @Valid ClassroomDto classroomDto) throws BindException {
+            @Valid ClassroomDetailDto classroomDto) throws BindException {
 
         return classroomService.createClass(request, classroomDto);
     }
@@ -77,10 +101,10 @@ public class ClassroomController {
             @PathVariable(value = "id") Long id,
             @ModelAttribute("classroom") Classroom updatedClassroom,
             RedirectAttributes redirectAttributes) {
+
         classroomService.updateClassroom(id, updatedClassroom);
         redirectAttributes.addFlashAttribute("successMessage", "Classroom updated successfully!");
         return "redirect:/classroom/" + id;
-
     }
 
     @PreAuthorize(TEACHER_AUTHORITY)
@@ -91,24 +115,18 @@ public class ClassroomController {
         return "redirect:/classroom/created-list";
     }
 
-    @PreAuthorize(LEARNER_AUTHORITY)
-    @GetMapping("/joined-list")
-    public String JoinClassroomForm(
-            HttpServletRequest request,
-            Model model) {
-        model.addAttribute("classrooms", userService.getUserRequesting(request).getClassJoinings());
-        return "classroom/classroom-list";
-    }
-
-    @PreAuthorize(LEARNER_AUTHORITY)
-    @PostMapping("/join")
-    public String JoinedClassroom(
-            HttpServletRequest request,
-            @RequestParam String code, Model model) {
-        boolean success = classroomService.joinClassroom(request, code);
-        
-        return null;
-    }
+    // @PreAuthorize(TEACHER_AUTHORITY)
+    // @GetMapping("/{id}/remove-member")
+    // public String removeLearnerByTeacher(
+    // HttpServletRequest request,
+    // @PathVariable(value = "id") Long id,
+    // @RequestParam(required = true) Long learnerId, Model model) {
+    // Classroom classroom = classroomService.getClassroomByRequestAndId(request,
+    // id);
+    // classroomService.removeLearnerFromClassroomLearnerId(classroom, learnerId);
+    // model.addAttribute("classroom", classroom);
+    // return "classroom/classroom-detail";
+    // }
 
     @PreAuthorize(TEACHER_AUTHORITY)
     @GetMapping("/download")
@@ -127,7 +145,6 @@ public class ClassroomController {
 
     @PreAuthorize(TEACHER_AUTHORITY)
     @PostMapping("/import")
-
     public ResponseEntity<?> importClassroomData(
             HttpServletRequest request,
             @ModelAttribute ExcelFileDto fileDto) throws BindException {
@@ -137,6 +154,26 @@ public class ClassroomController {
                         .message("Import Successfully")
                         .build(),
                 HttpStatus.OK);
+    }
+
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @GetMapping("/{id}/download")
+    public ResponseEntity<InputStreamResource> getNewLeanerTemplate(
+            HttpServletRequest request,
+            @PathVariable Long id) throws IOException {
+
+        Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
+        ClassPathResource resource = new ClassPathResource("static/class-member/Template.xlsx");
+        InputStream inputStream = resource.getInputStream();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=" + classroom.getName() + ".xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(new InputStreamResource(inputStream));
     }
 
     @PreAuthorize(TEACHER_AUTHORITY)
@@ -155,19 +192,27 @@ public class ClassroomController {
                 HttpStatus.OK);
     }
 
-    @PreAuthorize(TEACHER_AUTHORITY)
-    @GetMapping("/{id}/download")
-    public ResponseEntity<InputStreamResource> getNewLeanerTemplate() throws IOException {
-        ClassPathResource resource = new ClassPathResource("static/classroom/Template.xlsx");
-        InputStream inputStream = resource.getInputStream();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Template.xlsx");
+    @PreAuthorize(LEARNER_AUTHORITY)
+    @GetMapping("/joined-list")
+    public String JoinClassroomForm(
+            HttpServletRequest request,
+            Model model) {
+        model.addAttribute("classroom", new CodeFormDto());
+        model.addAttribute("classrooms", userService.getUserRequesting(request).getClassJoinings());
+        return "classroom/classroom-list";
+    }
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-                .body(new InputStreamResource(inputStream));
+    @PreAuthorize(LEARNER_AUTHORITY)
+    @PostMapping("/join")
+    public String JoinedClassroom(
+            HttpServletRequest request,
+            @RequestParam String code, Model model) {
+        boolean success = classroomService.joinClassroom(request, code);
+        if (success) {
+            model.addAttribute("classjoin", userService.getUserRequesting(request).getClassJoinings());
+            return "redirect:/classroom/joined-list?joined";
+        }
+        return "redirect:error";
     }
 
 }

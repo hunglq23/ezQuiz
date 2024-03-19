@@ -529,8 +529,7 @@
           </div>
           <div class="modal-footer p-1 d-flex justify-content-between">
             <a
-              th:href="@{classroom/download}"
-              download="Template.xlsx"
+              th:href="@{/classroom/{id}/download(id=${classroom.id})}"
               class="btn btn-sm bg-light px-2 glitter-button"
             >
               <i class="fas fa-download me-1"></i>Download template
