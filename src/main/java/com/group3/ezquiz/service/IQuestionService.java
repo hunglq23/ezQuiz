@@ -17,4 +17,6 @@ public interface IQuestionService {
 
   ResponseEntity<?> checkQuestionAnswers(Long id, Map<String, String> params, String questIndex);
 
+  void saveQuestion(Question question);
+
 }

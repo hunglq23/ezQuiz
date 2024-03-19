@@ -1,1363 +1,1095 @@
 <!DOCTYPE html>
 <html lang="en-US" xmlns:th="www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quiz Edit</title>
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="../../static/images/favicon.ico"
-      th:href="@{/images/favicon.ico}"
-    />
-    <link
-      href="../../static/vendor/bootstrap/bootstrap.min.css"
-      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
-      rel="stylesheet"
-    />
-    <link
-      href="../../static/css/main.css"
-      th:href="@{/css/main.css}"
-      rel="stylesheet"
-    />
-    <link
-      href="../../static/css/quiz/quiz-editing.css"
-      th:href="@{/css/quiz/quiz-editing.css}"
-      rel="stylesheet"
-    />
-    <!-- Font Family Nunito Sans -->
-    <link
-      href="../../static/css/font.css"
-      th:href="@{/css/font.css}"
-      rel="stylesheet"
-    />
-  </head>
 
-  <body>
-    <header class="bg-light">
-      <nav
-        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
-        role="navigation"
-      >
-        <div class="container-fluid mx-2">
-          <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
-            >ezQuiz</a
-          >
-          <a
-            class="btn btn-sm mx-3 px-3 bd-left opa-25"
-            style="font-size: 18px"
-            data-bs-toggle="modal"
-            data-bs-target="#quizInfo"
-            th:with="t = ${quiz.title}"
-            th:text="${t == null || t.isEmpty() ? 'Untitled Quiz' : t}"
-          ></a>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Edit</title>
+  <link rel="icon" type="image/x-icon" href="../../static/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+  <link href="../../static/vendor/bootstrap/bootstrap.min.css" th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+    rel="stylesheet" />
+  <link href="../../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+  <link href="../../static/css/quiz/quiz-editing.css" th:href="@{/css/quiz/quiz-editing.css}" rel="stylesheet" />
+  <!-- Font Family Nunito Sans -->
+  <link href="../../static/css/font.css" th:href="@{/css/font.css}" rel="stylesheet" />
+</head>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto me-2">
-              <div
-                class="text-danger"
-                style="margin-top: 12px"
-                th:if="${errorQuestions != null}"
-              >
-                <span th:text="${errorQuestions.size()}">99</span> invalid
-                question<span th:if="${errorQuestions.size() > 1}">s</span>!
+<body>
+  <header class="bg-light">
+    <nav class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm" role="navigation">
+      <div class="container-fluid mx-2">
+        <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}">ezQuiz</a>
+        <a class="btn btn-sm mx-3 px-3 bd-left opa-25" style="font-size: 18px" data-bs-toggle="modal"
+          data-bs-target="#quizInfo" th:with="t = ${quiz.title}"
+          th:text="${t == null || t.isEmpty() ? 'Untitled Quiz' : t}"></a>
 
-                <a
-                  class="text-danger fw-bold"
-                  data-bs-toggle="offcanvas"
-                  data-bs-target="#errorOffcanvas"
-                  aria-controls="errorOffcanvas"
-                  style="cursor: pointer"
-                >
-                  Details
-                </a>
-              </div>
-            </ul>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto me-2">
+            <div class="text-danger" style="margin-top: 12px" th:if="${errorQuestions != null}">
+              <span th:text="${errorQuestions.size()}">99</span> invalid
+              question<span th:if="${errorQuestions.size() > 1}">s</span>!
 
-            <button
-              type="button"
-              class="btn btn-sm opa-25 mx-1 btn-cog"
-              data-bs-toggle="modal"
-              data-bs-target="#quizInfo"
-            >
-              <i class="fas fa-cog"></i>
-            </button>
-            <button
-              class="btn btn-sm btn-primary px-2"
-              onclick="handleSaveButtonClick()"
-            >
-              <i class="fas fa-save me-1"></i> SAVE
-            </button>
-          </div>
+              <a class="text-danger fw-bold" data-bs-toggle="offcanvas" data-bs-target="#errorOffcanvas"
+                aria-controls="errorOffcanvas" style="cursor: pointer">
+                Details
+              </a>
+            </div>
+          </ul>
+
+          <button type="button" class="btn btn-sm opa-25 mx-1 btn-cog" data-bs-toggle="modal"
+            data-bs-target="#quizInfo">
+            <i class="fas fa-cog"></i>
+          </button>
+          <button class="btn btn-sm btn-primary px-2" onclick="handleSaveButtonClick()">
+            <i class="fas fa-save me-1"></i> SAVE
+          </button>
         </div>
-      </nav>
-    </header>
+      </div>
+    </nav>
+  </header>
 
-    <div class="page-content bg-light d-flex">
-      <div
-        class="container-xl px-lg-5"
-        th:classappend="${quiz.questions.size() < 1 ? 'has-no-question' : ''}"
-      >
-        <div class="h-100 d-flex justify-content-center gap-3 gap-lg-5">
-          <!-- <left content> -->
-          <div class="border border-1 rounded-1 d-none d-md-block left-content">
-            <div class="d-flex flex-column h-100" style="padding: 10px">
-              <div id="quiz-image" class="bg-light">
-                <button
-                  class="border border-1 rounded-1 w-100 glitter-button p-0"
-                  data-bs-toggle="modal"
-                  data-bs-target="#quizInfo"
-                  data-bs-placement="left"
-                  data-bs-trigger="hover"
-                  data-bs-title="Edit image"
-                >
-                  <div
-                    id="quizImage"
-                    class="d-flex flex-column justify-content-center"
-                    style="
+  <div class="page-content bg-light d-flex">
+    <div class="container-xl px-lg-5" th:classappend="${quiz.questions.size() < 1 ? 'has-no-question' : ''}">
+      <div class="h-100 d-flex justify-content-center gap-3 gap-lg-5">
+        <!-- <left content> -->
+        <div class="border border-1 rounded-1 d-none d-md-block left-content">
+          <div class="d-flex flex-column h-100" style="padding: 10px">
+            <div id="quiz-image" class="bg-light">
+              <button class="border border-1 rounded-1 w-100 glitter-button p-0" data-bs-toggle="modal"
+                data-bs-target="#quizInfo" data-bs-placement="left" data-bs-trigger="hover" data-bs-title="Edit image">
+                <div id="quizImage" class="d-flex flex-column justify-content-center" style="
                       height: 159px;
                       background-size: cover;
                       background-position: center center;
-                    "
-                  >
-                    <div
-                      th:if="${quiz.imageUrl == null}"
-                      class="d-flex flex-column"
-                    >
-                      <i class="fas fa-image" style="font-size: 28px"> </i>
-                      <span>Upload quiz image here</span>
+                    ">
+                  <div th:if="${quiz.imageUrl == null}" class="d-flex flex-column">
+                    <i class="fas fa-image" style="font-size: 28px"> </i>
+                    <span>Upload quiz image here</span>
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div class="d-flex flex-column mt-1">
+              <div class="quiz-detail" th:classappend="${quiz.questions.size() > 0 ? 'has-question' : ''}">
+                <div class="detail-title glitter-button" data-bs-toggle="tooltip" data-bs-placement="right"
+                  data-bs-trigger="hover" data-bs-title="Edit title">
+                  <div class="d-flex flex-column" style="padding-top: 5px">
+                    <input id="titleInput1" th:value="${quiz.title}" class="h3 hidden-input m-0 p-0 titleInput"
+                      type="text" placeholder="Untitled Quiz" autocomplete="off" maxlength="16" />
+                    <h3 id="quizTitle" class="m-0">
+                      <span th:if="${quiz.title == null || quiz.title.isEmpty()}" class="fw-light">Untitled Quiz</span>
+                      <span th:unless="${quiz.title == null}" th:text="${quiz.title}"></span>
+                    </h3>
+                    <span class="error-icon text-danger d-none titleError titleInput1Error" style="font-size: 14px">
+                      Title Error!
+                    </span>
+                  </div>
+                  <div>
+                    <label for="titleInput1" class="rounded-1">
+                      <i class="fas fa-pencil mx-2"></i>
+                    </label>
+                  </div>
+                </div>
+
+                <p class="detail-description m-0 d-flex flex-column" style="height: fit-content">
+                  <textarea id="descriptionInput1" placeholder="Click here to type something for description..."
+                    class="hidden-input w-100 description-input" rows="3" data-bs-toggle="tooltip"
+                    data-bs-placement="right" data-bs-trigger="hover" data-bs-title="Edit description" maxlength="88"
+                    th:text="${quiz.description}"></textarea>
+                </p>
+                <span class="text-danger error-icon d-none descriptionError descriptionInput1Error">
+                  Description Error!
+                </span>
+              </div>
+
+              <div th:if="${quiz.questions.size() > 0}">
+                <div class="divider left-content-divider mb-1">
+                  <div style="color: #999">Create manually</div>
+                </div>
+                <div class="m-1 d-flex flex-column gap-1">
+                  <a class="btn btn-sm btn-purple w-75" style="color: #8854c0"
+                    th:href="@{./edit/create-question(type='single-choice')}">Single choice</a>
+                  <a class="btn btn-sm btn-purple w-75" style="color: #8854c0"
+                    th:href="@{./edit/create-question(type='multiple-choice')}">Multiple choice</a>
+                </div>
+              </div>
+
+              <div th:if="${quiz.questions.size() == 0}">
+                <div style="margin-top: 12px" class="p-1">
+                  <i class="fas fa-list me-1"></i>
+                  <span>0 question</span>
+                </div>
+                <div class="divider full-divider mb-1"></div>
+                <div class="mx-1">
+                  <div class="w-100">
+                    <strong>Import from:</strong>
+                  </div>
+
+                  <button type="button" class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
+                    data-bs-toggle="modal" data-bs-target="#excelImport">
+                    <i class="fas fa-file-excel me-1"></i> Excel file
+                  </button>
+
+                </div>
+              </div>
+              <div th:unless="${quiz.questions.size() == 0}">
+                <div class="divider mt-1">
+                  <div style="color: #999">Import</div>
+                </div>
+                <div class="mx-1">
+                  <button type="button" class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
+                    data-bs-toggle="modal" data-bs-target="#excelImport">
+                    <i class="fas fa-file-excel me-1"></i> Excel file
+                  </button>
+                </div>
+                <div class="mx-1">
+                  <button type="button" class="btn btn-sm btn-secondary w-75 my-1 border-1" id="assignHomeworkBtn"
+                    data-bs-toggle="modal" data-bs-target="#assignQuizModal">
+                    Assign Homework
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- </left content> -->
+
+        <!-- <right content> -->
+        <div class="right-content col-8" th:if="${quiz.questions.size() == 0}">
+          <div class="d-flex" style="height: 488px">
+            <div class="border-1 rounded-1 custom-box-shadow centered w-100">
+              <div class="border-0 left-center" style="width: 69%">
+                <h5 style="font-weight: 900">
+                  Add a question from the Library
+                </h5>
+                <div class="position-relative w-100">
+                  <input type="button" onclick="handleClickSearchButton()"
+                    class="form-control border-0 custom-box-shadow text-start"
+                    style="font-size: 18px; padding-right: 33px" value="Search in Library" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" />
+                  <button class="btn p-0 border-0 rounded-2 arrow-right-style" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+                <div class="divider my-4">or</div>
+                <h5 style="font-weight: 900; color: #8854c0">
+                  Create a question manually
+                </h5>
+                <div class="d-flex justify-content-between">
+                  <a class="btn btn-sm btn-purple" style="color: #8854c0; width: 48%"
+                    th:href="@{./edit/create-question(type='single-choice')}">Single choice</a>
+                  <a class="btn btn-sm btn-purple" style="color: #8854c0; width: 48%"
+                    th:href="@{./edit/create-question(type='multiple-choice')}">Multiple choice</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right-content col-8" th:if="${quiz.questions.size() > 0}">
+          <div class="section d-flex justify-content-between align-items-end">
+            <strong class="pt-1 px-1">
+              <i class="fas fa-list-check mx-1"></i>
+              <span th:text="${quiz.questions.size()}">0</span>
+              question<span th:if="${quiz.questions.size() > 1}">s</span>
+            </strong>
+
+            <button type="button" class="btn btn-sm btn-purpleee rounded-1 border-0"
+              style="margin-right: 3px; padding: 5px 8px; box-shadow: none" onclick="handleClickSearchButton()"
+              data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+              <i class="fas fa-plus" style="margin-right: 5px"></i>
+              Add
+              <span class="d-none d-sm-inline"> more</span> question
+            </button>
+          </div>
+
+          <div class="flex-fill d-flex flex-column gap-2 data">
+            <div th:each="question, iStat : ${quiz.questions}" th:id="${'question' + (iStat.index + 1)}"
+              class="card mt-0">
+              <div class="card-header bg-white">
+                <!-- question number to the left-->
+                <div class="qcard-number mx-2">
+                  <i class="far fa-check-square mx-1"></i>
+                  Question <span th:text="${iStat.index + 1}">1</span>
+                </div>
+                <!-- edit, delete,... to the right -->
+                <div class="d-flex">
+                  <a th:href="@{./edit-question(type=${question.type},questionId=${question.id})}"
+                    class="btn btn-sm bg p-1 px-2 qcard-tool border-0" style="box-shadow: none"><i
+                      class="fas fa-edit mx-1"></i> Edit
+                    <span class="d-md-none d-lg-inline">this question</span>
+                  </a>
+                  <div style="border-left: 1px solid #e8e8e8"></div>
+                  <a class="btn-delete-question" href="#"
+                    th:onclick="'return confirmDelete(\'' + ${question.id} + '\')'">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                  <form id="deleteForm" method="post" th:action="@{/quiz/{id}/delete-question(id=${quiz.id})}">
+                    <input type="hidden" id="questionIdToDelete" name="questionId" />
+                  </form>
+                </div>
+              </div>
+              <div class="card-body px-3 pb-1 pt-2">
+                <div style="min-height: 123px">
+                  <p th:text="${question.text}" class="card-text mx-2"></p>
+                </div>
+
+                <div class="divider answer-divider mb-1">
+                  <div style="color: #999">
+                    <span th:if="${question.type.equals('single-choice')}">
+                      Single Choice
+                    </span>
+                    <span th:if="${question.type.equals('multiple-choice')}">
+                      Multiple Choice
+                    </span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div th:each="answer : ${question.answers}" class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                    <div class="px-0 d-flex align-items-start">
+                      <div th:if="${answer.isCorrect}">
+                        <span style="color: green">&#10003;</span>&nbsp;&nbsp;
+                      </div>
+                      <div th:unless="${answer.isCorrect}">
+                        <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
+                      </div>
+                      <div th:text="${answer.text}" class="text-secondary fw-bold"></div>
                     </div>
                   </div>
-                </button>
+                </div>
               </div>
-              <div class="d-flex flex-column mt-1">
-                <div
-                  class="quiz-detail"
-                  th:classappend="${quiz.questions.size() > 0 ? 'has-question' : ''}"
-                >
-                  <div
-                    class="detail-title glitter-button"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="right"
-                    data-bs-trigger="hover"
-                    data-bs-title="Edit title"
-                  >
-                    <div class="d-flex flex-column" style="padding-top: 5px">
-                      <input
-                        id="titleInput1"
-                        th:value="${quiz.title}"
-                        class="h3 hidden-input m-0 p-0 titleInput"
-                        type="text"
-                        placeholder="Untitled Quiz"
-                        autocomplete="off"
-                        maxlength="16"
-                      />
-                      <h3 id="quizTitle" class="m-0">
-                        <span
-                          th:if="${quiz.title == null || quiz.title.isEmpty()}"
-                          class="fw-light"
-                          >Untitled Quiz</span
-                        >
-                        <span
-                          th:unless="${quiz.title == null}"
-                          th:text="${quiz.title}"
-                        ></span>
-                      </h3>
-                      <span
-                        class="error-icon text-danger d-none titleError titleInput1Error"
-                        style="font-size: 14px"
-                      >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add question from another quiz -->
+  <div class="offcanvas offcanvas-end p-1" style="width: 69%; min-width: 678px" tabindex="-1" id="offcanvasRight"
+    aria-labelledby="offcanvasRightLabel">
+    <form id="searchForm" class="offcanvas-header d-flex flex-column gap-1 position-relative p-1">
+      <div class="w-100 d-flex gap-2 align-items-center">
+        <div class="search-bar">
+          <input id="searchQuizInput" name="title" type="text" class="form-control border-0 rounded-1"
+            placeholder="Look for any quizzes by title here..." autocomplete="off" required />
+          <button id="searchQuizButton" type="button" class="btn btn-sm btn-purple search-btn" onclick="searchQuiz()">
+            Search
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex gap-3 w-100 px-3" style="align-items: center">
+        <div style="color: #a3a3a3">
+          <i class="fas fa-filter"></i>
+          <span>Filter by:</span>
+        </div>
+        <ul class="navbar-nav d-flex flex-row gap-2">
+          <li class="nav-item dropdown">
+            <a class="btn dropdown-toggle btn-sm bg-light" style="padding: 0 23px" id="quizOriginDropdown" role="button"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <input type="hidden" name="origin" />
+              <span>Quiz Origin</span>
+            </a>
+            <div class="dropdown-menu position-absolute p-0" aria-labelledby="quizOriginDropdown"
+              style="min-width: 0; width: 123px">
+              <a class="dropdown-item btn btn-sm p-1 quizOrigin">
+                Created by me
+              </a>
+              <a class="dropdown-item btn btn-sm p-1 quizOrigin">
+                The others
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="btn dropdown-toggle btn-sm bg-light" style="padding: 0 12px" id="quizTagDropdown" role="button"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <input type="hidden" name="tag" />
+              <span>Quiz Tag</span>
+            </a>
+            <div class="dropdown-menu position-absolute shadow animated--grow-in p-0" aria-labelledby="quizTagDropdown"
+              style="min-width: 0; width: 99px">
+              <a class="dropdown-item btn btn-sm p-1 px-2 quizTag"> Quiz </a>
+              <a class="dropdown-item btn btn-sm p-1 px-2 quizTag"> Exam </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="btn dropdown-toggle btn-sm bg-light" style="padding: 0 12px" id="questNumDropdown" role="button"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <input type="hidden" name="questNum" />
+              <span>Number of questions</span>
+            </a>
+            <div class="dropdown-menu position-absolute p-0" aria-labelledby="questNumDropdown" style="min-width: 0">
+              <a class="dropdown-item btn btn-sm p-1 questNum">
+                Less than 5 questions
+              </a>
+              <a class="dropdown-item btn btn-sm p-1 questNum">
+                5 - 10 questions
+              </a>
+              <a class="dropdown-item btn btn-sm p-1 questNum">
+                10+ questions
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <button type="button" class="btn-close text-reset bg-light position-absolute" data-bs-dismiss="offcanvas"
+        aria-label="Close" style="top: 15px; right: 23px; padding: 11px"></button>
+    </form>
+    <div class="offcanvas-body bg-white rounded-1">
+      <div class="col-5 bg-white p-1 d-flex flex-column">
+        <div class="opa-25">
+          Display the result for
+          <strong>"<span id="data-search"></span>"</strong>:
+        </div>
+        <div class="data data-left" id="searchResults">
+          <!--            <a class="data-item">-->
+          <!--              <div class="item-detail">-->
+          <!--                <div class="detail-header flex-grow-1">-->
+          <!--                  <strong>Quiz Title</strong>-->
+          <!--                  <div class="item-tag">Exam</div>-->
+          <!--                </div>-->
+          <!--                <ul class="fa-ul">-->
+          <!--                  <li><i class="fa-li fa fa-list"></i>30 questions</li>-->
+          <!--                  <li>-->
+          <!--                    <i class="fa-li fa fa-user" style="color: #cacaca"></i-->
+          <!--                    >Creator name-->
+          <!--                  </li>-->
+          <!--                </ul>-->
+          <!--              </div>-->
+          <!--              <div class="item-image">-->
+          <!--                <img-->
+          <!--                  class="bg-success"-->
+          <!--                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"-->
+          <!--                  alt="Quiz Image"-->
+          <!--                />-->
+          <!--              </div>-->
+          <!--            </a>-->
+        </div>
+      </div>
+
+      <div class="bg-light flex-fill d-flex flex-column" style="padding: 20px">
+        <div class="w-100 bg-white rounded-2">
+          <div class="d-flex justify-content-between align-items-center" style="padding: 3px 8px">
+            <div class="d-flex gap-1 align-items-center">
+              <img class="rounded-1"
+                src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                alt="Quiz Image" style="height: 33px; width: auto" />
+              <div class="d-flex flex-column justify-content-center" style="line-height: 1.23">
+                <strong>Biology</strong>
+                <small class="fw-lighter">10 questions</small>
+              </div>
+            </div>
+            <a class="btn btn-sm bg-light glitter-button" style="padding: 3px 8px">Add all <span>3</span>
+              question(s)</a>
+          </div>
+        </div>
+        <div class="data data-right">
+          <div class="bg-white data-item d-flex flex-column">
+            <div class="item-header">
+              <div class="item-tag">single-choice</div>
+              <a class="btn btn-sm bg-light" style="
+                    font-size: 12px;
+                    color: #a3a3a3;
+                    border: solid 1px #e8e8e8;
+                    padding: 3px 5px;
+                  " title="Add this question">Add <span><i class="fas fa-plus"></i></span></a>
+            </div>
+            <div class="item-detail flex-fill p-1 pt-0">
+              <h6 style="margin-bottom: 5px">
+                Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
+              </h6>
+              <ul class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0" style="list-style-type: none">
+                <li class="col p-0">
+                  <span style="color: green">&#10003;</span>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Enim sint nulla corporis rerum odit?
+                </li>
+                <li class="col p-0">
+                  <span style="color: red">&#x2715;</span>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Consequatur esse ipsum, nemo quia laudantium harum aliquam
+                  nostrum accusantium odio! Placeat eveniet voluptatum alias
+                  commodi maiores vitae veniam fugiat fugit dicta.
+                </li>
+                <li class="col p-0">
+                  <span style="color: green">&#10003;</span>
+                  List icons can
+                </li>
+                <li class="col p-0">
+                  <span style="color: red">&#x2715;</span>
+                  be used to
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="bg-white data-item d-flex flex-column">
+            <div class="item-header">
+              <div class="item-tag">single-choice</div>
+              <a class="btn btn-sm bg-light" style="
+                    font-size: 12px;
+                    color: #a3a3a3;
+                    border: solid 1px #e8e8e8;
+                    padding: 3px 5px;
+                  " title="Add this question">Add <span><i class="fas fa-plus"></i></span></a>
+            </div>
+            <div class="item-detail flex-fill p-1 pt-0">
+              <h6 style="margin-bottom: 5px">
+                Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
+              </h6>
+              <ul class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0" style="list-style-type: none">
+                <li class="col p-0">
+                  <span style="color: green">&#10003;</span>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Enim sint nulla corporis rerum odit?
+                </li>
+                <li class="col p-0">
+                  <span style="color: red">&#x2715;</span>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Consequatur esse ipsum, nemo quia laudantium harum aliquam
+                  nostrum accusantium odio! Placeat eveniet voluptatum alias
+                  commodi maiores vitae veniam fugiat fugit dicta.
+                </li>
+                <li class="col p-0">
+                  <span style="color: green">&#10003;</span>
+                  List icons can
+                </li>
+                <li class="col p-0">
+                  <span style="color: red">&#x2715;</span>
+                  be used to
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz info form modal -->
+  <div class="modal fade" id="quizInfo" tabindex="-1" aria-labelledby="quizInfoLabel" aria-hidden="true">
+    <div class="modal-dialog mt-5">
+      <div class="modal-content border-0 bg-light">
+        <div class="modal-header p-2 align-items-start">
+          <div class="text-center mx-2">
+            <h4 class="modal-title" id="quizInfoLabel">Edit quiz details</h4>
+          </div>
+          <button type="button" class="btn-sm btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0 my-1">
+          <div class="row justify-content-center">
+            <div class="px-3">
+              <form class="d-flex flex-column gap-2" th:action="@{/quiz/{id}/edit(id=${quiz.id})}" role="form"
+                id="editForm" enctype="multipart/form-data">
+                <div>
+                  <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">
+                      <label class="fas fa-link" for="imageUrl"></label>
+                    </span>
+                    <input id="imageUrl" type="text" name="imageUrl" class="form-control"
+                      placeholder="Paste the image URL here" aria-label="imageURL" aria-describedby="basic-addon1"
+                      th:value="${quiz.imageUrl}" />
+                  </div>
+                  <div class="error-area">
+                    <span class="text-danger d-none imageUrlError" style="padding-left: 33px">
+                      Image Error!
+                    </span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-8">
+                    <div class="input-group">
+                      <span class="input-group-text" id="basic-addon1">
+                        <label class="fw-bolder" for="title">Aa</label>
+                      </span>
+                      <input id="title" th:value="${quiz.title}" type="text" name="title"
+                        class="form-control titleInput" placeholder="Type the quiz title here" aria-label="title"
+                        aria-describedby="basic-addon1" maxlength="16" />
+                    </div>
+                    <div class="error-area">
+                      <span class="text-danger d-none titleError titleInput1Error" style="padding-left: 33px">
                         Title Error!
                       </span>
                     </div>
-                    <div>
-                      <label for="titleInput1" class="rounded-1">
-                        <i class="fas fa-pencil mx-2"></i>
-                      </label>
+                  </div>
+
+                  <div class="form-group col-4 p-0 px-1">
+                    <div class="form-control form-switch my-0 bg-light rounded-2"
+                      style="display: flex; justify-content: center; gap: 8px">
+                      <input class="form-check-input" type="checkbox" name="isExam" value="true" id="examOnly" />
+                      <input type="hidden" name="isExam" value="false" />
+                      <label class="form-check-label" for="examOnly">Exam Only</label>
                     </div>
                   </div>
-
-                  <p
-                    class="detail-description m-0 d-flex flex-column"
-                    style="height: fit-content"
-                  >
-                    <textarea
-                      id="descriptionInput1"
-                      placeholder="Click here to type something for description..."
-                      class="hidden-input w-100 description-input"
-                      rows="3"
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="right"
-                      data-bs-trigger="hover"
-                      data-bs-title="Edit description"
-                      maxlength="88"
-                      th:text="${quiz.description}"
-                    ></textarea>
-                  </p>
-                  <span
-                    class="text-danger error-icon d-none descriptionError descriptionInput1Error"
-                  >
-                    Description Error!
-                  </span>
                 </div>
 
-                <div th:if="${quiz.questions.size() > 0}">
-                  <div class="divider left-content-divider mb-1">
-                    <div style="color: #999">Create manually</div>
-                  </div>
-                  <div class="m-1 d-flex flex-column gap-1">
-                    <a
-                      class="btn btn-sm btn-purple w-75"
-                      style="color: #8854c0"
-                      th:href="@{./edit/create-question(type='single-choice')}"
-                      >Single choice</a
-                    >
-                    <a
-                      class="btn btn-sm btn-purple w-75"
-                      style="color: #8854c0"
-                      th:href="@{./edit/create-question(type='multiple-choice')}"
-                      >Multiple choice</a
-                    >
+                <div class="form-group">
+                  <textarea class="form-control" style="background-image: none" name="description" id="description"
+                    rows="3" placeholder="Type description here..." maxlength="88"
+                    th:text="${quiz.description}"></textarea>
+                  <div class="error-area">
+                    <span class="text-danger d-none error-icon descriptionError descriptionInput1Error">
+                      Description Error!
+                    </span>
                   </div>
                 </div>
-
-                <div th:if="${quiz.questions.size() == 0}">
-                  <div style="margin-top: 12px" class="p-1">
-                    <i class="fas fa-list me-1"></i>
-                    <span>0 question</span>
-                  </div>
-                  <div class="divider full-divider mb-1"></div>
-                  <div class="mx-1">
-                    <div class="w-100">
-                      <strong>Import from:</strong>
-                    </div>
-
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
-                      data-bs-toggle="modal"
-                      data-bs-target="#excelImport"
-                    >
-                      <i class="fas fa-file-excel me-1"></i> Excel file
-                    </button>
-                  </div>
-                </div>
-                <div th:unless="${quiz.questions.size() == 0}">
-                  <div class="divider mt-1">
-                    <div style="color: #999">Import</div>
-                  </div>
-                  <div class="mx-1">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary w-75 my-1 border-1"
-                      data-bs-toggle="modal"
-                      data-bs-target="#excelImport"
-                    >
-                      <i class="fas fa-file-excel me-1"></i> Excel file
-                    </button>
-                  </div>
-                </div>
-              </div>
+              </form>
             </div>
           </div>
-          <!-- </left content> -->
-
-          <!-- <right content> -->
-          <div
-            class="right-content col-8"
-            th:if="${quiz.questions.size() == 0}"
-          >
-            <div class="d-flex" style="height: 488px">
-              <div class="border-1 rounded-1 custom-box-shadow centered w-100">
-                <div class="border-0 left-center" style="width: 69%">
-                  <h5 style="font-weight: 900">
-                    Add a question from the Library
-                  </h5>
-                  <div class="position-relative w-100">
-                    <input
-                      type="button"
-                      onclick="handleClickSearchButton()"
-                      class="form-control border-0 custom-box-shadow text-start"
-                      style="font-size: 18px; padding-right: 33px"
-                      value="Search in Library"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    />
-                    <button
-                      class="btn p-0 border-0 rounded-2 arrow-right-style"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    >
-                      <i class="fas fa-arrow-right"></i>
-                    </button>
-                  </div>
-                  <div class="divider my-4">or</div>
-                  <h5 style="font-weight: 900; color: #8854c0">
-                    Create a question manually
-                  </h5>
-                  <div class="d-flex justify-content-between">
-                    <a
-                      class="btn btn-sm btn-purple"
-                      style="color: #8854c0; width: 48%"
-                      th:href="@{./edit/create-question(type='single-choice')}"
-                      >Single choice</a
-                    >
-                    <a
-                      class="btn btn-sm btn-purple"
-                      style="color: #8854c0; width: 48%"
-                      th:href="@{./edit/create-question(type='multiple-choice')}"
-                      >Multiple choice</a
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="right-content col-8" th:if="${quiz.questions.size() > 0}">
-            <div class="section d-flex justify-content-between align-items-end">
-              <strong class="pt-1 px-1">
-                <i class="fas fa-list-check mx-1"></i>
-                <span th:text="${quiz.questions.size()}">0</span>
-                question<span th:if="${quiz.questions.size() > 1}">s</span>
-              </strong>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-purpleee rounded-1 border-0"
-                style="margin-right: 3px; padding: 5px 8px; box-shadow: none"
-                onclick="handleClickSearchButton()"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasRight"
-                aria-controls="offcanvasRight"
-              >
-                <i class="fas fa-plus" style="margin-right: 5px"></i>
-                Add
-                <span class="d-none d-sm-inline"> more</span> question
-              </button>
-            </div>
-
-            <div class="flex-fill d-flex flex-column gap-2 data">
-              <div
-                th:each="question, iStat : ${quiz.questions}"
-                th:id="${'question' + (iStat.index + 1)}"
-                class="card mt-0"
-              >
-                <div class="card-header bg-white">
-                  <!-- question number to the left-->
-                  <div class="qcard-number mx-2">
-                    <i class="far fa-check-square mx-1"></i>
-                    Question <span th:text="${iStat.index + 1}">1</span>
-                  </div>
-                  <!-- edit, delete,... to the right -->
-                  <div class="d-flex">
-                    <a
-                      class="btn btn-sm bg p-1 px-2 qcard-tool border-0"
-                      style="box-shadow: none"
-                      ><i class="fas fa-edit mx-1"></i> Edit
-                      <span class="d-md-none d-lg-inline">this question</span>
-                    </a>
-                    <div style="border-left: 1px solid #e8e8e8"></div>
-                    <a
-                      class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"
-                      style="box-shadow: none"
-                      ><i class="fas fa-trash mx-1"></i
-                    ></a>
-                  </div>
-                </div>
-                <div class="card-body px-3 pb-1 pt-2">
-                  <div style="min-height: 123px">
-                    <p th:text="${question.text}" class="card-text mx-2"></p>
-                  </div>
-
-                  <div class="divider answer-divider mb-1">
-                    <div style="color: #999">
-                      <span th:if="${question.type.equals('single-choice')}">
-                        Single Choice
-                      </span>
-                      <span th:if="${question.type.equals('multiple-choice')}">
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div
-                      th:each="answer : ${question.answers}"
-                      class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1"
-                    >
-                      <div class="px-0 d-flex align-items-start">
-                        <div th:if="${answer.isCorrect}">
-                          <span style="color: green">&#10003;</span>&nbsp;&nbsp;
-                        </div>
-                        <div th:unless="${answer.isCorrect}">
-                          <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
-                        </div>
-                        <div
-                          th:text="${answer.text}"
-                          class="text-secondary fw-bold"
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+        <div class="modal-footer p-0 px-2 pb-2 text-end">
+          <button type="button" data-bs-dismiss="modal" class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
+            onclick="handleEditFormContinueClick()">
+            Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Add question from another quiz -->
-    <div
-      class="offcanvas offcanvas-end p-1"
-      style="width: 69%; min-width: 678px"
-      tabindex="-1"
-      id="offcanvasRight"
-      aria-labelledby="offcanvasRightLabel"
-    >
-      <form
-        id="searchForm"
-        class="offcanvas-header d-flex flex-column gap-1 position-relative p-1"
-      >
-        <div class="w-100 d-flex gap-2 align-items-center">
-          <div class="search-bar">
-            <input
-              id="searchQuizInput"
-              name="title"
-              type="text"
-              class="form-control border-0 rounded-1"
-              placeholder="Look for any quizzes by title here..."
-              autocomplete="off"
-              required
-            />
-            <button
-              id="searchQuizButton"
-              type="button"
-              class="btn btn-sm btn-purple search-btn"
-              onclick="searchQuiz()"
-            >
-              Search
-            </button>
-          </div>
+  <!-- Modal -->
+  <div class="modal fade" id="assignQuizModal" tabindex="-1" aria-labelledby="assignQuizModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="assignQuizModalLabel">Assign Homework</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
-        <div class="d-flex gap-3 w-100 px-3" style="align-items: center">
-          <div style="color: #a3a3a3">
-            <i class="fas fa-filter"></i>
-            <span>Filter by:</span>
-          </div>
-          <ul class="navbar-nav d-flex flex-row gap-2">
-            <li class="nav-item dropdown">
-              <a
-                class="btn dropdown-toggle btn-sm bg-light"
-                style="padding: 0 23px"
-                id="quizOriginDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <input type="hidden" name="origin" />
-                <span>Quiz Origin</span>
-              </a>
-              <div
-                class="dropdown-menu position-absolute p-0"
-                aria-labelledby="quizOriginDropdown"
-                style="min-width: 0; width: 123px"
-              >
-                <a class="dropdown-item btn btn-sm p-1 quizOrigin">
-                  Created by me
-                </a>
-                <a class="dropdown-item btn btn-sm p-1 quizOrigin">
-                  The others
-                </a>
-              </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="btn dropdown-toggle btn-sm bg-light"
-                style="padding: 0 12px"
-                id="quizTagDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <input type="hidden" name="tag" />
-                <span>Quiz Tag</span>
-              </a>
-              <div
-                class="dropdown-menu position-absolute shadow animated--grow-in p-0"
-                aria-labelledby="quizTagDropdown"
-                style="min-width: 0; width: 99px"
-              >
-                <a class="dropdown-item btn btn-sm p-1 px-2 quizTag"> Quiz </a>
-                <a class="dropdown-item btn btn-sm p-1 px-2 quizTag"> Exam </a>
-              </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="btn dropdown-toggle btn-sm bg-light"
-                style="padding: 0 12px"
-                id="questNumDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <input type="hidden" name="questNum" />
-                <span>Number of questions</span>
-              </a>
-              <div
-                class="dropdown-menu position-absolute p-0"
-                aria-labelledby="questNumDropdown"
-                style="min-width: 0"
-              >
-                <a class="dropdown-item btn btn-sm p-1 questNum">
-                  Less than 5 questions
-                </a>
-                <a class="dropdown-item btn btn-sm p-1 questNum">
-                  5 - 10 questions
-                </a>
-                <a class="dropdown-item btn btn-sm p-1 questNum">
-                  10+ questions
-                </a>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <button
-          type="button"
-          class="btn-close text-reset bg-light position-absolute"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-          style="top: 15px; right: 23px; padding: 11px"
-        ></button>
-      </form>
-      <div class="offcanvas-body bg-white rounded-1">
-        <div class="col-5 bg-white p-1 d-flex flex-column">
-          <div class="opa-25">
-            Display the result for
-            <strong>"<span id="data-search"></span>"</strong>:
-          </div>
-          <div class="data data-left" id="searchResults">
-            <!--            <a class="data-item">-->
-            <!--              <div class="item-detail">-->
-            <!--                <div class="detail-header flex-grow-1">-->
-            <!--                  <strong>Quiz Title</strong>-->
-            <!--                  <div class="item-tag">Exam</div>-->
-            <!--                </div>-->
-            <!--                <ul class="fa-ul">-->
-            <!--                  <li><i class="fa-li fa fa-list"></i>30 questions</li>-->
-            <!--                  <li>-->
-            <!--                    <i class="fa-li fa fa-user" style="color: #cacaca"></i-->
-            <!--                    >Creator name-->
-            <!--                  </li>-->
-            <!--                </ul>-->
-            <!--              </div>-->
-            <!--              <div class="item-image">-->
-            <!--                <img-->
-            <!--                  class="bg-success"-->
-            <!--                  src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=200&h=200"-->
-            <!--                  alt="Quiz Image"-->
-            <!--                />-->
-            <!--              </div>-->
-            <!--            </a>-->
-          </div>
-        </div>
-
-        <div
-          class="bg-light flex-fill d-flex flex-column"
-          style="padding: 20px"
-        >
-          <div class="w-100 bg-white rounded-2">
-            <div
-              class="d-flex justify-content-between align-items-center"
-              style="padding: 3px 8px"
-            >
-              <div class="d-flex gap-1 align-items-center">
-                <img
-                  class="rounded-1"
-                  src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  alt="Quiz Image"
-                  style="height: 33px; width: auto"
-                />
-                <div
-                  class="d-flex flex-column justify-content-center"
-                  style="line-height: 1.23"
-                >
-                  <strong>Biology</strong>
-                  <small class="fw-lighter">10 questions</small>
-                </div>
-              </div>
-              <a
-                class="btn btn-sm bg-light glitter-button"
-                style="padding: 3px 8px"
-                >Add all <span>3</span> question(s)</a
-              >
+        <div class="modal-body">
+          <form id="assignHomeworkForm" method="post" th:action="@{/quiz/{id}/assign(id=${quiz.id})}"
+            th:object="${assignedQuizDto}">
+            <div class="mb-3">
+              <label for="note" class="form-label">note:</label>
+              <input type="text" class="form-control" id="note" name="note" required>
             </div>
-          </div>
-          <div class="data data-right">
-            <div class="bg-white data-item d-flex flex-column">
-              <div class="item-header">
-                <div class="item-tag">single-choice</div>
-                <a
-                  class="btn btn-sm bg-light"
-                  style="
-                    font-size: 12px;
-                    color: #a3a3a3;
-                    border: solid 1px #e8e8e8;
-                    padding: 3px 5px;
-                  "
-                  title="Add this question"
-                  >Add <span><i class="fas fa-plus"></i></span
-                ></a>
-              </div>
-              <div class="item-detail flex-fill p-1 pt-0">
-                <h6 style="margin-bottom: 5px">
-                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
-                </h6>
-                <ul
-                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"
-                  style="list-style-type: none"
-                >
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Enim sint nulla corporis rerum odit?
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Consequatur esse ipsum, nemo quia laudantium harum aliquam
-                    nostrum accusantium odio! Placeat eveniet voluptatum alias
-                    commodi maiores vitae veniam fugiat fugit dicta.
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    List icons can
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    be used to
-                  </li>
-                </ul>
-              </div>
+
+            <div class="mb-3">
+              <label for="maxAttempt" class="form-label">Max Attempts:</label>
+              <input type="number" class="form-control" id="maxAttempt" name="maxAttempt" required>
             </div>
-            <div class="bg-white data-item d-flex flex-column">
-              <div class="item-header">
-                <div class="item-tag">single-choice</div>
-                <a
-                  class="btn btn-sm bg-light"
-                  style="
-                    font-size: 12px;
-                    color: #a3a3a3;
-                    border: solid 1px #e8e8e8;
-                    padding: 3px 5px;
-                  "
-                  title="Add this question"
-                  >Add <span><i class="fas fa-plus"></i></span
-                ></a>
-              </div>
-              <div class="item-detail flex-fill p-1 pt-0">
-                <h6 style="margin-bottom: 5px">
-                  Con người không thể sống thiếu ô - xi quá bao nhiêu phút?
-                </h6>
-                <ul
-                  class="w-100 row row-cols-1 row-cols-lg-2 row-cols-xxl-3 m-0 p-0"
-                  style="list-style-type: none"
-                >
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Enim sint nulla corporis rerum odit?
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Consequatur esse ipsum, nemo quia laudantium harum aliquam
-                    nostrum accusantium odio! Placeat eveniet voluptatum alias
-                    commodi maiores vitae veniam fugiat fugit dicta.
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: green">&#10003;</span>
-                    List icons can
-                  </li>
-                  <li class="col p-0">
-                    <span style="color: red">&#x2715;</span>
-                    be used to
-                  </li>
-                </ul>
-              </div>
+
+            <div class="mb-3">
+              <label for="durationInMins" class="form-label">Duration (in minutes):</label>
+              <input type="number" class="form-control" id="durationInMins" name="durationInMins" required>
             </div>
-          </div>
+            <div class="mb-3">
+              <label for="startDate" class="form-label">Start Date:</label>
+              <input type="date" class="form-control" id="startDate" name="startDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="dueDate" class="form-label"> DueDate:</label>
+              <input type="date" class="form-control" id="dueDate" name="dueDate" required>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <label class="form-check-label" for="shuffleQuestions">Shuffle Questions</label>
+              <input class="form-check-input" type="checkbox" id="shuffleQuestions" name="shuffleQuestions">
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="shuffleAnswers" name="shuffleAnswers" default>
+              <label class="form-check-label" for="shuffleAnswers">Shuffle Answers</label>
+            </div>
+            <div class="form-group mb-3">
+              <label>Select Classroom</label>
+              <!-- Sử dụng select dropdown để chọn một lớp học duy nhất -->
+              <select class="form-select" id="classroomSelect" name="selectedClassroom" required>
+                <!-- Thêm các option từ biến thymeleaf classrooms -->
+                <option th:each="classroom : ${classrooms}" th:value="${classroom.id}" th:text="${classroom.name}">
+                </option>
+              </select>
+            </div>
+            <input type="hidden" name="quizId" th:value="${quiz.id}" />
+            <button type="submit" class="btn btn-primary">Assign quiz</button>
+          </form>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Quiz info form modal -->
-    <div
-      class="modal fade"
-      id="quizInfo"
-      tabindex="-1"
-      aria-labelledby="quizInfoLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog mt-5">
-        <div class="modal-content border-0 bg-light">
-          <div class="modal-header p-2 align-items-start">
-            <div class="text-center mx-2">
-              <h4 class="modal-title" id="quizInfoLabel">Edit quiz details</h4>
-            </div>
-            <button
-              type="button"
-              class="btn-sm btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+  <!-- Excel input modal -->
+  <div class="modal fade" id="excelImport" tabindex="-1" aria-labelledby="excelImportLabel" aria-hidden="true">
+    <div class="modal-dialog mt-5">
+      <div class="modal-content border-0">
+        <div class="modal-header p-2 align-items-start">
+          <div>
+            <h5 class="modal-title" id="excelImportLabel">
+              Import questions from excel file
+            </h5>
+            <p class="fw-lighter fst-italic m-0" style="font-size: small">
+              Please upload questions according to the template below
+            </p>
           </div>
-          <div class="modal-body p-0 my-1">
-            <div class="row justify-content-center">
-              <div class="px-3">
-                <form
-                  class="d-flex flex-column gap-2"
-                  th:action="@{/quiz/{id}/edit(id=${quiz.id})}"
-                  role="form"
-                  id="editForm"
-                  enctype="multipart/form-data"
-                >
-                  <div>
-                    <div class="input-group">
-                      <span class="input-group-text" id="basic-addon1">
-                        <label class="fas fa-link" for="imageUrl"></label>
-                      </span>
-                      <input
-                        id="imageUrl"
-                        type="text"
-                        name="imageUrl"
-                        class="form-control"
-                        placeholder="Paste the image URL here"
-                        aria-label="imageURL"
-                        aria-describedby="basic-addon1"
-                        th:value="${quiz.imageUrl}"
-                      />
-                    </div>
-                    <div class="error-area">
-                      <span
-                        class="text-danger d-none imageUrlError"
-                        style="padding-left: 33px"
-                      >
-                        Image Error!
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-8">
-                      <div class="input-group">
-                        <span class="input-group-text" id="basic-addon1">
-                          <label class="fw-bolder" for="title">Aa</label>
-                        </span>
-                        <input
-                          id="title"
-                          th:value="${quiz.title}"
-                          type="text"
-                          name="title"
-                          class="form-control titleInput"
-                          placeholder="Type the quiz title here"
-                          aria-label="title"
-                          aria-describedby="basic-addon1"
-                          maxlength="16"
-                        />
-                      </div>
-                      <div class="error-area">
-                        <span
-                          class="text-danger d-none titleError titleInput1Error"
-                          style="padding-left: 33px"
-                        >
-                          Title Error!
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="form-group col-4 p-0 px-1">
-                      <div
-                        class="form-control form-switch my-0 bg-light rounded-2"
-                        style="display: flex; justify-content: center; gap: 8px"
-                      >
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          name="isExam"
-                          value="true"
-                          id="examOnly"
-                        />
-                        <input type="hidden" name="isExam" value="false" />
-                        <label class="form-check-label" for="examOnly"
-                          >Exam Only</label
-                        >
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <textarea
-                      class="form-control"
-                      style="background-image: none"
-                      name="description"
-                      id="description"
-                      rows="3"
-                      placeholder="Type description here..."
-                      maxlength="88"
-                      th:text="${quiz.description}"
-                    ></textarea>
-                    <div class="error-area">
-                      <span
-                        class="text-danger d-none error-icon descriptionError descriptionInput1Error"
-                      >
-                        Description Error!
-                      </span>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer p-0 px-2 pb-2 text-end">
-            <button
-              type="button"
-              data-bs-dismiss="modal"
-              class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
-              onclick="handleEditFormContinueClick()"
-            >
-              Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
-            </button>
-          </div>
+          <button type="button" class="btn-sm btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="excelImportForm" method="post" th:action="@{/quiz/{id}/import(id=${quiz.id})}"
+            enctype="multipart/form-data" class="input-group mb-3">
+            <input type="file" class="form-control" name="excelFile" id="inputExcelFile" />
+          </form>
+        </div>
+        <div class="modal-footer p-1 d-flex justify-content-between">
+          <a th:href="@{/quiz/download}" download="Template.xlsx" class="btn btn-sm bg-light px-2 glitter-button">
+            <i class="fas fa-download me-1"></i>Download template
+          </a>
+          <button type="submit" class="btn btn-sm btn-secondary my-0 px-2 glitter-button" form="excelImportForm">
+            Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+          </button>
         </div>
       </div>
+      `
     </div>
+  </div>
 
-    <!-- Excel input modal -->
-    <div
-      class="modal fade"
-      id="excelImport"
-      tabindex="-1"
-      aria-labelledby="excelImportLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog mt-5">
-        <div class="modal-content border-0">
-          <div class="modal-header p-2 align-items-start">
-            <div>
-              <h5 class="modal-title" id="excelImportLabel">
-                Import questions from excel file
-              </h5>
-              <p class="fw-lighter fst-italic m-0" style="font-size: small">
-                Please upload questions according to the template below
-              </p>
-            </div>
-            <button
-              type="button"
-              class="btn-sm btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+  <!-- <Alert updating message> -->
+  <svg xmlns="http://www.w3.org/2000/svg" display="none">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path
+        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path
+        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+  </svg>
+  <div id="alert" class="d-none" style="position: fixed; left: 1.11rem; bottom: 0.11rem; z-index: 1000">
+    <div class="d-flex align-items-center alert" role="alert">
+      <svg class="bi flex-shrink-0 me-1" role="img" aria-label="Success:" width="20" height="20">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <svg class="bi flex-shrink-0 me-1" width="20" height="20" role="img" aria-label="Fail:">
+        <use xlink:href="#exclamation-triangle-fill" />
+      </svg>
+      <div>
+        <span id="alertMessage">Updated successfully!</span>
+        (<span id="success-countdown">5</span>)
+      </div>
+    </div>
+  </div>
+
+  <!-- Error question offcanvas -->
+  <div class="offcanvas offcanvas-end" style="width: 456px; overflow: auto" tabindex="-1" id="errorOffcanvas"
+    aria-labelledby="errorOffcanvas">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasRightLabel">
+        Error Questions
+      </h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-bod flex-column">
+      <!-- List of error questions -->
+      <div th:each="question, iStat : ${errorQuestions}" th:id="${'question' + (iStat.index + 1)}" class="card mt-0">
+        <div class="card-header bg-white">
+          <!-- question number to the left-->
+          <div class="qcard-number mx-2">
+            <i class="far fa-check-square mx-1"></i>
+            Question <span th:text="${iStat.index + 1}">1</span>
           </div>
-          <div class="modal-body">
-            <form
-              id="excelImportForm"
-              method="post"
-              th:action="@{/quiz/{id}/import(id=${quiz.id})}"
-              enctype="multipart/form-data"
-              class="input-group mb-3"
-            >
-              <input
-                type="file"
-                class="form-control"
-                name="excelFile"
-                id="inputExcelFile"
-              />
-            </form>
-          </div>
-          <div class="modal-footer p-1 d-flex justify-content-between">
-            <a
-              th:href="@{/quiz/download}"
-              download="Template.xlsx"
-              class="btn btn-sm bg-light px-2 glitter-button"
-            >
-              <i class="fas fa-download me-1"></i>Download template
+          <!-- edit, delete,... to the right -->
+          <div class="d-flex">
+            <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"><i class="fas fa-edit mx-1"></i> Edit
             </a>
-            <button
-              type="submit"
-              class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
-              form="excelImportForm"
-            >
-              Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
-            </button>
+            <div style="border-left: 1px solid #e8e8e8"></div>
+            <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"><i class="fas fa-trash mx-1"></i></a>
           </div>
         </div>
-        `
-      </div>
-    </div>
+        <div class="card-body px-3 pb-1 pt-2">
+          <div style="min-height: 123px">
+            <p th:text="${question.text}" class="card-text mx-2"></p>
+          </div>
 
-    <!-- <Alert updating message> -->
-    <svg xmlns="http://www.w3.org/2000/svg" display="none">
-      <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
-        <path
-          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
-        />
-      </symbol>
-      <symbol
-        id="exclamation-triangle-fill"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
-        />
-      </symbol>
-    </svg>
-    <div
-      id="alert"
-      class="d-none"
-      style="position: fixed; left: 1.11rem; bottom: 0.11rem; z-index: 1000"
-    >
-      <div class="d-flex align-items-center alert" role="alert">
-        <svg
-          class="bi flex-shrink-0 me-1"
-          role="img"
-          aria-label="Success:"
-          width="20"
-          height="20"
-        >
-          <use xlink:href="#check-circle-fill" />
-        </svg>
-        <svg
-          class="bi flex-shrink-0 me-1"
-          width="20"
-          height="20"
-          role="img"
-          aria-label="Fail:"
-        >
-          <use xlink:href="#exclamation-triangle-fill" />
-        </svg>
-        <div>
-          <span id="alertMessage">Updated successfully!</span>
-          (<span id="success-countdown">5</span>)
-        </div>
-      </div>
-    </div>
-
-    <!-- Error question offcanvas -->
-    <div
-      class="offcanvas offcanvas-end"
-      style="width: 456px; overflow: auto"
-      tabindex="-1"
-      id="errorOffcanvas"
-      aria-labelledby="errorOffcanvas"
-    >
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasRightLabel">
-          Error Questions
-        </h5>
-        <button
-          type="button"
-          class="btn-close text-reset"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="offcanvas-bod flex-column">
-        <!-- List of error questions -->
-        <div
-          th:each="question, iStat : ${errorQuestions}"
-          th:id="${'question' + (iStat.index + 1)}"
-          class="card mt-0"
-        >
-          <div class="card-header bg-white">
-            <!-- question number to the left-->
-            <div class="qcard-number mx-2">
-              <i class="far fa-check-square mx-1"></i>
-              Question <span th:text="${iStat.index + 1}">1</span>
-            </div>
-            <!-- edit, delete,... to the right -->
-            <div class="d-flex">
-              <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"
-                ><i class="fas fa-edit mx-1"></i> Edit
-              </a>
-              <div style="border-left: 1px solid #e8e8e8"></div>
-              <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"
-                ><i class="fas fa-trash mx-1"></i
-              ></a>
+          <div class="divider answer-divider mb-1">
+            <div style="color: #999">
+              <span th:if="${question.type.equals('single-choice')}">
+                Single Choice
+              </span>
+              <span th:if="${question.type.equals('multiple-choice')}">
+                Multiple Choice
+              </span>
             </div>
           </div>
-          <div class="card-body px-3 pb-1 pt-2">
-            <div style="min-height: 123px">
-              <p th:text="${question.text}" class="card-text mx-2"></p>
-            </div>
 
-            <div class="divider answer-divider mb-1">
-              <div style="color: #999">
-                <span th:text="${question.type}"> Single Choice </span>
-              </div>
-            </div>
-
-            <div class="row">
-              <div
-                th:each="answer : ${question.answers}"
-                class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1"
-              >
-                <div class="px-0 d-flex align-items-start">
-                  <div th:if="${answer.isCorrect}">
-                    <span style="color: green">&#10003;</span>&nbsp;&nbsp;
-                  </div>
-                  <div th:unless="${answer.isCorrect}">
-                    <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
-                  </div>
-                  <div
-                    style="
+          <div class="row">
+            <div th:each="answer : ${question.answers}" class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+              <div class="px-0 d-flex align-items-start">
+                <div th:if="${answer.isCorrect}">
+                  <span style="color: green">&#10003;</span>&nbsp;&nbsp;
+                </div>
+                <div th:unless="${answer.isCorrect}">
+                  <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
+                </div>
+                <div style="
                       white-space: nowrap;
                       overflow: hidden;
                       text-overflow: ellipsis;
                       width: 188px;
-                    "
-                    th:text="${answer.text}"
-                    class="text-secondary fw-bold"
-                  ></div>
-                </div>
+                    " th:text="${answer.text}" class="text-secondary fw-bold"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- </Alert updating message> -->
+  </div>
+  <!-- </Alert updating message> -->
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
-    ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script
-      src="https://kit.fontawesome.com/b16b259998.js"
-      crossorigin="anonymous"
-    ></script>
+  <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
 
-    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
+  <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
 
-    <!-- <script
+  <!-- <script
       src="../../static/js/quiz/search-quiz.js"
       th:src="@{/js/quiz/search-quiz.js}"
     ></script> -->
 
-    <script th:inline="javascript">
-      /*<![CDATA[*/
-      const inputIDs = ["imageUrl", "title", "examOnly", "description"];
-      var quizId = /*[[${quiz.id}]]*/ "";
-      (function () {
-        for (let id of inputIDs) {
-          const input = document.getElementById(id);
-          const savedItem = localStorage.getItem(quizId + id);
-          if (savedItem != null) {
-            if (id === "examOnly") {
-              if (savedItem === "true") {
-                input.checked = "checked";
-              } else {
-                input.removeAttribute("checked");
-              }
-            } else {
-              input.value = savedItem;
-            }
-          }
-        }
-        handleEditFormContinueClick();
-      })();
-
-      (function handleDetailsChangeOutsideForm() {
-        const IDs = ["titleInput1", "descriptionInput1"];
-        for (let id of IDs) {
-          const input = document.getElementById(id);
-          input.addEventListener("keyup", () => {
-            const formInput = document.getElementById(id.replace("Input1", ""));
-            formInput.value = input.value;
-            saveToLocalStorage(["title", "description"]);
-            if (id === "titleInput1") {
-              if (input.value === "") {
-                const quizTitle = document.getElementById("quizTitle");
-                quizTitle.textContent = "Untitled Quiz";
-                quizTitle.style.fontWeight = 300;
-                quizTitle.style.opacity = 0.68;
-              } else {
-                quizTitle.textContent = input.value;
-              }
-            }
-          });
-        }
-      })();
-
-      function handleEditFormContinueClick() {
-        const IDs = ["imageUrl", "title", "description"];
-        for (let id of IDs) {
-          const fieldValue = document.getElementById(id).value;
-          if (fieldValue) {
-            if (id === "imageUrl") {
-              const bgValue = `url(${fieldValue})`;
-              const quizImage = document.getElementById("quizImage");
-              quizImage.style.backgroundImage = bgValue;
-              quizImage.querySelector("div").classList.add("d-none");
-            } else {
-              document.getElementById(id + "Input1").value = fieldValue;
-              if (id === "title") {
-                document.getElementById("quizTitle").textContent = fieldValue;
-              }
-            }
-          }
-        }
-        saveToLocalStorage(inputIDs);
-      }
-
-      function saveToLocalStorage(inputIDs) {
-        for (let id of inputIDs) {
-          const input = document.getElementById(id);
-          let value = "";
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    const inputIDs = ["imageUrl", "title", "examOnly", "description"];
+    var quizId = /*[[${quiz.id}]]*/ "";
+    (function () {
+      for (let id of inputIDs) {
+        const input = document.getElementById(id);
+        const savedItem = localStorage.getItem(quizId + id);
+        if (savedItem != null) {
           if (id === "examOnly") {
-            value = input.checked;
-          } else {
-            value = input.value;
-          }
-          localStorage.setItem(quizId + id, value);
-        }
-      }
-
-      var imageUrl = /*[[${quiz.imageUrl}]]*/ "";
-      (function getQuizImage() {
-        if (imageUrl) {
-          const bgValue = `url(${imageUrl})`;
-          const quizImage = document.getElementById("quizImage");
-          quizImage.style.backgroundImage = bgValue;
-        }
-      })();
-
-      var questionNum = /*[[${quiz.questions.size()}]]*/ -1;
-      function handleSaveButtonClick() {
-        if (questionNum < 0) {
-          console.error("question number = -1");
-        } else if (questionNum === 0) {
-          alert("At least 1 Question in the Quiz before saving!");
-        } else if (questionNum > 0) {
-          handleFormSubmitByIdAndMethod(
-            "editForm",
-            function () {
-              alert("Saved successfully!");
-              for (let id of inputIDs) {
-                localStorage.removeItem(quizId + id);
-              }
-              window.location.href = `/quiz/${quizId}/edit`;
-            },
-            "put"
-          );
-        }
-      }
-      /*]]>*/
-    </script>
-
-    <script>
-      (function handleInputError() {
-        const IDs = [
-          "imageUrl",
-          "title",
-          "description",
-          "titleInput1",
-          "descriptionInput1",
-        ];
-        for (let id of IDs) {
-          let input = document.getElementById(id);
-          let inputErrors = document.getElementsByClassName(id + "Error");
-          input.addEventListener("keyup", () => {
-            for (let inputErr of inputErrors) {
-              inputErr.classList.add("d-none");
+            if (savedItem === "true") {
+              input.checked = "checked";
+            } else {
+              input.removeAttribute("checked");
             }
-          });
+          } else {
+            input.value = savedItem;
+          }
         }
-      })();
-
-      function handleClickSearchButton() {
-        document.getElementById("searchQuizInput").focus();
       }
+      handleEditFormContinueClick();
+    })();
 
-      (function () {
-        const input = document.getElementById("titleInput1");
-        const detail = document.getElementsByClassName("quiz-detail")[0];
-
-        input.addEventListener("focus", function () {
-          detail.classList.remove("title-out-focus");
-          detail.classList.add("title-on-focus");
+    (function handleDetailsChangeOutsideForm() {
+      const IDs = ["titleInput1", "descriptionInput1"];
+      for (let id of IDs) {
+        const input = document.getElementById(id);
+        input.addEventListener("keyup", () => {
+          const formInput = document.getElementById(id.replace("Input1", ""));
+          formInput.value = input.value;
+          saveToLocalStorage(["title", "description"]);
+          if (id === "titleInput1") {
+            if (input.value === "") {
+              const quizTitle = document.getElementById("quizTitle");
+              quizTitle.textContent = "Untitled Quiz";
+              quizTitle.style.fontWeight = 300;
+              quizTitle.style.opacity = 0.68;
+            } else {
+              quizTitle.textContent = input.value;
+            }
+          }
         });
+      }
+    })();
 
-        input.addEventListener("focusout", function () {
-          detail.classList.remove("title-on-focus");
-          detail.classList.add("title-out-focus");
+    function handleEditFormContinueClick() {
+      const IDs = ["imageUrl", "title", "description"];
+      for (let id of IDs) {
+        const fieldValue = document.getElementById(id).value;
+        if (fieldValue) {
+          if (id === "imageUrl") {
+            const bgValue = `url(${fieldValue})`;
+            const quizImage = document.getElementById("quizImage");
+            quizImage.style.backgroundImage = bgValue;
+            quizImage.querySelector("div").classList.add("d-none");
+          } else {
+            document.getElementById(id + "Input1").value = fieldValue;
+            if (id === "title") {
+              document.getElementById("quizTitle").textContent = fieldValue;
+            }
+          }
+        }
+      }
+      saveToLocalStorage(inputIDs);
+    }
+
+    function saveToLocalStorage(inputIDs) {
+      for (let id of inputIDs) {
+        const input = document.getElementById(id);
+        let value = "";
+        if (id === "examOnly") {
+          value = input.checked;
+        } else {
+          value = input.value;
+        }
+        localStorage.setItem(quizId + id, value);
+      }
+    }
+
+    var imageUrl = /*[[${quiz.imageUrl}]]*/ "";
+    (function getQuizImage() {
+      if (imageUrl) {
+        const bgValue = `url(${imageUrl})`;
+        const quizImage = document.getElementById("quizImage");
+        quizImage.style.backgroundImage = bgValue;
+      }
+    })();
+
+    var questionNum = /*[[${quiz.questions.size()}]]*/ -1;
+    function handleSaveButtonClick() {
+      if (questionNum < 0) {
+        console.error("question number = -1");
+      } else if (questionNum === 0) {
+        alert("At least 1 Question in the Quiz before saving!");
+      } else if (questionNum > 0) {
+        handleFormSubmitByIdAndMethod(
+          "editForm",
+          function () {
+            alert("Saved successfully!");
+            for (let id of inputIDs) {
+              localStorage.removeItem(quizId + id);
+            }
+            window.location.href = `/quiz/${quizId}/edit`;
+          },
+          "put"
+        );
+      }
+    }
+    /*]]>*/
+  </script>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function () {
+      $('#assignHomeworkBtn').click(function () {
+        $('#assignQuizModal').modal('show');
+      });
+
+      // Xử lý khi submit form gán bài tập từ modal
+      $('#assignHomeworkForm').submit(function (e) {
+        e.preventDefault();
+        var form = $(this);
+
+        $.ajax({
+          type: "POST",
+          url: form.attr('action'),
+          data: form.serialize(),
+          success: function () {
+            $('#assignQuizModal').modal('hide');
+            location.reload(); // Reload trang khi hoàn thành
+          }
         });
-      })();
+      });
+    });
+    /*]]>*/
+  </script>
 
-      (function () {
-        const input = document.getElementById("titleInput1");
-        const detail = document.getElementsByClassName("quiz-detail")[0];
+  <script>
+    function confirmDelete(questionId) {
+      if (confirm("Are you sure you want to delete this question?")) {
+        var deleteForm = document.getElementById("deleteForm");
+        var questionIdToDelete = document.getElementById("questionIdToDelete");
+        questionIdToDelete.value = questionId;
+        deleteForm.submit();
+      }
+      return false;
+    }
 
-        input.addEventListener("focus", function () {
-          detail.classList.remove("title-out-focus");
-          detail.classList.add("title-on-focus");
+    (function handleInputError() {
+      const IDs = [
+        "imageUrl",
+        "title",
+        "description",
+        "titleInput1",
+        "descriptionInput1",
+      ];
+      for (let id of IDs) {
+        let input = document.getElementById(id);
+        let inputErrors = document.getElementsByClassName(id + "Error");
+        input.addEventListener("keyup", () => {
+          for (let inputErr of inputErrors) {
+            inputErr.classList.add("d-none");
+          }
         });
+      }
+    })();
 
-        input.addEventListener("focusout", function () {
-          detail.classList.remove("title-on-focus");
-          detail.classList.add("title-out-focus");
-        });
-      })();
+    function handleClickSearchButton() {
+      document.getElementById("searchQuizInput").focus();
+    }
 
-      // $(document).ready(function () {
-      //   // Gọi hàm khi trang được tải
-      //   delayedSearch();
-      // });
-      // // search
-      // var delayTimer;
+    (function () {
+      const input = document.getElementById("titleInput1");
+      const detail = document.getElementsByClassName("quiz-detail")[0];
 
-      // function delayedSearch() {
-      //   clearTimeout(delayTimer);
-      //   delayTimer = setTimeout(function () {
-      //     search();
-      //   }, 100);
-      // }
-      // function search() {
-      //   var searchTerm = $("#searchQuizInput").val();
-      //   $("#data-search").text(searchTerm);
-      //   $.ajax({
-      //     type: "GET",
-      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
-      //     success: function (data) {
-      //       displayResults(data);
-      //     },
-      //     error: function (error) {
-      //       console.error("Error during search:", error);
-      //     },
-      //   });
-      // }
+      input.addEventListener("focus", function () {
+        detail.classList.remove("title-out-focus");
+        detail.classList.add("title-on-focus");
+      });
 
-      // function displayResults(results) {
-      //   var resultsContainer = $("#searchResults");
-      //   resultsContainer.empty();
-      //   results.forEach(function (result) {
-      //     var dataItem = $("<a>", { class: "data-item" });
-      //     var itemDetail = $("<div>", { class: "item-detail" });
-      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
-      //     var title = $("<strong>", { text: result.title });
-      //     detailHeader.append(title);
-      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
-      //     detailHeader.append(itemTag);
-      //     itemDetail.append(detailHeader);
-      //     var ul = $("<ul>", { class: "fa-ul" });
-      //     var questionsLi = $("<li>", {
-      //       html:
-      //         '<i class="fa-li fa fa-list"></i>' +
-      //         result.questions +
-      //         " questions",
-      //     });
-      //     ul.append(questionsLi);
-      //     var creatorLi = $("<li>", {
-      //       html:
-      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
-      //         result.creator.fullName,
-      //     });
-      //     ul.append(creatorLi);
-      //     itemDetail.append(ul);
-      //     var itemImage = $("<div>", { class: "item-image" });
+      input.addEventListener("focusout", function () {
+        detail.classList.remove("title-on-focus");
+        detail.classList.add("title-out-focus");
+      });
+    })();
 
-      //     var image = $("<img>", {
-      //       class: "bg-success",
-      //       src: result.quizImageUrl,
-      //       alt: "Quiz Image",
-      //     });
-      //     itemImage.append(image);
-      //     dataItem.append(itemDetail);
-      //     dataItem.append(itemImage);
-      //     resultsContainer.append(dataItem);
-      //   });
-      // }
+    (function () {
+      const input = document.getElementById("titleInput1");
+      const detail = document.getElementsByClassName("quiz-detail")[0];
 
-      // $(document).ready(function () {
-      //   // Gọi hàm khi trang được tải
-      //   delayedSearch();
-      // });
-      // // search
-      // var delayTimer;
+      input.addEventListener("focus", function () {
+        detail.classList.remove("title-out-focus");
+        detail.classList.add("title-on-focus");
+      });
 
-      // function delayedSearch() {
-      //   clearTimeout(delayTimer);
-      //   delayTimer = setTimeout(function () {
-      //     search();
-      //   }, 100);
-      // }
-      // function search() {
-      //   var searchTerm = $("#searchQuizInput").val();
-      //   $("#data-search").text(searchTerm);
-      //   $.ajax({
-      //     type: "GET",
-      //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
-      //     success: function (data) {
-      //       displayResults(data);
-      //     },
-      //     error: function (error) {
-      //       console.error("Error during search:", error);
-      //     },
-      //   });
-      // }
+      input.addEventListener("focusout", function () {
+        detail.classList.remove("title-on-focus");
+        detail.classList.add("title-out-focus");
+      });
+    })();
 
-      // function displayResults(results) {
-      //   var resultsContainer = $("#searchResults");
-      //   resultsContainer.empty();
-      //   results.forEach(function (result) {
-      //     var dataItem = $("<a>", { class: "data-item" });
-      //     var itemDetail = $("<div>", { class: "item-detail" });
-      //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
-      //     var title = $("<strong>", { text: result.title });
-      //     detailHeader.append(title);
-      //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
-      //     detailHeader.append(itemTag);
-      //     itemDetail.append(detailHeader);
-      //     var ul = $("<ul>", { class: "fa-ul" });
-      //     var questionsLi = $("<li>", {
-      //       html:
-      //         '<i class="fa-li fa fa-list"></i>' +
-      //         result.questions +
-      //         " questions",
-      //     });
-      //     ul.append(questionsLi);
-      //     var creatorLi = $("<li>", {
-      //       html:
-      //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
-      //         result.creator.fullName,
-      //     });
-      //     ul.append(creatorLi);
-      //     itemDetail.append(ul);
-      //     var itemImage = $("<div>", { class: "item-image" });
+    // $(document).ready(function () {
+    //   // Gọi hàm khi trang được tải
+    //   delayedSearch();
+    // });
+    // // search
+    // var delayTimer;
 
-      //     var image = $("<img>", {
-      //       class: "bg-success",
-      //       src: result.quizImageUrl,
-      //       alt: "Quiz Image",
-      //     });
-      //     itemImage.append(image);
-      //     dataItem.append(itemDetail);
-      //     dataItem.append(itemImage);
-      //     resultsContainer.append(dataItem);
-      //   });
-      // }
-    </script>
-  </body>
+    // function delayedSearch() {
+    //   clearTimeout(delayTimer);
+    //   delayTimer = setTimeout(function () {
+    //     search();
+    //   }, 100);
+    // }
+    // function search() {
+    //   var searchTerm = $("#searchQuizInput").val();
+    //   $("#data-search").text(searchTerm);
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
+    //     success: function (data) {
+    //       displayResults(data);
+    //     },
+    //     error: function (error) {
+    //       console.error("Error during search:", error);
+    //     },
+    //   });
+    // }
+
+    // function displayResults(results) {
+    //   var resultsContainer = $("#searchResults");
+    //   resultsContainer.empty();
+    //   results.forEach(function (result) {
+    //     var dataItem = $("<a>", { class: "data-item" });
+    //     var itemDetail = $("<div>", { class: "item-detail" });
+    //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+    //     var title = $("<strong>", { text: result.title });
+    //     detailHeader.append(title);
+    //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
+    //     detailHeader.append(itemTag);
+    //     itemDetail.append(detailHeader);
+    //     var ul = $("<ul>", { class: "fa-ul" });
+    //     var questionsLi = $("<li>", {
+    //       html:
+    //         '<i class="fa-li fa fa-list"></i>' +
+    //         result.questions +
+    //         " questions",
+    //     });
+    //     ul.append(questionsLi);
+    //     var creatorLi = $("<li>", {
+    //       html:
+    //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+    //         result.creator.fullName,
+    //     });
+    //     ul.append(creatorLi);
+    //     itemDetail.append(ul);
+    //     var itemImage = $("<div>", { class: "item-image" });
+
+    //     var image = $("<img>", {
+    //       class: "bg-success",
+    //       src: result.quizImageUrl,
+    //       alt: "Quiz Image",
+    //     });
+    //     itemImage.append(image);
+    //     dataItem.append(itemDetail);
+    //     dataItem.append(itemImage);
+    //     resultsContainer.append(dataItem);
+    //   });
+    // }
+
+    // $(document).ready(function () {
+    //   // Gọi hàm khi trang được tải
+    //   delayedSearch();
+    // });
+    // // search
+    // var delayTimer;
+
+    // function delayedSearch() {
+    //   clearTimeout(delayTimer);
+    //   delayTimer = setTimeout(function () {
+    //     search();
+    //   }, 100);
+    // }
+    // function search() {
+    //   var searchTerm = $("#searchQuizInput").val();
+    //   $("#data-search").text(searchTerm);
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "/rest-quiz/search?search=" + searchTerm.trim(),
+    //     success: function (data) {
+    //       displayResults(data);
+    //     },
+    //     error: function (error) {
+    //       console.error("Error during search:", error);
+    //     },
+    //   });
+    // }
+
+    // function displayResults(results) {
+    //   var resultsContainer = $("#searchResults");
+    //   resultsContainer.empty();
+    //   results.forEach(function (result) {
+    //     var dataItem = $("<a>", { class: "data-item" });
+    //     var itemDetail = $("<div>", { class: "item-detail" });
+    //     var detailHeader = $("<div>", { class: "detail-header flex-grow-1" });
+    //     var title = $("<strong>", { text: result.title });
+    //     detailHeader.append(title);
+    //     var itemTag = $("<div>", { class: "item-tag", text: result.tag });
+    //     detailHeader.append(itemTag);
+    //     itemDetail.append(detailHeader);
+    //     var ul = $("<ul>", { class: "fa-ul" });
+    //     var questionsLi = $("<li>", {
+    //       html:
+    //         '<i class="fa-li fa fa-list"></i>' +
+    //         result.questions +
+    //         " questions",
+    //     });
+    //     ul.append(questionsLi);
+    //     var creatorLi = $("<li>", {
+    //       html:
+    //         '<i class="fa-li fa fa-user" style="color: #cacaca"></i>' +
+    //         result.creator.fullName,
+    //     });
+    //     ul.append(creatorLi);
+    //     itemDetail.append(ul);
+    //     var itemImage = $("<div>", { class: "item-image" });
+
+    //     var image = $("<img>", {
+    //       class: "bg-success",
+    //       src: result.quizImageUrl,
+    //       alt: "Quiz Image",
+    //     });
+    //     itemImage.append(image);
+    //     dataItem.append(itemDetail);
+    //     dataItem.append(itemImage);
+    //     resultsContainer.append(dataItem);
+    //   });
+    // }
+  </script>
+</body>
+
 </html>

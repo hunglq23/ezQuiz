@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Homework Detail</title>
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Library</title>
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+
+    <link href="../../static/vendor/bootstrap/bootstrap.min.css" th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+        rel="stylesheet" />
+    <link href="../../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+
+    <!-- Font Family Nunito Sans -->
+    <link href="../../static/css/font.css" th:href="@{/css/font.css}" rel="stylesheet" />
+
+    <link href="../../static/css/quiz/quiz-editing.css" th:href="@{/css/quiz/quiz-editing.css}" rel="stylesheet" />
+
+    <style>
+        .page-content {
+            min-height: 90vh;
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 88px;
+            left: 0;
+        }
+
+        .nav-link a {
+            opacity: 0.55;
+            margin-left: 1.23rem;
+            font-size: 1.11rem;
+        }
+
+        .nav-link.active {
+            a {
+                color: #8854c0;
+                opacity: 1;
+            }
+        }
+
+        .nav-link:hover {
+            a {
+                opacity: 1;
+            }
+
+            .rotate-on-hover {
+                animation: rotate 0.5s linear forwards;
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            33% {
+                transform: rotate(-8deg);
+            }
+
+            66% {
+                transform: rotate(15deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        #content {
+            padding: 8px;
+            min-width: 488px;
+            max-width: 678px;
+        }
+
+        .action {
+            display: flex;
+            align-items: center;
+        }
+
+        .action i {
+            margin: auto;
+        }
+
+        .substance {
+            position: relative;
+        }
+
+        .action {
+            position: absolute;
+            right: 8px;
+        }
+
+        .tab-content {
+            padding: 5px 15px;
+        }
+
+        ul {
+            margin-left: 15px;
+        }
+
+        /* Style for ul > li > a */
+        ul>li>a {
+            border-radius: 4px 4px 0 0;
+            background-color: rgb(203, 202, 202);
+            color: #eeeded;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 15px;
+            margin-right: 5px;
+        }
+
+        /* Active tab style */
+        ul>li.active>a {
+            background-color: #8854c0;
+            color: white;
+        }
+    </style>
+
+</head>
+
+<body style="background-color: #eeeded; margin-bottom: 20px;">
+    <header class="bg-light">
+        <nav class="navbar navbar-expand-sm p-0 navbar-light bg-white" id="header-nav" role="navigation">
+            <div class="container-fluid mx-2">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <a class="link-dark navbar-brand site-title mb-0" href="/home">ezQuiz</a>
+                    <ul class="navbar-nav align-items-center ms-auto">
+                        <li class="nav-item dropdown">
+                            <a id="libraryDropdown" class="btn dropdown-toggle btn-sm btn-purple px-2 mx-1"
+                                th:classappend="${user.isLearner() ? 'btn-purpleee' : ''}" role="button"
+                                th:href="@{/library}" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">My Library</a>
+                            <!-- Library dropdown -->
+                            <div class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                                aria-labelledby="libraryDropdown" style="min-width: 0; width: 123px; right: 9px">
+                                <a class="dropdown-item btn btn-sm text-center" th:href="@{/library}">
+                                    All
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_TEACHER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/quiz/created-list}">
+                                    Quiz
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_LEARNER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/quiz/joined-list}">
+                                    Quiz
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_TEACHER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/classroom/created-list}">
+                                    Classroom
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_LEARNER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/classroom/joined-list}">
+                                    Classroom
+                                </a>
+                            </div>
+                        </li>
+                        <li sec:authorize="hasRole('ROLE_TEACHER')" class="nav-item dropdown no-arrow">
+                            <a class="btn dropdown-toggle btn-sm btn-purpleee" id="toCreateDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="padding-left: 27px; padding-right: 27px">
+                                Create<i class="fas fa-plus" style="margin-left: 5px"></i></a>
+                            <div class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                                aria-labelledby="toCreateDropdown" style="min-width: 0; width: 123px">
+                                <a class="dropdown-item btn btn-sm" href="quiz/quiz-editing.html"
+                                    th:href="@{/quiz/new}">
+                                    New Quiz
+                                </a>
+                                <a class="dropdown-item btn btn-sm" th:href="@{/classroom/create}">
+                                    New Class
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle bg-light rounded-full rounded-circle" id="userDropdown"
+                                role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="padding: 6px 12px; margin-left: 25px">
+                                <i class="fas fa-bars"></i>
+                            </a>
+
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" th:href="@{/profile}">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Change Password
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/list}">
+                                    <i class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"></i>
+                                    User Management
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" th:href="@{/logout}">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container mt-4">
+        <h1>Homework <span class="marker marker-center">Detail</span></h1>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${assignedQuiz.quiz.title}">Homework Title</h5>
+                        <p class="card-text">
+                            <strong>Classroom:</strong> <span th:text="${assignedQuiz.classroom.name}">Classroom
+                                Name</span><br>
+                            <strong>Start Date:</strong> <span th:text="${assignedQuiz.startDate}">Start Date</span><br>
+                            <strong>DueDate:</strong> <span th:text="${assignedQuiz.dueDate}">DueDate</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav nav-pills">
+                <li class="active">
+                    <a href="#question" data-toggle="tab">Question</a>
+                </li>
+                <li><a href="#result" data-toggle="tab">Result</a>
+                </li>
+            </ul>
+            <div class="tab-content clearfix">
+                <div id="question" class="tab-pane active">
+                    <div class="flex-fill d-flex flex-column gap-2 data col-md-6">
+                        <div th:each="question, iStat : ${assignedQuiz.quiz.questions}"
+                            th:id="${'question' + (iStat.index + 1)}" class="card mt-0">
+                            <div class="card-header bg-white">
+                                <!-- question number to the left-->
+                                <div class="qcard-number mx-2">
+                                    <i class="far fa-check-square mx-1"></i>
+                                    Question <span th:text="${iStat.index + 1}">1</span>
+                                </div>
+                                <!-- edit, delete,... to the right -->
+                                <div class="d-flex">
+                                    <a th:href="@{/quiz/{id}/edit-question?type=single-choice(id=${assignedQuiz.quiz.id}, questionId=${question.id})}"
+                                        class="btn btn-sm bg p-1 px-2 qcard-tool border-0"><i
+                                            class="fas fa-edit mx-1"></i> Edit
+                                        <span class="d-md-none d-lg-inline">this question</span>
+                                    </a>
+                                    <div style="border-left: 1px solid #e8e8e8"></div>
+                                    <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"><i
+                                            class="fas fa-trash mx-1"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body px-3 pb-1 pt-2">
+                                <div style="min-height: 123px">
+                                    <p th:text="${question.text}" class="card-text mx-2"></p>
+                                </div>
+
+                                <div class="divider answer-divider mb-1">
+                                    <div style="color: #999">
+                                        <span th:if="${question.type.equals('single-choice')}">
+                                            Single Choice
+                                        </span>
+                                        <span th:if="${question.type.equals('multiple-choice')}">
+                                            Multiple Choice
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div th:each="answer : ${question.answers}"
+                                        class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                                        <div class="px-0 d-flex align-items-start">
+                                            <div th:if="${answer.isCorrect}">
+                                                <span style="color: green">&#10003;</span>&nbsp;&nbsp;
+                                            </div>
+                                            <div th:unless="${answer.isCorrect}">
+                                                <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
+                                            </div>
+                                            <div th:text="${answer.text}" class="text-secondary fw-bold"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="result" class="tab-pane">
+                    <h3>Result</h3>
+                    <p>Some content in menu 1.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

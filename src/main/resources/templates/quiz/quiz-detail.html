@@ -1,64 +1,365 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Quiz Detail</title>
-    <link th:href="@{../../vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
-    <link th:href="@{../../css/main.css}" rel="stylesheet" />
-</head>
-<body>
-<header th:insert="~{index.html :: header-navbar}" class="bg-light"></header>
-<div>
-<h2 class="justify-content-center" style="display: flex; padding-top: 15px">QUIZ DETAIL</h2>
-</div>
-<div class="container" style="padding-top: 15px">
-    <form th:object="${quiz}" method="post">
-        <div class="container justify-content-center" style="display: flex" >
-            <div class="col-md-5">
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Quiz Code</label>
-                    <input th:field="*{code}" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Quiz Code" readonly style="align-content: center; width: 450px">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Quiz Title</label>
-                    <input th:field="*{title}" type="text" class="form-control" id="exampleFormControlInput2" placeholder="Quiz Title" readonly
-                           style="align-content: center; width: 450px ">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-                    <textarea th:field="*{description}" class="form-control" id="exampleFormControlTextarea1" rows="3"
-                              style="align-content: center; width: 450px " readonly></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Quiz Type</label>
-                    <input th:value="${quiz.isExamOnly}? 'Exam Only' : 'Practice'" type="text" class="form-control" id="exampleFormControlInput" readonly
-                           style="align-content: center; width: 450px ">
-                </div>
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" th:href="@{/images/favicon.ico}" />
 
+    <link href="../../static/vendor/bootstrap/bootstrap.min.css" th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+        rel="stylesheet" />
+    <link href="../../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+
+    <!-- Font Family Nunito Sans -->
+    <link href="../../static/css/font.css" th:href="@{/css/font.css}" rel="stylesheet" />
+
+    <style>
+        .page-content {
+            min-height: 90vh;
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 88px;
+            left: 0;
+        }
+
+        .nav-link a {
+            opacity: 0.55;
+            margin-left: 1.23rem;
+            font-size: 1.11rem;
+        }
+
+        .nav-link.active {
+            a {
+                color: #8854c0;
+                opacity: 1;
+            }
+        }
+
+        .nav-link:hover {
+            a {
+                opacity: 1;
+            }
+
+            .rotate-on-hover {
+                animation: rotate 0.5s linear forwards;
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            33% {
+                transform: rotate(-8deg);
+            }
+
+            66% {
+                transform: rotate(15deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        /* CSS for centering the content */
+        .center-div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Adjust as needed */
+        }
+
+        /* Style for the columns */
+        .center-div .col-md-6 {
+            width: 50%;
+            float: left;
+            box-sizing: border-box;
+        }
+
+        /* Clear floats for the columns */
+        .center-div::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+    <title>Quiz Detail</title>
+</head>
+
+<body>
+    <header class="bg-light">
+        <nav class="navbar navbar-expand-sm p-0 navbar-light bg-white" id="header-nav" role="navigation">
+            <div class="container-fluid mx-2">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <a class="link-dark navbar-brand site-title mb-0" href="/home">ezQuiz</a>
+                    <ul class="navbar-nav align-items-center ms-auto">
+                        <li class="nav-item dropdown">
+                            <a id="libraryDropdown" class="btn dropdown-toggle btn-sm btn-purple px-2 mx-1"
+                                th:classappend="${user.isLearner() ? 'btn-purpleee' : ''}" role="button"
+                                th:href="@{/library}" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">My Library</a>
+                            <!-- Library dropdown -->
+                            <div class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                                aria-labelledby="libraryDropdown" style="min-width: 0; width: 123px; right: 9px">
+                                <a class="dropdown-item btn btn-sm text-center" th:href="@{/library}">
+                                    All
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_TEACHER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/quiz/created-list}">
+                                    Quiz
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_LEARNER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/quiz/joined-list}">
+                                    Quiz
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_TEACHER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/classroom/created-list}">
+                                    Classroom
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_LEARNER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/classroom/joined-list}">
+                                    Classroom
+                                </a>
+                                <a class="dropdown-item btn btn-sm text-center" th:href="@{/quiz/assigned-quizzes}">
+                                    Assigned Quiz
+                                </a>
+                            </div>
+                        </li>
+                        <li sec:authorize="hasRole('ROLE_TEACHER')" class="nav-item dropdown no-arrow">
+                            <a class="btn dropdown-toggle btn-sm btn-purpleee" id="toCreateDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="padding-left: 27px; padding-right: 27px">
+                                Create<i class="fas fa-plus" style="margin-left: 5px"></i></a>
+                            <div class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                                aria-labelledby="toCreateDropdown" style="min-width: 0; width: 123px">
+                                <a class="dropdown-item btn btn-sm" href="quiz/quiz-editing.html"
+                                    th:href="@{/quiz/new}">
+                                    New Quiz
+                                </a>
+                                <a class="dropdown-item btn btn-sm" th:href="@{/classroom/create}">
+                                    New Class
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle bg-light rounded-full rounded-circle" id="userDropdown"
+                                role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="padding: 6px 12px; margin-left: 25px">
+                                <i class="fas fa-bars"></i>
+                            </a>
+
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" th:href="@{/profile}">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Change Password
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/list}">
+                                    <i class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"></i>
+                                    User Management
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" th:href="@{/logout}">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-md-5">
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Status</label>
-                    <input  th:value="${quiz.isActive}? 'Active' : 'Inactive'" type="text" class="form-control" id="exampleFormControlInput6" readonly
-                            style="align-content: center; width: 450px ">
+        </nav>
+    </header>
+    <div>
+        <div class="center-div">
+            <div>
+                <h1>Quiz Detail</h1>
+                <div class="col-md-6">
+                    <p>Title: <span th:text="${quiz.title}"></span></p>
+                    <p>Is Draft: <span th:text="${quiz.isDraft}"></span></p>
+                    <p>Is Enable: <span th:text="${quiz.isEnable}"></span></p>
+                    <p>Is Exam: <span th:text="${quiz.isExam}"></span></p>
                 </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Created At</label>
-                    <input th:field="*{createdAt}" type="text" class="form-control" id="exampleFormControlInput3" readonly style="align-content: center; width: 450px">
+                <div class="col-md-6">
+                    <p>Description: <span th:text="${quiz.description}"></span></p>
+                    <p>Creator: <span th:text="${quiz.creator.fullName}"></span></p>
+                    <p>Created At: <span th:text="${quiz.createdAt}"></span></p>
+                    <p>Updated At: <span th:text="${quiz.updatedAt}"></span></p>
                 </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Updated At</label>
-                    <input th:field="*{updateAt}" type="text" class="form-control" id="exampleFormControlInput4" readonly
-                           style="align-content: center; width: 450px ">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Created By</label>
-                    <input th:field="*{createdBy.fullName}" type="text" class="form-control" id="exampleFormControlInput5" readonly
-                           style="align-content: center; width: 450px ">
+            </div>
+            <div style="display: flex; justify-content: space-between;width: 50%;margin-bottom: 10px;">
+                <h2>Questions</h2>
+                <button type="button" class="btn btn-primary" id="assignHomeworkBtn" data-bs-toggle="modal"
+                    data-bs-target="#assignQuizModal">
+                    Assign Homework
+                </button>
+            </div>
+            <div style="overflow: hidden" class="right-content col-8 d-flex flex-column gap-1"
+                th:if="${quiz.questions.size() > 0}">
+                <div class="flex-fill d-flex flex-column gap-2 data">
+                    <div th:each="question, iStat : ${quiz.questions}" th:id="${'question' + (iStat.index + 1)}"
+                        class="card mt-0 d-flex flex-column justify-content-center">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <!-- question number to the left-->
+                            <div class="qcard-number mx-2">
+                                <i class="far fa-check-square mx-1"></i>
+                                Question <span th:text="${iStat.index + 1}">1</span>
+                            </div>
+                            <!-- edit, delete,... to the right -->
+                            <div class="d-flex">
+                                <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"><i class="fas fa-edit mx-1"></i>
+                                    Edit
+                                    <span class="d-md-none d-lg-inline">this question</span>
+                                </a>
+                                <div style="border-left: 1px solid #e8e8e8"></div>
+                                <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"><i
+                                        class="fas fa-trash mx-1"></i></a>
+                            </div>
+                        </div>
+                        <div class="card-body px-3 pb-1 pt-2">
+                            <div style="min-height: 123px">
+                                <p th:text="${question.text}" class="card-text mx-2"></p>
+                            </div>
+
+                            <div class="divider answer-divider mb-1">
+                                <div style="color: #999">
+                                    <span th:if="${question.type.equals('single-choice')}">
+                                        Single Choice
+                                    </span>
+                                    <span th:if="${question.type.equals('multiple-choice')}">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div th:each="answer : ${question.answers}"
+                                    class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1">
+                                    <div class="px-0 d-flex align-items-start">
+                                        <div th:if="${answer.isCorrect}">
+                                            <span style="color: green">&#10003;</span>&nbsp;&nbsp;
+                                        </div>
+                                        <div th:unless="${answer.isCorrect}">
+                                            <span style="color: red">&#x2715;</span>&nbsp;&nbsp;
+                                        </div>
+                                        <div th:text="${answer.text}" class="text-secondary fw-bold"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </form>
-</div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="assignQuizModal" tabindex="-1" aria-labelledby="assignQuizModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="assignQuizModalLabel">Assign Homework</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="assignHomeworkForm" method="post" th:action="@{/quiz/{id}/assign(id=${quiz.id})}"
+                            th:object="${assignedQuizDto}">
+                            <div class="mb-3">
+                                <label for="homeworkTitle" class="form-label">Homework Title:</label>
+                                <input type="text" class="form-control" id="homeworkTitle" name="homeworkTitle"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date:</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date:</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" required>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <label class="form-check-label" for="shuffleQuestions">Shuffle Questions</label>
+                                <input class="form-check-input" type="checkbox" id="shuffleQuestions"
+                                    name="shuffleQuestions">
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="shuffleAnswers"
+                                    name="shuffleAnswers">
+                                <label class="form-check-label" for="shuffleAnswers">Shuffle Answers</label>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Select Classroom</label>
+                                <!-- Sử dụng select dropdown để chọn một lớp học duy nhất -->
+                                <select class="form-select" id="classroomSelect" name="selectedClassroom" required>
+                                    <!-- Thêm các option từ biến thymeleaf classrooms -->
+                                    <option th:each="classroom : ${classrooms}" th:value="${classroom.id}"
+                                        th:text="${classroom.name}"></option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="quizId" th:value="${quiz.id}" />
+                            <button type="submit" class="btn btn-primary">Assign Homework</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Bootstrap JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
+
+        <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
+
+        <!-- Script to show modal when Assign Homework button is clicked -->
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $(document).ready(function () {
+                $('#assignHomeworkBtn').click(function () {
+                    $('#assignQuizModal').modal('show');
+                });
+
+                // Xử lý khi submit form gán bài tập từ modal
+                $('#assignHomeworkForm').submit(function (e) {
+                    e.preventDefault();
+                    var form = $(this);
+
+                    $.ajax({
+                        type: "POST",
+                        url: form.attr('action'),
+                        data: form.serialize(),
+                        success: function () {
+                            $('#assignQuizModal').modal('hide');
+                            location.reload(); // Reload trang khi hoàn thành
+                        }
+                    });
+                });
+            });
+            /*]]>*/
+        </script>
+    </div>
 </body>
+
 </html>

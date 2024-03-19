@@ -146,4 +146,9 @@ public class QuestionServiceImpl implements IQuestionService {
 
     return new ResponseEntity<>(incorrectQuestion, HttpStatus.BAD_REQUEST);
   }
+
+  @Override
+  public void saveQuestion(Question question) {
+    questionRepo.save(question);
+  }
 }

@@ -9,12 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "_quiz_assigning")
 public class QuizAssigning {
 
@@ -43,5 +47,9 @@ public class QuizAssigning {
   private Date startDate;
 
   private Date dueDate;
+
+  @ManyToOne
+  @JoinColumn(name = "creator_id", nullable = false)
+  private User creator;
 
 }

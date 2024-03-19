@@ -1,23 +1,15 @@
 package com.group3.ezquiz.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import java.util.*;
 
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.utils.Utility;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,9 +33,12 @@ import org.slf4j.LoggerFactory;
 import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Answer;
+import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuestionToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
@@ -51,6 +46,7 @@ import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,6 +63,8 @@ public class QuizServiceImpl implements IQuizService {
   private final QuizRepo quizRepo;
   private final IQuestionService questionService;
   private final IUserService userService;
+  private final QuizAssigningService quizAssignService;
+  private final IClassroomService classroomService;
 
   @Override
   public Quiz getDraftQuiz(HttpServletRequest request) {
@@ -225,7 +223,7 @@ public class QuizServiceImpl implements IQuizService {
           // Parse question type from the second cell of the row
           Cell typeCell = cellIterator.next();
           String questionType = getCellValue(typeCell).trim();
-          if (!List.of("Single Choice", "Multiple Choice").contains(questionType)) {
+          if (!List.of("single-choice", "multiple-choice").contains(questionType)) {
             validQuestion = false;
             log.error("type " + questionType);
 
@@ -272,7 +270,7 @@ public class QuizServiceImpl implements IQuizService {
 
           // For single choice questions, find the matching Answer for the correct answer
           // and mark it as correct
-          if (questionType.equalsIgnoreCase("single choice")) {
+          if (questionType.equalsIgnoreCase("single-choice")) {
             if (correctAnswerNumber != 1) {
               validQuestion = false;
               log.error("single != 1");
@@ -281,7 +279,7 @@ public class QuizServiceImpl implements IQuizService {
 
           // For multiple choice questions, parse the correct answer indices and mark the
           // corresponding Answers as correct
-          else if (questionType.equalsIgnoreCase("multiple choice")) {
+          else if (questionType.equalsIgnoreCase("multiple-choice")) {
             if (correctAnswerNumber < 2) {
               validQuestion = false;
               log.error(" MTP < 2");
@@ -433,6 +431,21 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
+  public void deleteQuestionById(UUID id, Long questionId) {
+    Optional<Quiz> optionalQuiz = quizRepo.findById(id);
+    if (optionalQuiz.isPresent()) {
+      Quiz quiz = optionalQuiz.get();
+      List<Question> questions = quiz.getQuestions();
+      questions.removeIf(question -> question.getId().equals(questionId));
+      quizRepo.save(quiz);
+    } else {
+      // Handle case when quiz is not found
+      throw new ResourceNotFoundException("Quiz with ID " + id + " not found");
+
+    }
+  }
+
+  @Override
   public List<Quiz> searchQuizUUID(HttpServletRequest request, String search) {
     List<Quiz> data = quizRepo.searchQuizUUID(search);
     return data;
@@ -443,4 +456,67 @@ public class QuizServiceImpl implements IQuizService {
     List<Quiz> data = quizRepo.findQuizUUID();
     return data;
   }
+
+  @Override
+  public Question getQuestionByIdAndQuiz(Long questionId, Quiz quiz) {
+    return questionService.getByIdAndQuiz(questionId, quiz);
+  }
+
+  @Override
+  public Quiz handleQuestionEditingInQuiz(Quiz quiz, Long questionId, String type, String questionText,
+      Map<String, String> params) {
+    Question newQuestion = questionService
+        .createNewQuestionOfQuiz(quiz, type, questionText, params);
+    quiz.getQuestions().add(newQuestion);
+    Question quest = getQuestionByIdAndQuiz(questionId, quiz);
+    quiz.getQuestions().remove(quest);
+    quizRepo.save(quiz);
+    return quizRepo.save(quiz);
+  }
+
+  @Override
+  public void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
+
+      throws Exception {
+    Quiz quiz = getQuizByRequestAndID(request, quizId);
+    if (quiz == null) {
+      log.error("Không tìm thấy quiz với ID: {}", quizId);
+      throw new Exception("Quiz not found with ID: " + quizId);
+    }
+
+    // Lấy classroom từ classroomService
+    Long classroomId = assignedQuizDTO.getSelectedClassroom();
+    Classroom selectedClassroom = classroomService.getClassroomByRequestAndId(request, classroomId);
+    if (selectedClassroom == null) {
+      log.error("Không tìm thấy classroom với ID: {}", classroomId);
+      throw new Exception("Classroom not found with ID: " + classroomId);
+    }
+
+    log.info("Đã tìm thấy classroom");
+
+    if (assignedQuizDTO.isShuffleQuestions()) {
+      // Shuffle the questions
+      Collections.shuffle(quiz.getQuestions());
+
+      if (assignedQuizDTO.isShuffleAnswers()) {
+        // Shuffle the answers within each question
+        quiz.getQuestions().forEach(question -> Collections.shuffle(question.getAnswers()));
+      }
+    }
+
+    // Tạo mới QuizAssigning và gán thông tin từ Quiz
+    QuizAssigning quizAssigning = new QuizAssigning();
+    quizAssigning.setQuiz(quiz); // Gán Quiz
+    quizAssigning.setClassroom(selectedClassroom); // Gán Classroom
+    quizAssigning.setStartDate(assignedQuizDTO.getStartDate());
+    quizAssigning.setDueDate(assignedQuizDTO.getDueDate());
+    quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions());
+    quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers());
+    quizAssigning.setNote(assignedQuizDTO.getNote()); // Gán note hoặc thông tin khác
+    quizAssigning.setCreator(quiz.getCreator()); // Gán note hoặc thông tin khác
+
+    // Lưu QuizAssigning vào cơ sở dữ liệu
+    quizAssignService.create(quizAssigning);
+  }
+
 }

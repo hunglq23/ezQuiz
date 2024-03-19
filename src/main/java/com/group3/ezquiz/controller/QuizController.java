@@ -1,22 +1,32 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizAssigning;
+import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IQuizService;
+import com.group3.ezquiz.service.IUserService;
 import com.group3.ezquiz.service.impl.QuestionServiceImpl;
+import com.group3.ezquiz.service.impl.QuizAssigningService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindException;
+
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +44,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +59,9 @@ public class QuizController {
   private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
 
   private final IQuizService quizService;
+  private final QuizAssigningService quizAssignService;
+  private final IUserService userService;
+  private final IClassroomService classroomService;
 
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/new")
@@ -63,7 +77,11 @@ public class QuizController {
       @PathVariable UUID id,
       Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    User user = userService.getUserRequesting(request);
+    List<Classroom> classrooms = classroomService.getCreatedClassroomList(request);
     model.addAttribute("quiz", quiz);
+    model.addAttribute("user", user);
+    model.addAttribute("classrooms", classrooms);
     return "quiz/quiz-editing";
   }
 
@@ -214,6 +232,115 @@ public class QuizController {
     params.remove("questIndex");
 
     return quizService.handleAnswersChecking(quizId, questId, questIndex, params);
+  }
+
+  @PostMapping("/{id}/assign")
+  public String assignHomework(HttpServletRequest request,
+      @PathVariable("id") UUID quizId,
+      @ModelAttribute("assignedQuizDto") AssignedQuizDto assignedQuizDTO,
+      RedirectAttributes redirectAttributes) {
+
+    try {
+      quizService.assignQuiz(request, quizId, assignedQuizDTO);
+      redirectAttributes.addFlashAttribute("successMessage", "Homework assigned successfully");
+    } catch (Exception e) {
+      String errorMessage = "Failed to assign homework: " + e.getMessage();
+      redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+      log.error(errorMessage, e);
+    }
+
+    return "redirect:/quiz/" + quizId + "/edit";
+  }
+
+  @GetMapping("/assigned-quizzes")
+  public String getAsignedQuizList(HttpServletRequest request, Model model) {
+    User user = userService.getUserRequesting(request);
+    if (user.getRole().toString().equalsIgnoreCase("TEACHER")) {
+
+      List<QuizAssigning> asignedQuizList = quizAssignService.getAssigningQuizByTeacherId(user.getId());
+      model.addAttribute("asignedQuizList", asignedQuizList);
+    } else if (user.getRole().toString().equalsIgnoreCase("LEARNER")) {
+      List<Classroom> classrooms = userService.getUserRequesting(request).getClassrooms();
+
+      List<QuizAssigning> allAssignQuiz = new ArrayList<>();
+
+      for (Classroom classroom : classrooms) {
+        List<QuizAssigning> assignQuizList = classroom.getAssignedQuizList();
+        if (assignQuizList != null) {
+          allAssignQuiz.addAll(assignQuizList);
+        }
+      }
+      model.addAttribute("asignedQuizList", allAssignQuiz);
+    }
+    model.addAttribute("user", user);
+    return "assign-quiz/assigned-quiz-list";
+  }
+
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @GetMapping("assigned/{id}/detail")
+  public String getHomeworkDetail(HttpServletRequest request, @PathVariable Long id, Model model) {
+    User teacher = userService.getUserRequesting(request);
+    QuizAssigning assignedQuiz = quizAssignService.findById(id);
+    model.addAttribute("user", teacher);
+    model.addAttribute("assignedQuiz", assignedQuiz);
+    return "assign-quiz/assigned-quiz-detail";
+  }
+
+  @GetMapping("/remove/{id}")
+  public String removeAssignedQuiz(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+    quizAssignService.removeAssignedQuiz(id);
+    redirectAttributes.addFlashAttribute("successMessage", "Assigned quiz removed successfully");
+    return "redirect:/quiz/assigned-quizzes";
+  }
+
+  @GetMapping("/{id}/edit-question")
+  public String editQuestion(
+      HttpServletRequest request,
+      @PathVariable("id") UUID quizId,
+      @RequestParam("questionId") Long questionId,
+      @RequestParam("type") String type,
+      Model model) {
+
+    Quiz quiz = quizService.getQuizByRequestAndID(request, quizId);
+
+    Question question = quizService.getQuestionByIdAndQuiz(questionId, quiz);
+
+    model.addAttribute("quiz", quiz);
+    model.addAttribute("question", question);
+    model.addAttribute("type", type);
+    return "question/question-editting";
+  }
+
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @PostMapping("/{id}/edit-question")
+  public ResponseEntity<?> submitQuestionEditingInQuiz(
+      HttpServletRequest request,
+      @PathVariable UUID id,
+      @RequestParam("questionId") Long questionId,
+      @RequestParam String type,
+      @RequestParam(name = "qText") String questionText,
+      @RequestParam Map<String, String> params) {
+
+    Quiz quiz = quizService.getQuizByRequestAndID(request, id);
+    Quiz saved = quizService.handleQuestionEditingInQuiz(quiz, questionId, type, questionText, params);
+    if (saved == null) {
+      return ResponseEntity.badRequest().body("Failed!");
+    }
+    return ResponseEntity.ok(
+        MessageResponse.builder()
+            .message(questionText)
+            .timestamp(LocalDateTime.now())
+            .build());
+  }
+
+  @PreAuthorize(TEACHER_AUTHORITY)
+  @PostMapping("/{id}/delete-question")
+  public String deleteQuestion(@PathVariable UUID id, @RequestParam("questionId") Long questionId) {
+    // Call the service to delete the question
+    quizService.deleteQuestionById(id, questionId);
+
+    // Redirect back to the edit page for the quiz
+    return "redirect:/quiz/" + id + "/edit";
   }
 
 }

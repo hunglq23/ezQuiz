@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> Homework List</title>
+
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+
+    <link href="../../static/vendor/bootstrap/bootstrap.min.css" th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+        rel="stylesheet" />
+    <link href="../../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
+
+    <!-- Font Family Nunito Sans -->
+    <link href="../../static/css/font.css" th:href="@{/css/font.css}" rel="stylesheet" />
+
+    <style>
+        .page-content {
+            min-height: 90vh;
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 88px;
+            left: 0;
+        }
+
+        .nav-link a {
+            opacity: 0.55;
+            margin-left: 1.23rem;
+            font-size: 1.11rem;
+        }
+
+        .nav-link.active {
+            a {
+                color: #8854c0;
+                opacity: 1;
+            }
+        }
+
+        .nav-link:hover {
+            a {
+                opacity: 1;
+            }
+
+            .rotate-on-hover {
+                animation: rotate 0.5s linear forwards;
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            33% {
+                transform: rotate(-8deg);
+            }
+
+            66% {
+                transform: rotate(15deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+    </style>
+</head>
+
+</head>
+
+<body style="background-color: #eeeded;">
+    <header>
+        <nav class="navbar navbar-expand-sm p-0 navbar-light bg-white" id="header-nav" role="navigation">
+            <div class="container-fluid mx-2">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <a class="link-dark navbar-brand site-title mb-0" href="/home">ezQuiz</a>
+                    <div id="navSearch" class="position-relative mx-2 suggest-search">
+                        <input type="search" id="navSearchInput" class="form-control" placeholder="Search in Library" />
+                        <button id="navSearchButton" type="button" class="btn p-0 h-100 border-0 rounded-2">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div class="suggestions-list">
+                            <ul>
+                                <li>Gợi ý 1</li>
+                                <li>Gợi ý 2</li>
+                                <li>Gợi ý 3</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ul class="navbar-nav align-items-center ms-auto">
+                        <li class="nav-item dropdown">
+                            <a id="libraryDropdown" class="btn dropdown-toggle btn-sm btn-purple px-2 mx-1"
+                                th:classappend="${user.isLearner() ? 'btn-purpleee' : ''}" role="button"
+                                th:href="@{/library}" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">My Library</a>
+                            <!-- Library dropdown -->
+                            <div class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                                aria-labelledby="libraryDropdown" style="min-width: 0; width: 123px; right: 9px">
+                                <a class="dropdown-item btn btn-sm text-center" th:href="@{/library}">
+                                    All
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_TEACHER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/quiz/created-list}">
+                                    Quiz
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_LEARNER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/quiz/joined-list}">
+                                    Quiz
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_TEACHER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/classroom/created-list}">
+                                    Classroom
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_LEARNER')" class="dropdown-item btn btn-sm text-center"
+                                    th:href="@{/classroom/joined-list}">
+                                    Classroom
+                                </a>
+                            </div>
+                        </li>
+                        <li sec:authorize="hasRole('ROLE_TEACHER')" class="nav-item dropdown no-arrow">
+                            <a class="btn dropdown-toggle btn-sm btn-purpleee" id="toCreateDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="padding-left: 27px; padding-right: 27px">
+                                Create<i class="fas fa-plus" style="margin-left: 5px"></i></a>
+                            <div class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                                aria-labelledby="toCreateDropdown" style="min-width: 0; width: 123px">
+                                <a class="dropdown-item btn btn-sm" href="quiz/quiz-editing.html"
+                                    th:href="@{/quiz/new}">
+                                    New Quiz
+                                </a>
+                                <a class="dropdown-item btn btn-sm" th:href="@{/classroom/create}">
+                                    New Class
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle bg-light rounded-full rounded-circle" id="userDropdown"
+                                role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                style="padding: 6px 12px; margin-left: 25px">
+                                <i class="fas fa-bars"></i>
+                            </a>
+
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" th:href="@{/profile}">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Change Password
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/list}">
+                                    <i class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"></i>
+                                    User Management
+                                </a>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" th:href="@{/logout}">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container mt-4">
+        <h1>Assigned Quiz <span class="marker marker-center">List</span></h1>
+        <div class="row mt-4">
+            <!-- Lặp qua từng bài tập của giáo viên và hiển thị dưới dạng card -->
+            <div class="col-md-4" th:each="asignedQuiz : ${asignedQuizList}">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${asignedQuiz.quiz.title}">Title</h5>
+                        <p class="card-text">
+                            <strong>Classroom:</strong> <span th:text="${asignedQuiz.classroom.name}">Classroom
+                                Name</span><br>
+                            <strong>Start Date:</strong> <span th:text="${asignedQuiz.startDate}">Start Date</span><br>
+                            <strong>End Date:</strong> <span th:text="${asignedQuiz.dueDate}">End Date</span>
+                        </p>
+                        <a sec:authorize="hasRole('ROLE_TEACHER')"
+                            th:href="@{/quiz/assigned/{id}/detail(id=${asignedQuiz.id})}" class="btn btn-primary">View
+                            Detail</a>
+                        <a sec:authorize="hasRole('ROLE_LEARNER')"
+                            th:href="@{/quiz/{id}/play(id=${asignedQuiz.quiz.id})}" class="btn btn-success">Do
+                            Quiz</a>
+                        <a sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/quiz/remove/{id}(id=${asignedQuiz.id})}"
+                            class="btn btn-danger">Remove</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

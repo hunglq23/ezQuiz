@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDto;
@@ -46,5 +47,15 @@ public interface IQuizService {
   Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
 
   void deleteQuiz(UUID id);
+
+  Question getQuestionByIdAndQuiz(Long questionId, Quiz quiz);
+
+  Quiz handleQuestionEditingInQuiz(Quiz quiz, Long questionId, String type, String questionText,
+      Map<String, String> params);
+
+  void deleteQuestionById(UUID id, Long questionId);
+
+  void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
+      throws Exception;
 
 }
