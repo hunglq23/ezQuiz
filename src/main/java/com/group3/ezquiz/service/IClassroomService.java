@@ -1,11 +1,13 @@
 package com.group3.ezquiz.service;
 
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.group3.ezquiz.model.Classroom;
-import com.group3.ezquiz.payload.ClassroomDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.ClassroomDetailDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -13,13 +15,13 @@ public interface IClassroomService {
 
     List<Classroom> getCreatedClassroomList(HttpServletRequest request);
 
-    ResponseEntity<?> createClass(HttpServletRequest request, @Valid ClassroomDto classroomDto);
+    ResponseEntity<?> createClass(HttpServletRequest request, @Valid ClassroomDetailDto classroomDto);
 
     void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile excelFile);
 
     Classroom getClassroomByRequestAndId(HttpServletRequest request, Long id);
 
-    boolean importLearnerDataFromExcel( MultipartFile multipartFile, Classroom classroom);
+    boolean importLearnerDataFromExcel(MultipartFile multipartFile, Classroom classroom);
 
     Classroom updateClassroom(Long id, Classroom updatedClassroom);
 
@@ -27,5 +29,11 @@ public interface IClassroomService {
 
     boolean joinClassroom(HttpServletRequest request, String code);
 
+    Page<Classroom> getClassroomByTeacher(HttpServletRequest request, @Valid LibraryReqParam libraryDto);
+
     
+
+    // void removeLearnerFromClassroomLearnerId(Classroom classroom, Long
+    // learnerId);
+
 }
