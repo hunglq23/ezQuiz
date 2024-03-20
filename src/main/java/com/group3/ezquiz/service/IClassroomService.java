@@ -1,19 +1,23 @@
 package com.group3.ezquiz.service;
 
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Classroom;
-import com.group3.ezquiz.payload.ClassroomDto;
+import com.group3.ezquiz.payload.ClassroomDetailDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 public interface IClassroomService {
 
-    List<Classroom> getCreatedClassroomList(HttpServletRequest request);
+   
 
-    ResponseEntity<?> createClass(HttpServletRequest request, @Valid ClassroomDto classroomDto);
+    ResponseEntity<?> createClass(HttpServletRequest request, @Valid ClassroomDetailDto classroomDto);
 
     void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile excelFile);
 
@@ -27,5 +31,5 @@ public interface IClassroomService {
 
     boolean joinClassroom(HttpServletRequest request, String code);
 
-    
+    Page<Classroom> getClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
 }

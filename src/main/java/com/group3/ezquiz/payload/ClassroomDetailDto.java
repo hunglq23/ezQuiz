@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ClassroomDto {
+public class ClassroomDetailDto {
 
     @Size(min = 3, message = "Name at lease 3 characters!")
     private String name;
