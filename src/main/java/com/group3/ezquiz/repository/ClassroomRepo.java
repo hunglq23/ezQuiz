@@ -5,6 +5,7 @@ import com.group3.ezquiz.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.group3.ezquiz.model.Classroom;
 
@@ -22,5 +23,11 @@ public interface ClassroomRepo extends JpaRepository<Classroom, Long> {
   Optional<Classroom> findByCode(String code);
 
   Page<Classroom> findByCreatorAndNameContaining(User creator, String name, Pageable pageable);
+
+  @Query("SELECT c FROM Classroom c " +
+          "LEFT JOIN ClassJoining cj ON c.id = cj.classroom.id " +
+          "LEFT JOIN User u ON cj.learner.id = u.id " +
+          "WHERE u.id = :userId")
+  List<Classroom> findJoinedClassroomsByLearner(Long userId);
 
 }

@@ -131,15 +131,18 @@
             >
             <div id="navSearch" class="position-relative mx-2 suggest-search">
               <input
-                type="search"
-                id="navSearchInput"
-                class="form-control"
-                placeholder="Search in Library"
+                      type="search"
+                      id="navSearchInput"
+                      class="form-control"
+                      placeholder="Search in Library"
+                      autocomplete="off"
+                      th:value="${page.search}"
               />
               <button
-                id="navSearchButton"
-                type="button"
-                class="btn p-0 h-100 border-0 rounded-2"
+                      id="navSearchButton"
+                      type="button"
+                      class="btn p-0 h-100 border-0 rounded-2"
+                      onclick="searchQuizItem()"
               >
                 <i class="fas fa-search"></i>
               </button>
@@ -315,33 +318,33 @@
                   </li>
                   <li
                     class="page-item"
-                    th:classappend="${currentPage == 1 ? 'active' : ''}"
+                    th:classappend="${page.page == 1 ? 'active' : ''}"
                   >
                     <a class="page-link page-index" role="button">1</a>
                   </li>
                   <div th:if="${max > 3}">
                     <li
-                      th:if="${currentPage < 3}"
+                      th:if="${page.page < 3}"
                       class="page-item ms-0 me-3"
-                      th:classappend="${currentPage == 2 ? 'active' : ''}"
+                      th:classappend="${page.page == 2 ? 'active' : ''}"
                     >
                       <a class="page-link page-index" role="button">2</a>
                     </li>
                     <li
-                      th:if="${currentPage > 2 && currentPage < max - 1}"
+                      th:if="${page.page > 2 && page.page < max - 1}"
                       class="page-item mx-2 active"
                     >
                       <a
                         class="page-link page-index"
                         role="button"
-                        th:text="${currentPage}"
+                        th:text="${page.page}"
                         >98</a
                       >
                     </li>
                     <li
-                      th:if="${currentPage > max - 2}"
+                      th:if="${page.page > max - 2}"
                       class="page-item ms-3 me-0"
-                      th:classappend="${currentPage == max - 1 ? 'active' : ''}"
+                      th:classappend="${page.page == max - 1 ? 'active' : ''}"
                     >
                       <a
                         class="page-link page-index"
@@ -354,14 +357,14 @@
                   <div th:if="${max == 3}">
                     <li
                       class="page-item"
-                      th:classappend="${currentPage == 2 ? 'active' : ''}"
+                      th:classappend="${page.page == 2 ? 'active' : ''}"
                     >
                       <a class="page-link page-index" role="button">2</a>
                     </li>
                   </div>
                   <li
                     class="page-item"
-                    th:classappend="${currentPage == max ? 'active' : ''}"
+                    th:classappend="${page.page == max ? 'active' : ''}"
                   >
                     <a
                       class="page-link page-index"
@@ -394,9 +397,24 @@
             style="gap: 0.456789rem; min-width: 699px"
           >
             <div class="d-flex justify-content-between">
-              <div style="opacity: 0.69; line-height: 2">
-                <span>Displaying of "a"</span>
-                (69 results)
+              <div class="ps-1" style="opacity: 0.69; line-height: 2">
+                Found <span th:text="${totalItemNumber}">69</span> result(s).
+                <span th:if="${#strings.isEmpty(page.search)}">
+                    Displaying
+                    <span th:text="${quiz != null ? quiz.size() : 0}"
+                    >-1</span
+                    >
+                    result(s):
+                  </span>
+                <span th:unless="${#strings.isEmpty(page.search)}">
+                    Displaying of "<span th:text="${page.search}">err</span>"
+                    (<span th:text="${quiz != null ? quiz.size() : 0}"
+                >-1</span
+                >
+                    result<span th:if="${quiz != null && quiz.size() > 1}"
+                >s</span
+                >):
+                  </span>
               </div>
               <div class="d-flex gap-1">
                 <div class="navbar-nav d-flex flex-column">
@@ -410,10 +428,10 @@
                     >
                       <span class="fas fa-filter"></span>
                       <div style="width: 88px">
-                        <span th:if="${isDraft == null}"> All </span>
+                        <span th:if="${page.draft == null}"> All </span>
                         <span
-                          th:if="${isDraft != null}"
-                          th:text="${isDraft == false ? 'Not Draft' : 'Draft' }"
+                          th:if="${page.draft != null}"
+                          th:text="${page.draft == false ? 'Not Draft' : 'Draft' }"
                           style="text-transform: capitalize"
                         ></span>
                       </div>
@@ -448,10 +466,10 @@
                       aria-expanded="false"
                     >
                       <span class="fas fa-sort me-2"></span>
-                      <span th:if="${sort==null}"> Latest </span>
+                      <span th:if="${page.sort==null}"> Latest </span>
                       <span
-                        th:unless="${sort==null}"
-                        th:text="${sort}"
+                        th:unless="${page.sort==null}"
+                        th:text="${page.sort}"
                         style="text-transform: capitalize"
                       ></span>
                     </button>
@@ -644,16 +662,17 @@
 
     <script th:inline="javascript">
       /*<![CDATA[*/
-      const sort = /*[[${sort == null ? '' : sort.toString()}]]*/ "";
-      const isDraft = /*[[${isDraft == null ? '' : isDraft.toString()}]]*/ "";
-      const pageSize = /*[[${pageSize}]]*/ 1;
-      const page = /*[[${currentPage}]]*/ 1;
+      const sort = /*[[${page.sort}]]*/ "";
+      const isDraft = /*[[${page.draft}]]*/ "";
+      const pageSize = /*[[${page.size}]]*/ 1;
+      const page = /*[[${page.page}]]*/ 1;
+      const search = /*[[${page.search}]]*/ "";
       $(document).ready(function () {
         $(".sort-type").each(function () {
           let sortType = $(this).find("span").text();
           $(this).on("click", function () {
             console.log(sortType);
-            location.href = `/quiz/my-quiz?sort=${sortType}&draft=${isDraft}&page=${page}&size=${pageSize}`;
+            location.href = `/quiz/my-quiz?search=${search}&sort=${sortType}&draft=${isDraft}&page=${page}&size=${pageSize}`;
           });
         });
 
@@ -667,31 +686,46 @@
           }
           $(this).on("click", function () {
             console.log(filterType);
-            location.href = `/quiz/my-quiz?sort=${sort}&draft=${draft}&page=${page}&size=${pageSize}`;
+            location.href = `/quiz/my-quiz?search=${search}&sort=${sort}&draft=${draft}&page=${page}&size=${pageSize}`;
           });
         });
 
         $(".page-index").each(function () {
           const pageIndex = $(this).text();
-          if (pageIndex > 9) {
-            $(this).css("padding", "5px 5px");
+          if (pageIndex <= 9) {
+            $(this).css("padding", "5px 13px");
+          } else if (pageIndex > 9) {
+            $(this).css("padding", "5px 8px");
           }
           $(this).on("click", function () {
-            location.href = `/quiz/my-quiz?sort=${sort}&draft=${isDraft}&page=${pageIndex}&size=${pageSize}`;
+            location.href = `/quiz/my-quiz?search=${search}&sort=${sort}&draft=${isDraft}&page=${pageIndex}&size=${pageSize}`;
           });
         });
       });
 
       function prevPage() {
-        location.href = `/quiz/my-quiz?sort=${sort}&draft=${isDraft}&page=${
-          page - 1
+        location.href = `/quiz/my-quiz?search=${search}&sort=${sort}&draft=${isDraft}&page=${
+                page - 1
         }&size=${pageSize}`;
       }
 
       function nextPage() {
-        location.href = `/quiz/my-quiz?sort=${sort}&draft=${isDraft}&page=${
-          page + 1
+        location.href = `/quiz/my-quiz?search=${search}&sort=${sort}&draft=${isDraft}&page=${
+                page + 1
         }&size=${pageSize}`;
+      }
+
+      $(document).ready(function () {
+        $("#navSearchInput").on("keydown", function (event) {
+          if (event.keyCode === 13) {
+            searchLibraryItem();
+          }
+        });
+      });
+
+      function searchLibraryItem() {
+        let term = $("#navSearchInput").val();
+        location.href = `/quiz/my-quiz?search=${term}&sort=${sort}&draft=${isDraft}&page=${page}&size=${pageSize}`;
       }
       /*]]>*/
     </script>

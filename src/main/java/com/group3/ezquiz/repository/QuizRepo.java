@@ -36,7 +36,11 @@ public interface QuizRepo extends JpaRepository<Quiz, UUID> {
 
   Page<Quiz> findByCreatorAndTitleContaining(User creator, String title, Pageable pageable);
 
+  Page<Quiz> findByCreatorAndTitleContainingAndIsDraft(User creator, String title, Boolean isDraft, Pageable pageable);
+
   List<Quiz> findByCreator(User userRequesting);
+
+
 
   @Query(value = "select q from Quiz q order by q.updatedAt DESC limit 3")
   List<Quiz> findQuizUUID();

@@ -4,9 +4,7 @@ import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
-import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
-import com.group3.ezquiz.payload.quiz.QuizToLearner;
-import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.payload.quiz.*;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
@@ -33,9 +31,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -146,43 +148,90 @@ public class QuizController {
         .body(new InputStreamResource(inputStream));
   }
 
+//  @PreAuthorize(TEACHER_AUTHORITY)
+//  @GetMapping("/my-quiz")
+//  public String showQuizList(
+//      HttpServletRequest request,
+//      @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
+//      @RequestParam(required = false, value = "draft") Boolean isDraft,
+//      @RequestParam(required = false, value = "page") Optional<Integer> page,
+//      @RequestParam(required = false, value = "size") Optional<Integer> size,
+//      Model model) {
+//    String sort = sortOrder.orElse("latest");
+//    Integer currentPage = page.orElse(1);
+//    Integer pageSize = size.orElse(3);
+//
+//    String draftParam = isDraft == null ? "" : isDraft.toString();
+//    if (currentPage < 1)
+//      return "redirect:/quiz/my-quiz?sort=" + sort +
+//          "&draft=" + draftParam +
+//          "&page=1&size=" + pageSize;
+//
+//    Page<QuizDto> quizPage = quizService.getQuizInLibrary(
+//        request, sort, isDraft, PageRequest.of(currentPage - 1, pageSize));
+//
+//    int maxPage = quizPage.getTotalPages();
+//    if (currentPage > maxPage) {
+//      return "redirect:/quiz/my-quiz?sort=" + sort +
+//          "&draft=" + draftParam +
+//          "&page=" + maxPage +
+//          "&size=" + pageSize;
+//    }
+//    int curPage = quizPage.getNumber() + 1;
+//
+//    model.addAttribute("quizList", quizPage);
+//    model.addAttribute("isDraft", isDraft);
+//    model.addAttribute("sort", sort);
+//    model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
+//    model.addAttribute("pageSize", quizPage.getSize());
+//    model.addAttribute("max", maxPage);
+//    return "quiz/quiz-list";
+//  }
+
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/my-quiz")
   public String showQuizList(
-      HttpServletRequest request,
-      @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
-      @RequestParam(required = false, value = "draft") Boolean isDraft,
-      @RequestParam(required = false, value = "page") Optional<Integer> page,
-      @RequestParam(required = false, value = "size") Optional<Integer> size,
-      Model model) {
-    String sort = sortOrder.orElse("latest");
-    Integer currentPage = page.orElse(1);
-    Integer pageSize = size.orElse(3);
-
-    String draftParam = isDraft == null ? "" : isDraft.toString();
-    if (currentPage < 1)
-      return "redirect:/quiz/my-quiz?sort=" + sort +
-          "&draft=" + draftParam +
-          "&page=1&size=" + pageSize;
-
-    Page<QuizDto> quizPage = quizService.getQuizInLibrary(
-        request, sort, isDraft, PageRequest.of(currentPage - 1, pageSize));
-
-    int maxPage = quizPage.getTotalPages();
-    if (currentPage > maxPage) {
-      return "redirect:/quiz/my-quiz?sort=" + sort +
-          "&draft=" + draftParam +
-          "&page=" + maxPage +
-          "&size=" + pageSize;
+          HttpServletRequest request,
+          @Valid @ModelAttribute QuizReqParam quizReq,
+          BindingResult bindingResult,
+          RedirectAttributes redirectAttributes,
+          Model model) {
+    if(bindingResult.hasErrors()){
+      for(ObjectError error: bindingResult.getAllErrors()){
+        FieldError fieldError = (FieldError) error;
+        if(fieldError.getField().equals("sort")){
+          quizReq.setSort("latest");
+        }
+        if(fieldError.getField().equals("draft")) {
+          quizReq.setDraft(true);
+        }
+        if (fieldError.getField().equals("page")) {
+          quizReq.setPage(1);
+        }
+        if (fieldError.getField().equals("size")) {
+          quizReq.setSize(3);
+        }
+      }
+      redirectAttributes.addAllAttributes(quizReq.getAttrMap());
+      return "redirect:/quiz/quiz-list";
     }
-    int curPage = quizPage.getNumber() + 1;
+    QuizResponse quiz = quizService.getQuizInLibrary(request, quizReq);
+    List<QuizDto> quizDtoList = quiz.getQuizDtoList();
+    if (quizDtoList == null && quiz.getExceedMaxPage() == true) {
+      // case when the current page exceed the max page number
+      if (quiz.getMaxPage() > 0) {
+        quizReq.setPage(quiz.getMaxPage());
+        redirectAttributes.addAllAttributes(quizReq.getAttrMap());
+        return "redirect:/quiz/quiz-list";
+      } else {
 
-    model.addAttribute("quizList", quizPage);
-    model.addAttribute("isDraft", isDraft);
-    model.addAttribute("sort", sort);
-    model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
-    model.addAttribute("pageSize", quizPage.getSize());
-    model.addAttribute("max", maxPage);
+      }
+    }
+
+    model.addAttribute("quizList", quizDtoList);
+    model.addAttribute("page", quizReq);
+    model.addAttribute("max", quiz.getMaxPage());
+    model.addAttribute("totalItemNumber", quiz.getTotalItemNumber());
     return "quiz/quiz-list";
   }
 
