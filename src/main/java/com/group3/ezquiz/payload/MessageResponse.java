@@ -10,4 +10,5 @@ import lombok.Getter;
 public class MessageResponse {
   private String message;
   private LocalDateTime timestamp;
+  private Integer ansNumRemain;
 }

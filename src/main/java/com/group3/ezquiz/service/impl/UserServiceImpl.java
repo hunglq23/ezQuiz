@@ -245,7 +245,7 @@ public class UserServiceImpl implements IUserService {
   @Override
   public void updatePassword(String email, String pass) {
     String encodedPass = passwordEncoder.encode(pass);
-    User user = userRepo.findByEmailAndIsVerifiedIsTrueAndIsEnableIsTrue(email).get();
+    User user = getByEmail(email);
     user.setPassword(encodedPass);
     userRepo.save(user);
   }

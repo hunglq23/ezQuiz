@@ -74,7 +74,7 @@ public class User {
   @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
   private List<Classroom> classrooms;
 
-  @OneToMany(mappedBy = "learner", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "learner")
   private List<QuizTaking> takenQuizList;
 
   public Boolean isLearner() {
