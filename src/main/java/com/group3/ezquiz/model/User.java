@@ -67,7 +67,7 @@ public class User {
   @OneToMany(mappedBy = "learner")
   private List<ClassJoining> classJoinings;
 
-  @OneToMany(mappedBy = "learner", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "learner")
   private List<QuizTaking> takenQuizList;
 
   public Boolean isLearner() {

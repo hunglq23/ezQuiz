@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.group3.ezquiz.model.Question;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,4 +19,5 @@ public interface QuestionRepo extends JpaRepository<Question, Long> {
     Optional<Question> findByIdAndAnswers_IdAndAnswers_IsCorrect(
             Long questionId, Long answerId, Boolean answerValue);
 
+    List<Question> findByQuizList_IdAndAnswers_Id(UUID quizId, Long answerId);
 }
