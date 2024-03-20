@@ -76,10 +76,8 @@ public class QuizController {
       Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     User user = userService.getUserRequesting(request);
-    List<Classroom> classrooms = classroomService.getCreatedClassroomList(request);
     model.addAttribute("quiz", quiz);
     model.addAttribute("user", user);
-    model.addAttribute("classrooms", classrooms);
     return "quiz/quiz-editing";
   }
 
