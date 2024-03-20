@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +17,13 @@ import org.springframework.stereotype.Service;
 import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Answer;
+import com.group3.ezquiz.model.Attempt;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.question.CorrectQuestion;
 import com.group3.ezquiz.payload.question.IncorrectQuestion;
 import com.group3.ezquiz.repository.QuestionRepo;
+import com.group3.ezquiz.service.IAttemptService;
 import com.group3.ezquiz.service.IQuestionService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ public class QuestionServiceImpl implements IQuestionService {
   private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final QuestionRepo questionRepo;
+  private final IAttemptService attemptService;
 
   @Override
   public Question createNewQuestionOfQuiz(
@@ -54,6 +58,70 @@ public class QuestionServiceImpl implements IQuestionService {
     question.setAnswers(answers);
 
     return questionRepo.save(question);
+  }
+
+  @Override
+  public Integer getCorrectAnswerNumberInQuestion(Long questId) {
+
+    return questionRepo.countByIdAndAnswers_IsCorrectIsTrue(questId);
+  }
+
+  @Override
+  public Question getByIdAndQuiz(Long questId, Quiz quiz) {
+
+    return questionRepo
+        .findByIdAndQuizList_Id(questId, quiz.getId())
+        .orElseThrow(
+            () -> new ResourceNotFoundException(
+                "Not found question ID (" + questId +
+                    ") in quiz ID: " + quiz.getId()));
+  }
+
+  @Override
+  public ResponseEntity<?> checkQuestionAnswers(
+      Attempt attempt,
+      Long questionId,
+      Map<String, String> uncheckAnswers,
+      String questIndex) {
+
+    Boolean allAnswerCorrect = true;
+    IncorrectQuestion incorrectQuestion = new IncorrectQuestion(questIndex, new HashMap<>());
+
+    for (Entry<String, String> ansEntry : uncheckAnswers.entrySet()) {
+      if (questionRepo
+          .findByIdAndAnswers_IdAndAnswers_IsCorrect(
+              questionId,
+              Long.parseLong(ansEntry.getKey()),
+              Boolean.parseBoolean(ansEntry.getValue()))
+          .isPresent() == false) {
+        incorrectQuestion.getAnswers().put(ansEntry.getKey(), false);
+        allAnswerCorrect = false;
+      } else {
+        incorrectQuestion.getAnswers().put(ansEntry.getKey(), true);
+      }
+    }
+
+    if (allAnswerCorrect) {
+      attemptService.addQuestNumWithValue(attempt, true);
+      return ResponseEntity.ok(
+          CorrectQuestion.builder()
+              .message("All the answers in question are correct!")
+              .questIndex(questIndex)
+              .timestamp(LocalDateTime.now())
+              .build());
+    }
+    attemptService.addQuestNumWithValue(attempt, false);
+    return new ResponseEntity<>(incorrectQuestion, HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+  @Override
+  public Question getQuestionOfAnswerId(Long answerId, UUID quizId) {
+
+    List<Question> questions = questionRepo.findByQuizList_IdAndAnswers_Id(quizId, answerId);
+    if (questions == null || questions.size() == 0) {
+      throw new ResourceNotFoundException("Not found question with answer id: " + answerId);
+    }
+    return questions.get(0);
   }
 
   private List<Answer> mapParamsToAnswers(Map<String, String> params, Question question, String type) {
@@ -92,58 +160,5 @@ public class QuestionServiceImpl implements IQuestionService {
       throw new InvalidQuestionException("At least 2 answer selected in multiple choice!");
     }
     return answers;
-  }
-
-  @Override
-  public Integer getCorrectAnswerNumberInQuestion(Long questId) {
-
-    return questionRepo.countByIdAndAnswers_IsCorrectIsTrue(questId);
-  }
-
-  @Override
-  public Question getByIdAndQuiz(Long questId, Quiz quiz) {
-
-    return questionRepo
-        .findByIdAndQuizList_Id(questId, quiz.getId())
-        .orElseThrow(
-            () -> new ResourceNotFoundException(
-                "Not found question ID (" + questId +
-                    ") in quiz ID: " + quiz.getId()));
-  }
-
-  @Override
-  public ResponseEntity<?> checkQuestionAnswers(
-      Long questionId,
-      Map<String, String> uncheckAnswers,
-      String questIndex) {
-
-    Boolean allAnswerCorrect = true;
-    IncorrectQuestion incorrectQuestion = new IncorrectQuestion(questIndex, new HashMap<>());
-
-    for (Entry<String, String> ansEntry : uncheckAnswers.entrySet()) {
-      if (questionRepo
-          .findByIdAndAnswers_IdAndAnswers_IsCorrect(
-              questionId,
-              Long.parseLong(ansEntry.getKey()),
-              Boolean.parseBoolean(ansEntry.getValue()))
-          .isPresent() == false) {
-
-        incorrectQuestion.getAnswers().put(ansEntry.getKey(), false);
-        allAnswerCorrect = false;
-      } else {
-        incorrectQuestion.getAnswers().put(ansEntry.getKey(), true);
-      }
-    }
-
-    if (allAnswerCorrect) {
-      return ResponseEntity.ok(
-          CorrectQuestion.builder()
-              .message("All the answers in question are correct!")
-              .questIndex(questIndex)
-              .timestamp(LocalDateTime.now())
-              .build());
-    }
-
-    return new ResponseEntity<>(incorrectQuestion, HttpStatus.BAD_REQUEST);
   }
 }

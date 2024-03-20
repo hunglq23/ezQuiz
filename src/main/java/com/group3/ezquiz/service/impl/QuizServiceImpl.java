@@ -1,22 +1,14 @@
 package com.group3.ezquiz.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import java.util.*;
 
 import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.payload.quiz.QuizResult;
 import com.group3.ezquiz.utils.Utility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,9 +30,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.group3.ezquiz.exception.InvalidAttemptException;
 import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Answer;
+import com.group3.ezquiz.model.Attempt;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
@@ -48,9 +42,11 @@ import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuestionToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
+import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.IAttemptService;
 import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,8 +61,9 @@ public class QuizServiceImpl implements IQuizService {
   private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final QuizRepo quizRepo;
-  private final IQuestionService questionService;
   private final IUserService userService;
+  private final IQuestionService questionService;
+  private final IAttemptService attemptService;
 
   @Override
   public Quiz getDraftQuiz(HttpServletRequest request) {
@@ -136,7 +133,8 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public QuizToLearner getQuizByLearnerForTaking(UUID id) {
+  public QuizToLearner getQuizByLearnerForTaking(HttpServletRequest request, UUID id) {
+    User learner = userService.getUserRequesting(request);
     Quiz quizById = getQuizById(id);
 
     List<QuestionToLearner> questions = new ArrayList<>();
@@ -158,26 +156,38 @@ public class QuizServiceImpl implements IQuizService {
               .build());
     }
 
+    AttemptDto newAttempt = attemptService.getNewAttempt(learner, quizById);
+
     return QuizToLearner.builder()
         .id(quizById.getId())
         .title(quizById.getTitle())
         .questions(questions)
+        .attempt(newAttempt)
         .build();
   }
 
   @Override
   public ResponseEntity<?> handleAnswersChecking(
+      HttpServletRequest request,
       UUID quizId,
       Long questId,
       String questIndex,
       Map<String, String> params) {
+
+    User learner = userService.getUserRequesting(request);
     Quiz quiz = getQuizById(quizId);
-    Question uncheck = questionService.getByIdAndQuiz(questId, quiz);
-    if (uncheck.getAnswers().size() != params.size()) {
+
+    Attempt lastAttempt = attemptService.getLastAttemptByLearnerAndQuiz(learner, quiz);
+    if (lastAttempt.getEndedAt() != null || lastAttempt.getResult() != null) {
+      throw new InvalidAttemptException("This attempt was finished and cannot be changed!");
+    }
+
+    Question uncheckQuestion = questionService.getByIdAndQuiz(questId, quiz);
+    if (uncheckQuestion.getAnswers().size() != params.size()) {
       throw new InvalidQuestionException("Number of submited answers was wrong!");
     }
     return questionService
-        .checkQuestionAnswers(uncheck.getId(), params, questIndex);
+        .checkQuestionAnswers(lastAttempt, uncheckQuestion.getId(), params, questIndex);
   }
 
   private Quiz getQuizById(UUID id) {
@@ -306,6 +316,68 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     return errorQuestions;
+  }
+
+  @Override
+  public ResponseEntity<?> handleAnswerSelectedByLearnerResp(
+      HttpServletRequest request,
+      UUID quizId,
+      Long answerId) {
+
+    User learner = userService.getUserRequesting(request);
+    Quiz quiz = getQuizById(quizId);
+
+    Attempt attempt = attemptService.getLastAttemptByLearnerAndQuiz(learner, quiz);
+    Question question = questionService.getQuestionOfAnswerId(answerId, quizId);
+    Integer totalCorrectNum = questionService.getCorrectAnswerNumberInQuestion(question.getId());
+    Integer ansNumSelected = attemptService.getAnsNumSelected(attempt, answerId, question);
+    if (ansNumSelected > totalCorrectNum) {
+      throw new InvalidAttemptException("The selected num > total correct ans num!");
+    }
+
+    return ResponseEntity.ok(MessageResponse.builder()
+        .message("Selected an answer!")
+        .ansNumRemain(totalCorrectNum - ansNumSelected)
+        .timestamp(LocalDateTime.now())
+        .build());
+  }
+
+  @Override
+  public AttemptDto handleFinishQuizAttempt(HttpServletRequest request, UUID quizId) {
+    Quiz quiz = getQuizById(quizId);
+    User learner = userService.getUserRequesting(request);
+    Attempt attempt = attemptService.getLastAttemptByLearnerAndQuiz(learner, quiz);
+    if (attempt.getEndedAt() == null && attempt.getResult() == null) {
+      Attempt saved = attemptService.saveResultAndfinishAttempt(attempt);
+      Integer total = saved.getTotalQuestNum();
+      Integer correct = saved.getCorrectNum();
+      Integer incorrect = saved.getIncorrectNum();
+      Integer incomplete = total - correct - incorrect;
+      if (incomplete < 0) {
+        log.error("Negative value", new InvalidAttemptException("Incomplete Question Num < 0"));
+      }
+      return AttemptDto.builder()
+          .bestResult(attemptService.getBestResult(quiz, learner))
+          .totalQuestNum(total)
+          .correctQuestNum(correct)
+          .incorrectQuestNum(incorrect)
+          .incompleteQuestNum(incomplete)
+          .result(saved.getResult())
+          .startedAt(saved.getStartedAt())
+          .endedAt(saved.getEndedAt())
+          .build();
+    }
+    throw new InvalidAttemptException("Invalid Attempt");
+  }
+
+  @Override
+  public QuizResult getQuizResult(HttpServletRequest request, UUID quizId) {
+
+    User learner = userService.getUserRequesting(request);
+    Quiz quiz = getQuizById(quizId);
+    Attempt attempt = attemptService.getLastAttemptByLearnerAndQuiz(learner, quiz);
+    attempt.getResponses();
+    return null;
   }
 
   private String getCellValue(Cell cell) {

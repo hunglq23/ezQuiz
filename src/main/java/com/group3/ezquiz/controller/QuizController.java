@@ -6,9 +6,10 @@ import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
+import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.payload.quiz.QuizResult;
 import com.group3.ezquiz.service.IQuizService;
-import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindException;
@@ -34,15 +35,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
-
-  private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
   private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
@@ -116,17 +113,15 @@ public class QuizController {
 
   @PostMapping("{id}/import")
   public String importData(HttpServletRequest request,
-      @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto, Model model)
-      throws BindException {
+      @PathVariable UUID id,
+      @ModelAttribute ExcelFileDto fileDto,
+      Model model) throws BindException {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     List<Question> errorQuestions = quizService.importQuizDataFromExcel(request,
         fileDto.getExcelFile(), id);
     model.addAttribute("quiz", quiz);
     if (errorQuestions.size() > 0) {
       model.addAttribute("errorQuestions", errorQuestions);
-      for (Question errorQuestion : errorQuestions) {
-        log.info(errorQuestion.getText());
-      }
     }
     return "quiz/quiz-editing";
   }
@@ -195,16 +190,29 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @GetMapping("/{id}/play")
   public String takeQuizByLearner(
+      HttpServletRequest request,
       @PathVariable UUID id,
       Model model) {
-    QuizToLearner toLearner = quizService.getQuizByLearnerForTaking(id);
+
+    QuizToLearner toLearner = quizService.getQuizByLearnerForTaking(request, id);
     model.addAttribute("quiz", toLearner);
     return "quiz/quiz-taking";
   }
 
   @PreAuthorize(LEARNER_AUTHORITY)
+  @PostMapping("/{quizId}/select-answer")
+  public ResponseEntity<?> checkQuestionAnswers(
+      HttpServletRequest request,
+      @PathVariable UUID quizId,
+      @RequestParam Long answerId) {
+
+    return quizService.handleAnswerSelectedByLearnerResp(request, quizId, answerId);
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
   @PostMapping("/{quizId}/check-answer")
   public ResponseEntity<?> checkQuestionAnswers(
+      HttpServletRequest request,
       @PathVariable UUID quizId,
       @RequestParam Long questId,
       @RequestParam String questIndex,
@@ -213,7 +221,29 @@ public class QuizController {
     params.remove("questId");
     params.remove("questIndex");
 
-    return quizService.handleAnswersChecking(quizId, questId, questIndex, params);
+    return quizService.handleAnswersChecking(request, quizId, questId, questIndex, params);
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @PostMapping("/{quizId}/finish")
+  public String finishQuizAttempt(
+      HttpServletRequest request,
+      @PathVariable UUID quizId) {
+
+    AttemptDto dto = quizService.handleFinishQuizAttempt(request, quizId);
+    return "redirect:/quiz/" + quizId + "/result";
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @GetMapping("/{quizId}/result")
+  public String viewQuizResultByLearner(
+      HttpServletRequest request,
+      @PathVariable UUID quizId, Model model) {
+
+    QuizResult result = quizService.getQuizResult(request, quizId);
+
+    model.addAttribute("result", result);
+    return "quiz/quiz-finish";
   }
 
 }
