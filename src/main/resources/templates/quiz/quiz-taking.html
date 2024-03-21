@@ -119,7 +119,20 @@
                     <a class="nav-link" href="#about">About</a>
                   </li> -->
             </ul>
+            <form
+              id="submitAttempt"
+              th:action="@{/quiz/{id}/finish(id=${quiz.id})}"
+              method="post"
+            >
+              <input
+                type="hidden"
+                name="attemptId"
+                th:value="${quiz.attempt.id}"
+              />
+            </form>
             <button
+              type="submit"
+              form="submitAttempt"
               class="btn btn-sm btn-purple px-2"
               style="border-bottom: #8854c0 3px solid"
             >
@@ -180,6 +193,12 @@
               id="question1"
               class="carousel-item"
             >
+              <input
+                type="hidden"
+                id="attemptId"
+                name="attemptId"
+                th:value="${quiz.attempt.id}"
+              />
               <input
                 type="hidden"
                 name="questIndex"
@@ -401,6 +420,7 @@
         $(button).attr("disabled", true);
 
         const formData = new FormData();
+        formData.append("attemptId", $("#attemptId").val());
         formData.append("answerId", $(button).find("input").attr("name"));
         return fetch(form.attr("action") + "/select-answer", {
           method: "post",
@@ -409,13 +429,15 @@
           .then((resp) => {
             if (resp.ok) {
               return resp.json();
+            } else if (resp.status == 409) {
+              location.href = "/error";
             }
           })
           .then((responseJSON) => {
             return responseJSON.ansNumRemain;
           })
           .catch((err) => {
-            console.error(err);
+            console.log(err);
           });
       }
     </script>

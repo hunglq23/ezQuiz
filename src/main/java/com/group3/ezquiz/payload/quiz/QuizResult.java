@@ -2,7 +2,7 @@ package com.group3.ezquiz.payload.quiz;
 
 import java.util.List;
 
-import com.group3.ezquiz.payload.question.QuestionResult;
+import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
 
 import lombok.Builder;
@@ -15,6 +15,6 @@ import lombok.Setter;
 public class QuizResult {
   private AttemptDto attempt;
   private String title;
-  private String description;
-  private List<QuestionResult> questions;
+  private String image;
+  private List<Question> questions;
 }

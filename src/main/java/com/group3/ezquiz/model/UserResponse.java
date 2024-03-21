@@ -32,7 +32,7 @@ public class UserResponse {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "attemp_id")
+  @JoinColumn(name = "attempt_id")
   private Attempt attempt;
 
   @ManyToOne(cascade = CascadeType.PERSIST)
