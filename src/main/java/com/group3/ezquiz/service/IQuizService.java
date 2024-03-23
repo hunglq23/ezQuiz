@@ -15,7 +15,6 @@ import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
-import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.payload.quiz.QuizResult;
 
@@ -37,7 +36,8 @@ public interface IQuizService {
 
   QuizToLearner getQuizByLearnerForTaking(HttpServletRequest request, UUID id);
 
-  ResponseEntity<?> handleAnswersChecking(HttpServletRequest request, UUID quizId, Long questId, String questIndex,
+  ResponseEntity<?> handleAnswersChecking(HttpServletRequest request, UUID quizId, Long questId, Long questId2,
+      String questIndex,
       Map<String, String> params);
 
   List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
@@ -62,10 +62,10 @@ public interface IQuizService {
   void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
       throws Exception;
 
-  ResponseEntity<?> handleAnswerSelectedByLearnerResp(HttpServletRequest request, UUID quizId, Long answerId);
+  ResponseEntity<?> handleAnswerSelected(HttpServletRequest request, UUID quizId, Long answerId, Long answerId2);
 
-  AttemptDto handleFinishQuizAttempt(HttpServletRequest request, UUID quizId);
+  void handleFinishQuizAttempt(HttpServletRequest request, UUID quizId, Long attemptId);
 
-  QuizResult getQuizResult(HttpServletRequest request, UUID quizId);
+  QuizResult findLastFinishAttemptResult(HttpServletRequest request, UUID quizId);
 
 }

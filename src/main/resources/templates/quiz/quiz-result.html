@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quiz Result</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../static/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
+    />
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/main.css"
+      th:href="@{/css/main.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/quiz/quiz-editing.css"
+      th:href="@{/css/quiz/quiz-editing.css}"
+      rel="stylesheet"
+    />
+    <!-- Font Family Nunito Sans -->
+    <link
+      href="../../static/css/font.css"
+      th:href="@{/css/font.css}"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <header class="bg-light">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
+        id="header-nav"
+        role="navigation"
+        th:fragment="header-navbar"
+      >
+        <div class="container-fluid mx-2">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="link-dark navbar-brand site-title mb-0" href="./home"
+              >ezQuiz</a
+            >
+            <div id="navSearch" class="position-relative mx-2 suggest-search">
+              <input
+                type="search"
+                id="navSearchInput"
+                class="form-control"
+                placeholder="Search in Library"
+              />
+              <button
+                id="navSearchButton"
+                type="button"
+                class="btn p-0 h-100 border-0 rounded-2"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+              <div class="suggestions-list">
+                <ul>
+                  <li>Gợi ý 1</li>
+                  <li>Gợi ý 2</li>
+                  <li>Gợi ý 3</li>
+                </ul>
+              </div>
+            </div>
+            <ul class="navbar-nav align-items-center ms-auto">
+              <li class="nav-item dropdown">
+                <a
+                  id="libraryDropdown"
+                  class="btn dropdown-toggle btn-sm btn-purpleee px-2 mx-1"
+                  role="button"
+                  th:href="@{/library?search=&sort=latest&page=1&size=3}"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  >My Library</a
+                >
+                <!-- Library dropdown -->
+                <div
+                  class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                  aria-labelledby="libraryDropdown"
+                  style="min-width: 0; width: 123px; right: 9px"
+                >
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/quiz/joined-list}"
+                  >
+                    Quiz
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/classroom/joined-list}"
+                  >
+                    Classroom
+                  </a>
+                </div>
+              </li>
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle bg-light rounded-full rounded-circle"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="padding: 6px 12px; margin-left: 25px"
+                >
+                  <i class="fas fa-bars"></i>
+                </a>
+
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="userDropdown"
+                >
+                  <a class="dropdown-item" th:href="@{/change-password}">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Change Password
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" th:href="@{/logout}">
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="page-content bg-light d-flex">
+      <div class="container-xl px-lg-5">
+        <div class="h-100 d-flex justify-content-center gap-3 gap-lg-5">
+          <!-- <left content> -->
+          <div class="border border-1 rounded-1 d-none d-md-block left-content">
+            <div class="d-flex flex-column h-100" style="padding: 10px">
+              <div id="quiz-image" class="bg-light">
+                <div class="border border-1 rounded-1 w-100 p-0">
+                  <div
+                    id="quizImage"
+                    class="d-flex flex-column justify-content-center"
+                    style="height: 159px"
+                  >
+                    <img
+                      class="rounded-1"
+                      style="object-fit: cover; height: 159px"
+                      th:src="${quiz.image}"
+                      alt="Quiz Image"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-column mt-1">
+                <div>
+                  <h3 class="m-1 mb-2" th:text="${quiz.title}"></h3>
+
+                  <table class="table">
+                    <tr>
+                      <td>Attempt:</td>
+                      <td th:text="${quiz.attempt.currentAttempt}">2</td>
+                    </tr>
+                    <tr>
+                      <td>Result:</td>
+                      <td th:text="${quiz.attempt.result()}"></td>
+                    </tr>
+
+                    <tr th:if="${quiz.attempt.currentAttempt > 1}">
+                      <td>Best Result:</td>
+                      <td th:text="${quiz.attempt.bestResult()}">69/100</td>
+                    </tr>
+                  </table>
+                  <div class="w-100 text-center">
+                    <a
+                      href="./play"
+                      class="btn btn-sm custom-box-shadow glitter-button px-3"
+                      style="background-color: #f0f0f0"
+                      >Retake this quiz</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- </left content> -->
+
+          <!-- <right content> -->
+          <div class="right-content col-8">
+            <div
+              class="section d-flex justify-content-between align-items-end px-1 pe-2"
+            >
+              <strong class="pt-1">
+                <i class="fas fa-list-check mx-1"></i>
+                You have answered
+                <span th:text="${quiz.attempt.completedQuestionNumber()}"
+                  >0
+                </span>
+                /
+                <span th:text="${quiz.questions.size()}">0</span> question<span
+                  th:if="${quiz.questions.size() > 1}"
+                  >s</span
+                >
+              </strong>
+              <span class="opa-25"
+                >(displaying the last finished attempt)
+              </span>
+            </div>
+
+            <div class="flex-fill d-flex flex-column gap-2 data">
+              <div
+                th:each="question, iStat : ${quiz.questions}"
+                th:id="${'question' + (iStat.index + 1)}"
+                class="card mt-0"
+              >
+                <div class="card-header bg-white p-1">
+                  <div class="w-100 d-flex justify-content-between">
+                    <div
+                      class="qcard-number"
+                      th:switch="${quiz.attempt.questionResults.get(question.id)}"
+                    >
+                      <i th:case="${null}" class="fas fa-question mx-1"></i>
+                      <i
+                        th:case="${true}"
+                        class="far fa-check-square mx-1 text-success"
+                      ></i>
+                      <i
+                        th:case="${false}"
+                        class="far fa-window-close mx-1 text-danger"
+                      ></i>
+                      Question <span th:text="${iStat.index + 1}">1</span>
+                    </div>
+                    <div
+                      th:switch="${quiz.attempt.questionResults.get(question.id)}"
+                      class="text-white pe-1"
+                    >
+                      <strong th:case="${null}" class="text-info"
+                        >You have not answered this question!
+                      </strong>
+                      <span th:case="${true}" class="text-success"
+                        >You have answered correctly!
+                      </span>
+                      <span th:case="${false}" class="bg-danger px-1 rounded-2"
+                        >Incorrect answers!
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body px-3 pb-1 pt-2">
+                  <div style="min-height: 123px">
+                    <p th:text="${question.text}" class="card-text mx-2"></p>
+                  </div>
+
+                  <div class="divider answer-divider mb-1">
+                    <div style="color: #999">
+                      <span th:text="${question.type}"> Single Choice </span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div
+                      th:each="answer : ${question.answers}"
+                      class="col-12 col-sm-6 col-md-12 col-lg-6 mb-1"
+                    >
+                      <div class="px-0 d-flex align-items-center gap-1">
+                        <div
+                          th:if="${quiz.attempt.questionResults.get(question.id) != null}"
+                        >
+                          <div th:if="${answer.isCorrect}">
+                            <span style="color: green">&#10003;</span>
+                          </div>
+                          <div th:unless="${answer.isCorrect}">
+                            <span style="color: red">&#x2715;</span>
+                          </div>
+                        </div>
+
+                        <span
+                          th:text="${answer.text}"
+                          class="text-secondary fw-bold"
+                        ></span>
+                        <span
+                          th:if="${quiz.attempt.isSelected(answer.id)}"
+                          th:classappend="${answer.isCorrect ? 'text-success' : 'text-danger'}"
+                          style="font-size: 10px"
+                          >Your answer</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

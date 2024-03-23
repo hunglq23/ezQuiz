@@ -10,7 +10,6 @@ import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
-import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IQuizService;
@@ -226,9 +225,10 @@ public class QuizController {
   public ResponseEntity<?> checkQuestionAnswers(
       HttpServletRequest request,
       @PathVariable UUID quizId,
+      @RequestParam Long attemptId,
       @RequestParam Long answerId) {
 
-    return quizService.handleAnswerSelectedByLearnerResp(request, quizId, answerId);
+    return quizService.handleAnswerSelected(request, quizId, attemptId, answerId);
   }
 
   @PreAuthorize(LEARNER_AUTHORITY)
@@ -236,23 +236,26 @@ public class QuizController {
   public ResponseEntity<?> checkQuestionAnswers(
       HttpServletRequest request,
       @PathVariable UUID quizId,
+      @RequestParam Long attemptId,
       @RequestParam Long questId,
       @RequestParam String questIndex,
       @RequestParam Map<String, String> params) {
 
+    params.remove("attemptId");
     params.remove("questId");
     params.remove("questIndex");
 
-    return quizService.handleAnswersChecking(request, quizId, questId, questIndex, params);
+    return quizService.handleAnswersChecking(request, quizId, attemptId, questId, questIndex, params);
   }
 
   @PreAuthorize(LEARNER_AUTHORITY)
   @PostMapping("/{quizId}/finish")
   public String finishQuizAttempt(
       HttpServletRequest request,
-      @PathVariable UUID quizId) {
+      @PathVariable UUID quizId,
+      @RequestParam Long attemptId) {
 
-    AttemptDto dto = quizService.handleFinishQuizAttempt(request, quizId);
+    quizService.handleFinishQuizAttempt(request, quizId, attemptId);
     return "redirect:/quiz/" + quizId + "/result";
   }
 
@@ -262,10 +265,10 @@ public class QuizController {
       HttpServletRequest request,
       @PathVariable UUID quizId, Model model) {
 
-    QuizResult result = quizService.getQuizResult(request, quizId);
+    QuizResult quiz = quizService.findLastFinishAttemptResult(request, quizId);
 
-    model.addAttribute("result", result);
-    return "quiz/quiz-finish";
+    model.addAttribute("quiz", quiz);
+    return "quiz/quiz-result";
   }
 
   @PostMapping("/{id}/assign")

@@ -22,4 +22,10 @@ public interface IAttemptService {
 
   BigDecimal getBestResult(Quiz quiz, User learner);
 
+  Attempt findLastFinishedAttempt(User learner, Quiz quiz);
+
+  Attempt getByIdAndLearnerAndQuiz(Long attemptId, User learner, Quiz quiz);
+
+  Integer getCurrentFinishedAttemptNum(User learner, Quiz quiz);
+
 }

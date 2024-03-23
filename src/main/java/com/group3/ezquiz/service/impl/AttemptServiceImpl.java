@@ -143,6 +143,27 @@ public class AttemptServiceImpl implements IAttemptService {
     return attempt.getResult();
   }
 
+  @Override
+  public Attempt getByIdAndLearnerAndQuiz(Long attemptId, User learner, Quiz quiz) {
+
+    return attemptRepo.findByIdAndQuizTaking_LearnerAndQuizTaking_QuizOrderByStartedAtDesc(attemptId, learner, quiz)
+        .orElseThrow(() -> new ResourceNotFoundException("Not found attempt!"));
+  }
+
+  @Override
+  public Attempt findLastFinishedAttempt(User learner, Quiz quiz) {
+
+    return attemptRepo.findLastFinishedAttempt(
+        learner, quiz);
+  }
+
+  @Override
+  public Integer getCurrentFinishedAttemptNum(User learner, Quiz quiz) {
+
+    return attemptRepo.countByResultIsNotNullAndQuizTaking_LearnerAndQuizTaking_Quiz(
+        learner, quiz);
+  }
+
   private Attempt findBestResultAttemptByLearnerAndQuiz(User learner, Quiz quiz) {
     return attemptRepo
         .findTopByQuizTaking_LearnerAndQuizTaking_QuizOrderByResultDesc(
