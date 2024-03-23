@@ -48,8 +48,4 @@ public class QuizAssigning {
 
   private Date dueDate;
 
-  @ManyToOne
-  @JoinColumn(name = "creator_id", nullable = false)
-  private User creator;
-
 }

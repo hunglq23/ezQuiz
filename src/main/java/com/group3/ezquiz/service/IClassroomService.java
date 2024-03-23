@@ -15,15 +15,13 @@ import jakarta.validation.Valid;
 
 public interface IClassroomService {
 
-   
-
     ResponseEntity<?> createClass(HttpServletRequest request, @Valid ClassroomDetailDto classroomDto);
 
     void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile excelFile);
 
     Classroom getClassroomByRequestAndId(HttpServletRequest request, Long id);
 
-    boolean importLearnerDataFromExcel( MultipartFile multipartFile, Classroom classroom);
+    boolean importLearnerDataFromExcel(MultipartFile multipartFile, Classroom classroom);
 
     Classroom updateClassroom(Long id, Classroom updatedClassroom);
 
@@ -32,4 +30,6 @@ public interface IClassroomService {
     boolean joinClassroom(HttpServletRequest request, String code);
 
     Page<Classroom> getClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
+
+    List<Classroom> findClassroomsByCreatorId(Long creatorId);
 }

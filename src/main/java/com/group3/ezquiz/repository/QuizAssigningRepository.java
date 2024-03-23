@@ -10,9 +10,8 @@ import com.group3.ezquiz.model.QuizAssigning;
 
 @Repository
 public interface QuizAssigningRepository extends JpaRepository<QuizAssigning, Long> {
-    List<QuizAssigning> findByClassroom(Classroom classroom);
+    List<QuizAssigning> findByClassroomId(Long classroomId);
 
-    List<QuizAssigning> findByClassroomIn(List<Classroom> classrooms);
+    List<QuizAssigning> findByClassroomClassJoiningsLearnerId(Long learnerId);
 
-    List<QuizAssigning> findByCreatorId(Long creatorId);
 }

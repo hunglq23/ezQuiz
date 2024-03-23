@@ -565,7 +565,6 @@ public class QuizServiceImpl implements IQuizService {
       throw new Exception("Quiz not found with ID: " + quizId);
     }
 
-    // Lấy classroom từ classroomService
     Long classroomId = assignedQuizDTO.getSelectedClassroom();
     Classroom selectedClassroom = classroomService.getClassroomByRequestAndId(request, classroomId);
     if (selectedClassroom == null) {
@@ -573,30 +572,24 @@ public class QuizServiceImpl implements IQuizService {
       throw new Exception("Classroom not found with ID: " + classroomId);
     }
 
-    log.info("Đã tìm thấy classroom");
-
     if (assignedQuizDTO.isShuffleQuestions()) {
-      // Shuffle the questions
       Collections.shuffle(quiz.getQuestions());
-
       if (assignedQuizDTO.isShuffleAnswers()) {
-        // Shuffle the answers within each question
         quiz.getQuestions().forEach(question -> Collections.shuffle(question.getAnswers()));
       }
     }
 
-    // Tạo mới QuizAssigning và gán thông tin từ Quiz
     QuizAssigning quizAssigning = new QuizAssigning();
     quizAssigning.setQuiz(quiz); // Gán Quiz
+    quizAssigning.setMaxAttempt(assignedQuizDTO.getMaxAttempt()); // Gán Classroom
+    quizAssigning.setDurationInMins(assignedQuizDTO.getDurationInMins()); // Gán Classroom
     quizAssigning.setClassroom(selectedClassroom); // Gán Classroom
     quizAssigning.setStartDate(assignedQuizDTO.getStartDate());
     quizAssigning.setDueDate(assignedQuizDTO.getDueDate());
     quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions());
     quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers());
     quizAssigning.setNote(assignedQuizDTO.getNote()); // Gán note hoặc thông tin khác
-    quizAssigning.setCreator(quiz.getCreator()); // Gán note hoặc thông tin khác
 
-    // Lưu QuizAssigning vào cơ sở dữ liệu
     quizAssignService.create(quizAssigning);
   }
 

@@ -48,6 +48,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
@@ -76,8 +79,10 @@ public class QuizController {
       Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     User user = userService.getUserRequesting(request);
+    List<Classroom> classrooms = classroomService.findClassroomsByCreatorId(user.getId());
     model.addAttribute("quiz", quiz);
     model.addAttribute("user", user);
+    model.addAttribute("classrooms", classrooms);
     return "quiz/quiz-editing";
   }
 
@@ -264,7 +269,7 @@ public class QuizController {
   }
 
   @PostMapping("/{id}/assign")
-  public String assignHomework(HttpServletRequest request,
+  public String assignQuiz(HttpServletRequest request,
       @PathVariable("id") UUID quizId,
       @ModelAttribute("assignedQuizDto") AssignedQuizDto assignedQuizDTO,
       RedirectAttributes redirectAttributes) {
@@ -283,23 +288,15 @@ public class QuizController {
   @GetMapping("/assigned-quizzes")
   public String getAsignedQuizList(HttpServletRequest request, Model model) {
     User user = userService.getUserRequesting(request);
+    List<QuizAssigning> assignedQuizList = new ArrayList<>();
+
     if (user.getRole().toString().equalsIgnoreCase("TEACHER")) {
-
-      List<QuizAssigning> asignedQuizList = quizAssignService.getAssigningQuizByTeacherId(user.getId());
-      model.addAttribute("asignedQuizList", asignedQuizList);
+      assignedQuizList = quizAssignService.getAssignedQuizForTeacher(user.getId());
     } else if (user.getRole().toString().equalsIgnoreCase("LEARNER")) {
-      List<Classroom> classrooms = userService.getUserRequesting(request).getClassrooms();
-
-      List<QuizAssigning> allAssignQuiz = new ArrayList<>();
-
-      for (Classroom classroom : classrooms) {
-        List<QuizAssigning> assignQuizList = classroom.getAssignedQuizList();
-        if (assignQuizList != null) {
-          allAssignQuiz.addAll(assignQuizList);
-        }
-      }
-      model.addAttribute("asignedQuizList", allAssignQuiz);
+      assignedQuizList = quizAssignService.getAssignedQuizzesForLearner(user.getId());
     }
+
+    model.addAttribute("assignedQuizList", assignedQuizList);
     model.addAttribute("user", user);
     return "assign-quiz/assigned-quiz-list";
   }

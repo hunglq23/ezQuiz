@@ -179,7 +179,7 @@
         <h1>Assigned Quiz <span class="marker marker-center">List</span></h1>
         <div class="row mt-4">
             <!-- Lặp qua từng bài tập của giáo viên và hiển thị dưới dạng card -->
-            <div class="col-md-4" th:each="asignedQuiz : ${asignedQuizList}">
+            <div class="col-md-4" th:each="asignedQuiz : ${assignedQuizList}">
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${asignedQuiz.quiz.title}">Title</h5>

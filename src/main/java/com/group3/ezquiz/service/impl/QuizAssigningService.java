@@ -3,6 +3,8 @@ package com.group3.ezquiz.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.group3.ezquiz.model.Classroom;
@@ -18,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuizAssigningService {
 
+    private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
+
     private final QuizAssigningRepository assigningQuizRepository;
     private final IClassroomService classroomService;
 
@@ -25,16 +29,22 @@ public class QuizAssigningService {
         assigningQuizRepository.save(assigningQuiz);
     }
 
-    public List<QuizAssigning> getAssigningQuizByClassroom(Classroom classroom) {
-        return assigningQuizRepository.findByClassroom(classroom);
+    public List<QuizAssigning> getAssignedQuizzesForLearner(Long learnerId) {
+        return assigningQuizRepository.findByClassroomClassJoiningsLearnerId(learnerId);
     }
 
-    public List<QuizAssigning> getAssigningQuizsForStudent(User user) {
-        return assigningQuizRepository.findByClassroomIn(user.getClassrooms());
-    }
+    public List<QuizAssigning> getAssignedQuizForTeacher(Long teacherId) {
+        List<QuizAssigning> quizAssignings = new ArrayList<>();
+        List<Classroom> classrooms = classroomService.findClassroomsByCreatorId(teacherId);
 
-    public List<QuizAssigning> getAssigningQuizByTeacherId(Long teacherId) {
-        return assigningQuizRepository.findByCreatorId(teacherId);
+        for (Classroom classroom : classrooms) {
+            List<QuizAssigning> quizAssigningsForClassroom = assigningQuizRepository
+                    .findByClassroomId(classroom.getId());
+            quizAssignings.addAll(quizAssigningsForClassroom);
+
+        }
+
+        return quizAssignings;
     }
 
     public QuizAssigning findById(Long id) {

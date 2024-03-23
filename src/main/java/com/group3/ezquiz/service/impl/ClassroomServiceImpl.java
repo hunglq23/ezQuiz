@@ -267,4 +267,9 @@ public class ClassroomServiceImpl implements IClassroomService {
     return classroomPage;
   }
 
+  @Override
+  public List<Classroom> findClassroomsByCreatorId(Long creatorId) {
+    return classroomRepo.findByCreatorId(creatorId);
+  }
+
 }

@@ -67,11 +67,8 @@ public class User {
   @OneToMany(mappedBy = "learner")
   private List<ClassJoining> classJoinings;
 
-  @OneToMany(mappedBy = "creator")
-  private List<QuizAssigning> assingedQuiz;
-
   @ManyToMany
-  @JoinTable(name = "classroom_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
+  @JoinTable(name = "_class_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
   private List<Classroom> classrooms;
 
   @OneToMany(mappedBy = "learner")
