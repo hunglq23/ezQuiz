@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class LibraryResponse {
-    private Integer maxPage;
+    private Integer totalPages;
     private List<ObjectDto> objectDtoList;
     private Boolean exceedMaxPage;
     private Long totalItemNumber;

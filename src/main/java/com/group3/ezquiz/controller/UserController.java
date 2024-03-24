@@ -9,8 +9,6 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.User;
@@ -39,45 +37,34 @@ public class UserController {
   @GetMapping("/library")
   public String getLibraryPage(
       HttpServletRequest request,
-      @Valid @ModelAttribute LibraryReqParam libraryDto,
+      @Valid @ModelAttribute LibraryReqParam params,
       BindingResult bindingResult,
-      Model model, RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes, Model model) {
+
     if (bindingResult.hasErrors()) {
-      for (ObjectError error : bindingResult.getAllErrors()) {
-        FieldError fieldError = (FieldError) error;
-        if (fieldError.getField().equals("sort")) {
-          libraryDto.setSort("latest");
-        }
-        if (fieldError.getField().equals("page")) {
-          libraryDto.setPage(1);
-        }
-        if (fieldError.getField().equals("size")) {
-          libraryDto.setSize(3);
-        }
-      }
-      redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
+      params.handleWhenError(bindingResult);
+      redirectAttributes.addAllAttributes(params.getAttrMap());
       return "redirect:/library";
     }
 
     LibraryResponse library = userService.getQuizAndClassroomByTeacher(
-        request, libraryDto);
+        request, params);
     List<ObjectDto> objectDtoList = library.getObjectDtoList();
 
     if (objectDtoList == null && library.getExceedMaxPage() == true) {
       // case when the current page exceed the max page number
-      if (library.getMaxPage() > 0) {
-        libraryDto.setPage(library.getMaxPage());
-        redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
+      if (library.getTotalPages() > 0) {
+        params.setPage(library.getTotalPages());
+        redirectAttributes.addAllAttributes(params.getAttrMap());
         return "redirect:/library";
       } else {
 
       }
     }
 
-    model.addAttribute("object", objectDtoList);
-    model.addAttribute("page", libraryDto);
-    model.addAttribute("max", library.getMaxPage());
-    model.addAttribute("totalItemNumber", library.getTotalItemNumber());
+    model.addAttribute("path", "/library");
+    model.addAttribute("library", library);
+    model.addAttribute("params", params);
     return "library";
   }
 

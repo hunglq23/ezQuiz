@@ -125,13 +125,9 @@ public class ClassroomServiceImpl implements IClassroomService {
     return false;
   }
 
-  // @Override
   // public void removeLearnerFromClassroomLearnerId(Classroom classroom, Long
   // learnerId) {
-  // Optional<User> learner = userRepo.findUserById(learnerId);
-  // if(learner.isEmpty()){
-  // throw new EntityNotFoundException("Not found learner with id" + learnerId);
-  // }
+
   // List<ClassJoining> classJoinings = classroom.getClassJoinings();
   // classJoinings.removeIf(joining ->
   // joining.getLearner().getId().equals(learnerId));

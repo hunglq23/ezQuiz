@@ -160,9 +160,9 @@ public class UserServiceImpl implements IUserService {
     String pattern = libraryDto.getSearch();
     int startIndex = size * (page - 1);
     int endIndex = size * page;
-    Direction sortDirection = Sort.Direction.DESC;
+    Direction sortDirection = Direction.DESC;
     if (libraryDto.getSort().equals("oldest")) {
-      sortDirection = Sort.Direction.ASC;
+      sortDirection = Direction.ASC;
     }
 
     User userRequesting = getUserRequesting(request);
@@ -180,7 +180,7 @@ public class UserServiceImpl implements IUserService {
     double totalEleNumber = classroomPage.getTotalElements() + quizPage.getTotalElements();
     int maxPage = (int) Math.ceil(totalEleNumber / size);
     LibraryResponse response = LibraryResponse.builder()
-        .maxPage(maxPage)
+        .totalPages(maxPage)
         .exceedMaxPage(true)
         .totalItemNumber(classroomPage.getTotalElements() + quizPage.getTotalElements())
         .build();
