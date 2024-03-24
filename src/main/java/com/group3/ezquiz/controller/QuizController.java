@@ -15,13 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -148,46 +145,6 @@ public class QuizController {
         .body(new InputStreamResource(inputStream));
   }
 
-//  @PreAuthorize(TEACHER_AUTHORITY)
-//  @GetMapping("/my-quiz")
-//  public String showQuizList(
-//      HttpServletRequest request,
-//      @RequestParam(required = false, value = "sort") Optional<String> sortOrder,
-//      @RequestParam(required = false, value = "draft") Boolean isDraft,
-//      @RequestParam(required = false, value = "page") Optional<Integer> page,
-//      @RequestParam(required = false, value = "size") Optional<Integer> size,
-//      Model model) {
-//    String sort = sortOrder.orElse("latest");
-//    Integer currentPage = page.orElse(1);
-//    Integer pageSize = size.orElse(3);
-//
-//    String draftParam = isDraft == null ? "" : isDraft.toString();
-//    if (currentPage < 1)
-//      return "redirect:/quiz/my-quiz?sort=" + sort +
-//          "&draft=" + draftParam +
-//          "&page=1&size=" + pageSize;
-//
-//    Page<QuizDto> quizPage = quizService.getQuizInLibrary(
-//        request, sort, isDraft, PageRequest.of(currentPage - 1, pageSize));
-//
-//    int maxPage = quizPage.getTotalPages();
-//    if (currentPage > maxPage) {
-//      return "redirect:/quiz/my-quiz?sort=" + sort +
-//          "&draft=" + draftParam +
-//          "&page=" + maxPage +
-//          "&size=" + pageSize;
-//    }
-//    int curPage = quizPage.getNumber() + 1;
-//
-//    model.addAttribute("quizList", quizPage);
-//    model.addAttribute("isDraft", isDraft);
-//    model.addAttribute("sort", sort);
-//    model.addAttribute("currentPage", curPage > maxPage ? maxPage : curPage);
-//    model.addAttribute("pageSize", quizPage.getSize());
-//    model.addAttribute("max", maxPage);
-//    return "quiz/quiz-list";
-//  }
-
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/my-quiz")
   public String showQuizList(
@@ -203,7 +160,7 @@ public class QuizController {
           quizReq.setSort("latest");
         }
         if(fieldError.getField().equals("draft")) {
-          quizReq.setDraft(true);
+          quizReq.setDraft("");
         }
         if (fieldError.getField().equals("page")) {
           quizReq.setPage(1);
@@ -212,26 +169,17 @@ public class QuizController {
           quizReq.setSize(3);
         }
       }
-      redirectAttributes.addAllAttributes(quizReq.getAttrMap());
+      HashMap<String, String> attrMap = quizReq.getAttrMap();
+      redirectAttributes.addAllAttributes(attrMap);
       return "redirect:/quiz/quiz-list";
     }
-    QuizResponse quiz = quizService.getQuizInLibrary(request, quizReq);
-    List<QuizDto> quizDtoList = quiz.getQuizDtoList();
-    if (quizDtoList == null && quiz.getExceedMaxPage() == true) {
-      // case when the current page exceed the max page number
-      if (quiz.getMaxPage() > 0) {
-        quizReq.setPage(quiz.getMaxPage());
-        redirectAttributes.addAllAttributes(quizReq.getAttrMap());
-        return "redirect:/quiz/quiz-list";
-      } else {
+    Page<QuizDto> quiz = quizService.getQuizInLibrary(request, quizReq);
+    int maxPage = quiz.getTotalPages();
 
-      }
-    }
-
-    model.addAttribute("quizList", quizDtoList);
+    model.addAttribute("quizList", quiz);
     model.addAttribute("page", quizReq);
-    model.addAttribute("max", quiz.getMaxPage());
-    model.addAttribute("totalItemNumber", quiz.getTotalItemNumber());
+    model.addAttribute("max", maxPage);
+    model.addAttribute("totalItemNumber", quiz.getTotalElements());
     return "quiz/quiz-list";
   }
 

@@ -18,7 +18,7 @@ public class QuizReqParam {
     @Pattern(regexp = "^(oldest|latest)$")
     private String sort = "latest";
 
-    private Boolean draft = true;
+    private String draft = "";
 
     @Min(1)
     private Integer size = 3;
@@ -31,7 +31,7 @@ public class QuizReqParam {
         return new HashMap<>(Map.of(
                 "search", this.search,
                 "sort", this.sort,
-                "draft", this.draft.toString(),
+                "draft", this.draft,
                 "page", this.page.toString(),
                 "size", this.size.toString()));
     }

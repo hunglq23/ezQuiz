@@ -390,52 +390,40 @@ public class QuizServiceImpl implements IQuizService {
     }
   }
 
-  public QuizResponse getQuizInLibrary(HttpServletRequest request, QuizReqParam quizReq) {
-    int size = quizReq.getSize();
-    int page = quizReq.getPage();
+  public Page<QuizDto> getQuizInLibrary(HttpServletRequest request, QuizReqParam quizReq) {
     String pattern = quizReq.getSearch();
-    Boolean draft = quizReq.getDraft();
-    int startIndex = size * (page - 1);
-    int endIndex = size * page;
+    String isDraft = quizReq.getDraft();
+    Boolean draft = null ;
+    switch(isDraft){
+      case "true":
+        draft = true;
+        break;
+      case "false":
+        draft = false;
+        break;
+    }
     Sort.Direction sortDirection = Sort.Direction.DESC;
     if (quizReq.getSort().equals("oldest")) {
       sortDirection = Sort.Direction.ASC;
     }
     User userRequesting = userService.getUserRequesting(request);
-    Page<Quiz> quizPage = quizRepo.findByCreatorAndTitleContainingAndIsDraft(userRequesting, pattern, draft,
-              PageRequest.of(0, endIndex, Sort.by(sortDirection, "createdAt")));
-
-    List<Quiz> quizByUser = quizPage.getContent();
-    double totalEleNumber = quizPage.getTotalElements();
-    int maxPage = (int) Math.ceil(totalEleNumber / size);
-    QuizResponse response = QuizResponse.builder()
-            .maxPage(maxPage)
-            .exceedMaxPage(true)
-            .totalItemNumber(quizPage.getTotalElements())
-            .build();
-    if (quizReq.getPage() <= maxPage) {
-      response.setExceedMaxPage(false);
-      List<QuizDto> quizDtoList = quizByUser.stream().map(this::mapToQuizDto).collect(Collectors.toList());
-      Comparator<QuizDto> comparator;
-      switch (quizReq.getSort()) {
-        case "latest":
-          comparator = Comparator.comparing(QuizDto::getTimeString).reversed();
-          quizDtoList.sort(comparator);
-          break;
-        case "oldest":
-          comparator = Comparator.comparing(QuizDto::getTimeString);
-          quizDtoList.sort(comparator);
-          break;
-      }
-      quizDtoList.forEach(quizDto -> quizDto.setTimeString(
-              Utility.calculateTimeElapsed(
-                      Utility.convertStringToTimestamp(quizDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
-      if (startIndex <= Math.min(endIndex, quizDtoList.size())) {
-        response.setQuizDtoList(
-                quizDtoList.subList(startIndex, Math.min(endIndex, quizDtoList.size())));
-      }
+    Page<Quiz> quizPage;
+    if(draft != null) {
+     quizPage = quizRepo.findByCreatorAndTitleContainingAndIsDraft(userRequesting, pattern, draft,
+              PageRequest.of(quizReq.getPage() - 1,
+                      quizReq.getSize(),
+                      Sort.by(sortDirection, "createdAt")));
+    } else {
+      quizPage = quizRepo.findByCreatorAndTitleContaining(userRequesting, pattern,
+              PageRequest.of(quizReq.getPage() -1,
+                      quizReq.getSize(),
+                      Sort.by(sortDirection, "createdAt")));
     }
-    return response;
+    Page<QuizDto> quizDtoList = quizPage.map(this::mapToQuizDto);
+    quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+            Utility.calculateTimeElapsed(
+                    Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    return quizDtoList;
   }
 
   private QuizDto mapToQuizDto(Quiz quiz) {

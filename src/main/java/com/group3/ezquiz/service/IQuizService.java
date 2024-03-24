@@ -41,7 +41,7 @@ public interface IQuizService {
 
   List<Quiz> searchQuizUUID(HttpServletRequest request, String search);
 
-  QuizResponse getQuizInLibrary(HttpServletRequest http, QuizReqParam quizReq);
+  Page<QuizDto> getQuizInLibrary(HttpServletRequest http, QuizReqParam quizReq);
 
   void deleteQuiz(UUID id);
 
