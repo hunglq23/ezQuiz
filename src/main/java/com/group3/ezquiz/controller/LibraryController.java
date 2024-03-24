@@ -1,0 +1,91 @@
+package com.group3.ezquiz.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.LibraryResponse;
+import com.group3.ezquiz.payload.ObjectDto;
+import com.group3.ezquiz.payload.QuizReqParam;
+import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.service.ILibraryService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/library")
+@PreAuthorize("hasRole('ROLE_TEACHER')")
+public class LibraryController {
+  @Autowired
+  private ILibraryService libraryService;
+
+  @GetMapping("/my-library")
+  public String getLibraryPage(
+      HttpServletRequest request,
+      @Valid @ModelAttribute LibraryReqParam params,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes, Model model) {
+
+    final String PATH = "/library/my-library";
+    final String DO_REDIRECT = "redirect:" + PATH;
+
+    if (bindingResult.hasErrors()) {
+      params.handleWhenError(bindingResult);
+      redirectAttributes.addAllAttributes(params.getAttrMap());
+      return DO_REDIRECT;
+    }
+
+    LibraryResponse library = libraryService.getCreatedQuizAndClassroom(request, params);
+    List<ObjectDto> objectDtoList = library.getObjectDtoList();
+
+    if (objectDtoList == null && library.getExceedMaxPage() == true) {
+      // case when the current page exceed the max page number
+      if (library.getTotalPages() > 0) {
+        params.setPage(library.getTotalPages());
+        redirectAttributes.addAllAttributes(params.getAttrMap());
+        return DO_REDIRECT;
+      }
+    }
+    model.addAttribute("path", PATH);
+    model.addAttribute("library", library);
+    model.addAttribute("params", params);
+    return "library";
+  }
+
+  @GetMapping("/my-quiz")
+  public String showCreatedQuizList(
+      HttpServletRequest request,
+      @Valid @ModelAttribute QuizReqParam params,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes,
+      Model model) {
+    final String PATH = "/library/my-quiz";
+
+    if (bindingResult.hasErrors()) {
+      // if any invalid request params, set that param to default value
+      params.handleWhenError(bindingResult);
+      redirectAttributes.addAllAttributes(params.getAttrMap());
+      return "redirect:" + PATH;
+    }
+
+    Page<QuizDto> quizPage = libraryService.getMyQuizInLibrary(request, params);
+
+    model.addAttribute("path", PATH);
+    model.addAttribute("quizList", quizPage);
+    model.addAttribute("params", params);
+    return "quiz/quiz-list";
+  }
+
+}

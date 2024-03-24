@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.payload.quiz.QuizResult;
-import com.group3.ezquiz.utils.Utility;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +44,10 @@ import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.model.UserResponse;
 import com.group3.ezquiz.payload.AssignedQuizDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuestionToLearner;
+import com.group3.ezquiz.payload.QuizReqParam;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
@@ -57,6 +59,7 @@ import com.group3.ezquiz.service.IAttemptService;
 import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +72,6 @@ public class QuizServiceImpl implements IQuizService {
 
   private final QuizRepo quizRepo;
   private final IUserService userService;
-  private final QuizAssigningService quizAssignService;
   private final IClassroomService classroomService;
   private final IQuestionService questionService;
   private final IAttemptService attemptService;
@@ -245,7 +247,8 @@ public class QuizServiceImpl implements IQuizService {
           // Parse question type from the second cell of the row
           Cell typeCell = cellIterator.next();
           String questionType = getCellValue(typeCell).trim();
-          if (!List.of("single-choice", "multiple-choice").contains(questionType)) {
+          if (!List.of("single-choice", "multiple-choice",
+              "Single Choice", "Multiple Choice").contains(questionType)) {
             validQuestion = false;
             log.error("type " + questionType);
 
@@ -529,23 +532,11 @@ public class QuizServiceImpl implements IQuizService {
     }
     Page<QuizDto> quizDtoList = quizByCreator.map(this::mapToQuizDto);
 
-    quizDtoList.forEach(objectDto -> objectDto.setTimeString(
-        Utility.calculateTimeElapsed(
-            Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    // quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+    // Utility.calculateTimeElapsed(
+    // Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd
+    // HH:mm:ss"))));
     return quizDtoList;
-  }
-
-  private QuizDto mapToQuizDto(Quiz quiz) {
-    return QuizDto.builder()
-        .id(quiz.getId())
-        .type("Quiz")
-        .title(quiz.getTitle())
-        .description(quiz.getDescription())
-        .image(quiz.getImageUrl())
-        .isDraft(quiz.getIsDraft())
-        .itemNumber(quiz.getQuestions().size())
-        .timeString(quiz.getCreatedAt().toString())
-        .build();
   }
 
   @Override
@@ -561,16 +552,12 @@ public class QuizServiceImpl implements IQuizService {
 
   @Override
   public void deleteQuestionById(UUID id, Long questionId) {
-    Optional<Quiz> optionalQuiz = quizRepo.findById(id);
-    if (optionalQuiz.isPresent()) {
-      Quiz quiz = optionalQuiz.get();
-      List<Question> questions = quiz.getQuestions();
-      questions.removeIf(question -> question.getId().equals(questionId));
+    Quiz quiz = getQuizById(id);
+    List<Question> questions = quiz.getQuestions();
+    if (questions.removeIf(question -> question.getId().equals(questionId))) {
       quizRepo.save(quiz);
     } else {
-      // Handle case when quiz is not found
-      throw new ResourceNotFoundException("Quiz with ID " + id + " not found");
-
+      throw new ResourceNotFoundException("Question with id " + questionId + "not found!");
     }
   }
 
@@ -637,8 +624,57 @@ public class QuizServiceImpl implements IQuizService {
     quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions());
     quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers());
     quizAssigning.setNote(assignedQuizDTO.getNote()); // Gán note hoặc thông tin khác
+  }
 
-    quizAssignService.create(quizAssigning);
+  @Override
+  public Page<QuizDto> getCreatedQuizList(HttpServletRequest request, @Valid QuizReqParam params) {
+    User userRequesting = userService.getUserRequesting(request);
+
+    Page<Quiz> page = null;
+    if (params.getDraft() == null) {
+      page = quizRepo.findByCreatorAndTitleContaining(
+          userRequesting,
+          params.getSearch(),
+          PageRequest.of(
+              params.getPage() - 1,
+              params.getSize(),
+              params.getSortType()));
+    } else {
+      page = quizRepo.findByCreatorAndIsDraftAndTitleContaining(
+          userRequesting,
+          params.getDraft(),
+          params.getSearch(),
+          PageRequest.of(
+              params.getPage() - 1,
+              params.getSize(),
+              params.getSortType()));
+    }
+    return page.map(this::mapToQuizDto);
+  }
+
+  @Override
+  public Page<QuizDto> getAvailableQuizList(@Valid LibraryReqParam params) {
+
+    Page<Quiz> page = quizRepo.findByIsDraftIsFalseAndTitleContaining(
+        params.getSearch(),
+        PageRequest.of(
+            params.getPage() - 1,
+            params.getSize(),
+            params.getSortType()));
+    return page.map(this::mapToQuizDto);
+  }
+
+  private QuizDto mapToQuizDto(Quiz quiz) {
+    return QuizDto.builder()
+        .id(quiz.getId())
+        .type("Quiz")
+        .title(quiz.getTitle())
+        .description(quiz.getDescription())
+        .image(quiz.getImageUrl())
+        .isDraft(quiz.getIsDraft())
+        .itemNumber(quiz.getQuestions().size())
+        .timestamp(quiz.getCreatedAt())
+        .build();
   }
 
 }

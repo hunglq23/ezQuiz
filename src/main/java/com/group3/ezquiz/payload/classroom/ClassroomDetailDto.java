@@ -1,4 +1,4 @@
-package com.group3.ezquiz.payload;
+package com.group3.ezquiz.payload.classroom;
 
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -19,7 +19,5 @@ public class ClassroomDetailDto {
     public void setDescription(String description) {
         this.description = description.trim().isEmpty() ? null : description;
     }
- 
-    
-    
+
 }

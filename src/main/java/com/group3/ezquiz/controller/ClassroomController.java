@@ -5,6 +5,7 @@ import java.io.InputStream;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +24,8 @@ import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
-import com.group3.ezquiz.payload.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
@@ -69,10 +71,19 @@ public class ClassroomController {
             redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
             return "redirect:/classroom/created-list";
         }
-        Page<Classroom> classroom = classroomService.getClassroomByTeacher(request, libraryDto);
-        int maxPage = classroom.getTotalPages();
+        Page<ClassroomDto> classroom = classroomService.getCreatedClassrooms(request, libraryDto);
+        Pageable pageable = classroom.getPageable();
+        if (pageable.getPageNumber() != 0 &&
+                pageable.getPageNumber() >= classroom.getTotalPages()) {
+            libraryDto.setPage(classroom.getTotalPages());
+            redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
+            return "redirect:/classroom/created-list";
+        }
         model.addAttribute("classroom", classroom);
-        model.addAttribute("max", maxPage);
+        model.addAttribute("max", classroom.getTotalPages());
+        model.addAttribute("page", libraryDto);
+        model.addAttribute("totalItemNumber", classroom.getTotalElements());
+        model.addAttribute("object", classroom.getContent());
         return "classroom/classroom-list";
     }
 

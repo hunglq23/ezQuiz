@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,10 +29,12 @@ import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
-import com.group3.ezquiz.payload.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -125,13 +126,9 @@ public class ClassroomServiceImpl implements IClassroomService {
     return false;
   }
 
-  // @Override
   // public void removeLearnerFromClassroomLearnerId(Classroom classroom, Long
   // learnerId) {
-  // Optional<User> learner = userRepo.findUserById(learnerId);
-  // if(learner.isEmpty()){
-  // throw new EntityNotFoundException("Not found learner with id" + learnerId);
-  // }
+
   // List<ClassJoining> classJoinings = classroom.getClassJoinings();
   // classJoinings.removeIf(joining ->
   // joining.getLearner().getId().equals(learnerId));
@@ -175,6 +172,26 @@ public class ClassroomServiceImpl implements IClassroomService {
     }
     return classroom != null;
 
+  }
+
+  @Override
+  public Page<ClassroomDto> getCreatedClassrooms(HttpServletRequest request, LibraryReqParam params) {
+
+    User userRequest = userService.getUserRequesting(request);
+    Page<Classroom> classroomPage = classroomRepo
+        .findByCreatorAndNameContaining(
+            userRequest,
+            params.getSearch(),
+            PageRequest.of(params.getPage() - 1,
+                params.getSize(),
+                params.getSortType()));
+
+    return classroomPage.map(this::mapToClassroomDto);
+  }
+
+  @Override
+  public List<Classroom> findClassroomsByCreatorId(Long creatorId) {
+    return classroomRepo.findByCreatorId(creatorId);
   }
 
   private Classroom processSheet(Sheet sheet, Classroom classroom) {
@@ -252,24 +269,15 @@ public class ClassroomServiceImpl implements IClassroomService {
     return codeClass;
   }
 
-  @Override
-  public Page<Classroom> getClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto) {
-    Direction sortDirection = Sort.Direction.DESC;
-    if (libraryDto.getSort().equals("oldest")) {
-      sortDirection = Sort.Direction.ASC;
-    }
-    User userRequest = userService.getUserRequesting(request);
-    Page<Classroom> classroomPage = classroomRepo.findByCreatorAndNameContaining(userRequest,
-        libraryDto.getSearch(),
-        PageRequest.of(libraryDto.getPage() - 1,
-            libraryDto.getSize(),
-            Sort.by(sortDirection, "createdAt")));
-    return classroomPage;
-  }
-
-  @Override
-  public List<Classroom> findClassroomsByCreatorId(Long creatorId) {
-    return classroomRepo.findByCreatorId(creatorId);
+  private ClassroomDto mapToClassroomDto(Classroom classroom) {
+    return ClassroomDto.builder()
+        .id(classroom.getId())
+        .name(classroom.getName())
+        .description(classroom.getDescription())
+        .imageUrl(classroom.getImageURL())
+        .itemNumber(classroom.getClassJoinings().size())
+        .timestamp(classroom.getCreatedAt())
+        .build();
   }
 
 }

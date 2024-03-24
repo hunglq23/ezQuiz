@@ -34,8 +34,10 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
-  public String handleMissingServletRequestParameterException() {
-    return "error";
+  public String handleMissingServletRequestParameterException(
+      MissingServletRequestParameterException exception, Model model) {
+    model.addAttribute("message", exception.getMessage());
+    return "error/404";
   }
 
   @ExceptionHandler(BindException.class)

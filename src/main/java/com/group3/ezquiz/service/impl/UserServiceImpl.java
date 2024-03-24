@@ -1,16 +1,9 @@
 package com.group3.ezquiz.service.impl;
 
-import com.group3.ezquiz.model.Classroom;
-import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.LibraryResponse;
-import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
-
-import com.group3.ezquiz.repository.ClassroomRepo;
-import com.group3.ezquiz.repository.QuizRepo;
-import com.group3.ezquiz.utils.Utility;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +13,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,11 +32,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -60,9 +46,6 @@ public class UserServiceImpl implements IUserService {
   private final JwtService jwtService;
   private final EmailService emailService;
   private final UserRepo userRepo;
-
-  private final QuizRepo quizRepo;
-  private final ClassroomRepo classroomRepo;
 
   @Override
   public BindingResult registerUser(RegisterRequest regUser, BindingResult result) {
@@ -151,95 +134,10 @@ public class UserServiceImpl implements IUserService {
   }
 
   @Override
-
   public LibraryResponse getQuizAndClassroomByTeacher(
       HttpServletRequest request, LibraryReqParam libraryDto) {
 
-    int size = libraryDto.getSize();
-    int page = libraryDto.getPage();
-    String pattern = libraryDto.getSearch();
-    int startIndex = size * (page - 1);
-    int endIndex = size * page;
-    Direction sortDirection = Sort.Direction.DESC;
-    if (libraryDto.getSort().equals("oldest")) {
-      sortDirection = Sort.Direction.ASC;
-    }
-
-    User userRequesting = getUserRequesting(request);
-
-    Page<Quiz> quizPage = quizRepo
-        .findByCreatorAndTitleContaining(userRequesting, pattern,
-            PageRequest.of(0, endIndex, Sort.by(sortDirection, "createdAt")));
-    List<Quiz> quizByUser = quizPage.getContent();
-
-    Page<Classroom> classroomPage = classroomRepo
-        .findByCreatorAndNameContaining(userRequesting, pattern,
-            PageRequest.of(0, endIndex, Sort.by(sortDirection, "createdAt")));
-
-    List<Classroom> classroomByUser = classroomPage.getContent();
-    double totalEleNumber = classroomPage.getTotalElements() + quizPage.getTotalElements();
-    int maxPage = (int) Math.ceil(totalEleNumber / size);
-    LibraryResponse response = LibraryResponse.builder()
-        .maxPage(maxPage)
-        .exceedMaxPage(true)
-        .totalItemNumber(classroomPage.getTotalElements() + quizPage.getTotalElements())
-        .build();
-    if (libraryDto.getPage() <= maxPage) {
-      response.setExceedMaxPage(false);
-
-      List<ObjectDto> objectDtoList = Stream.concat(
-          quizByUser.stream().map(this::createQuizObjectDto),
-          classroomByUser.stream().map(this::createClassroomObjectDto))
-          .collect(Collectors.toList());
-
-      Comparator<ObjectDto> comparator;
-      switch (libraryDto.getSort()) {
-        case "latest":
-          comparator = Comparator.comparing(ObjectDto::getTimeString).reversed();
-          objectDtoList.sort(comparator);
-          break;
-        case "oldest":
-          comparator = Comparator.comparing(ObjectDto::getTimeString);
-          objectDtoList.sort(comparator);
-          break;
-      }
-
-      objectDtoList.forEach(objectDto -> objectDto.setTimeString(
-          Utility.calculateTimeElapsed(
-              Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
-
-      if (startIndex <= Math.min(endIndex, objectDtoList.size())) {
-        response.setObjectDtoList(
-            objectDtoList.subList(startIndex, Math.min(endIndex, objectDtoList.size())));
-      }
-
-    }
-
-    return response;
-  }
-
-  private ObjectDto createQuizObjectDto(Quiz quiz) {
-    return ObjectDto.builder()
-        .type("Quiz")
-        .name(quiz.getTitle())
-        .description(quiz.getDescription())
-        .image(quiz.getImageUrl())
-        .isDraft(quiz.getIsDraft())
-        .itemNumber(quiz.getQuestions().size())
-        .timeString(quiz.getCreatedAt().toString())
-        .build();
-  }
-
-  private ObjectDto createClassroomObjectDto(Classroom classroom) {
-    return ObjectDto.builder()
-        .type("Classroom")
-        .name(classroom.getName())
-        .description(classroom.getDescription())
-        .image(classroom.getImageURL())
-        .isDraft(classroom.getIsDraft())
-        .itemNumber(classroom.getClassJoinings().size())
-        .timeString(classroom.getCreatedAt().toString())
-        .build();
+    return null;
   }
 
   @Override

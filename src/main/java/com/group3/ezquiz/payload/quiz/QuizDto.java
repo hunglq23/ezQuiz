@@ -2,7 +2,10 @@ package com.group3.ezquiz.payload.quiz;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.UUID;
+
+import com.group3.ezquiz.utils.MyUtils;
 
 @Getter
 @Setter
@@ -17,10 +20,9 @@ public class QuizDto {
     private String image;
     private Boolean isDraft;
     private Integer itemNumber;
-    private String timeString;
+    private Timestamp timestamp;
 
-    public String timeString(){
-        return timeString.substring(0, "yyyy-MM-dd HH:mm:ss".length());
+    public String getTimeString() {
+        return MyUtils.calculateTimeElapsed(timestamp);
     }
 }
-

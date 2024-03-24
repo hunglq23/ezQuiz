@@ -3,31 +3,118 @@ package com.group3.ezquiz.payload;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.With;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class LibraryReqParam {
 
-    private String search = "";
+  private final String DEFAULT_SORT = "latest";
+  private final int DEFAULT_PAGE = 1;
+  private final int DEFAULT_SIZE = 3;
 
-    @Pattern(regexp = "^(oldest|latest)$")
-    private String sort = "latest";
-    @Min(1)
-    private Integer size = 3;
-    @Min(1)
-    private Integer page = 1;
+  @With
+  private String search = "";
 
-    public HashMap<String, String> getAttrMap() {
+  @NotNull
+  @Pattern(regexp = "^(oldest|latest|AtoZ|ZtoA)$")
+  private String sort = "latest";
+  @NotNull
+  @Min(1)
+  private Integer page = 1;
+  @NotNull
+  @Min(1)
+  private Integer size = 3;
 
-        return new HashMap<>(Map.of(
-                "search", this.search,
-                "sort", this.sort,
-                "page", this.page.toString(),
-                "size", this.size.toString()));
+  public String getSearch() {
+    return search == null ? "" : search;
+  }
+
+  public HashMap<String, String> getAttrMap() {
+    HashMap<String, String> attrMap = new HashMap<>();
+    if (search != null && !search.isEmpty()) {
+      attrMap.put("search", search);
     }
+    attrMap.putAll(new HashMap<>(Map.of(
+        "sort", this.sort,
+        "page", this.page.toString(),
+        "size", this.size.toString())));
+    return attrMap;
+  }
+
+  public void handleWhenError(BindingResult bindingResult) {
+    for (ObjectError objectError : bindingResult.getAllErrors()) {
+      FieldError fieldError = (FieldError) objectError;
+      if (fieldError.getField().equals("sort")) {
+        setSort(DEFAULT_SORT);
+      }
+      if (fieldError.getField().equals("page")) {
+        setPage(DEFAULT_PAGE);
+      }
+      if (fieldError.getField().equals("size")) {
+        setSize(DEFAULT_SIZE);
+      }
+    }
+  }
+
+  public Sort getSortType() {
+    switch (sort) {
+
+      case "AtoZ":
+        return Sort.by(Direction.ASC, "name");
+
+      case "ZtoA":
+        return Sort.by(Direction.DESC, "name");
+
+      case "oldest":
+        return Sort.by(Direction.ASC, "createdAt");
+
+      default:
+      case "latest":
+        return Sort.by(Direction.DESC, "createdAt");
+    }
+  }
+
+  public ObjectDto compare(ObjectDto o1, ObjectDto o2) {
+    switch (sort) {
+      case "AtoZ":
+        return o1.getName().compareToIgnoreCase(o2.getName()) < 0 ? o1 : o2;
+
+      case "ZtoA":
+        return o1.getName().compareToIgnoreCase(o2.getName()) > 0 ? o1 : o2;
+
+      case "oldest":
+        return o1.getTimestamp().compareTo(o2.getTimestamp()) < 0 ? o1 : o2;
+
+      default:
+      case "latest":
+        return o1.getTimestamp().compareTo(o2.getTimestamp()) > 0 ? o1 : o2;
+    }
+  }
+
+  public int getStartIndex() {
+    return size * (page - 1);
+  }
+
+  public int getEndIndex() {
+    return size * page;
+  }
+
+  public LibraryReqParam getCustom() {
+    return new LibraryReqParam(getSearch(), getSort(), 1, getEndIndex());
+  }
 
 }

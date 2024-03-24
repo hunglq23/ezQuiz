@@ -1,420 +1,460 @@
 <!DOCTYPE html>
 <html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head th:fragment="head">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Library</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../static/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Library</title>
-  <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" th:href="@{/images/favicon.ico}" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="crossorigin"
+    />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap"
+      />
+    </noscript>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <link rel="stylesheet" th:href="@{/css/library.css}" />
+  </head>
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
-  <link rel="preload" as="style"
-    href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap" />
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap" media="print"
-    onload="this.media='all'" />
-  <noscript>
-    <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;700;800&amp;display=swap" />
-  </noscript>
-  <link href="../static/vendor/bootstrap/bootstrap.min.css" th:href="@{../vendor/bootstrap/bootstrap.min.css}"
-    rel="stylesheet" />
-  <link href="../static/css/main.css" th:href="@{../css/main.css}" rel="stylesheet" />
-
-  <style>
-    .body {
-      height: 100vh;
-    }
-
-    .sticky-nav {
-      position: sticky;
-      top: 88px;
-      left: 0;
-    }
-
-    .nav-link a {
-      opacity: 0.55;
-      margin-left: 1.23rem;
-      font-size: 1.11rem;
-    }
-
-    .nav-link.active {
-      a {
-        color: #8854c0;
-        opacity: 1;
-      }
-    }
-
-    .nav-link:hover {
-      a {
-        opacity: 1;
-      }
-
-      .rotate-on-hover {
-        animation: rotate 0.5s linear forwards;
-      }
-    }
-
-    @keyframes rotate {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      33% {
-        transform: rotate(-8deg);
-      }
-
-      66% {
-        transform: rotate(15deg);
-      }
-
-      100% {
-        transform: rotate(0deg);
-      }
-    }
-
-    #content {
-      padding: 8px;
-      min-width: 488px;
-      max-width: 678px;
-    }
-
-    #content .dropdown-menu {
-      position: absolute;
-
-      .filter-label,
-      .sort-label {
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-      }
-
-      .filter-label {
-        margin-left: 12px;
-      }
-    }
-
-    .pagination {
-      gap: 3px;
-      align-items: center;
-    }
-
-    .page-item .page-link {
-      border: none;
-      background-color: transparent;
-      border-radius: 7px;
-
-      &:hover {
-        color: #8854c0;
-      }
-    }
-
-    .page-item.active .page-link {
-      background-color: #ac82d8;
-
-      &:hover {
-        color: #fff;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <header class="bg-light">
-    <nav class="navbar navbar-expand-sm p-0 navbar-light bg-white" id="header-nav" role="navigation">
-      <div class="container-fluid mx-2">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <a class="link-dark navbar-brand site-title mb-0" href="./home">ezQuiz</a>
-          <div id="navSearch" class="position-relative mx-2 suggest-search">
-            <input type="search" id="navSearchInput" class="form-control" placeholder="Search in Library"
-              autocomplete="off" th:value="${page.search}" />
-            <button id="navSearchButton" type="button" class="btn p-0 h-100 border-0 rounded-2"
-              onclick="searchLibraryItem()">
-              <i class="fas fa-search"></i>
-            </button>
-            <div class="suggestions-list">
-              <ul>
-                <li>Gợi ý 1</li>
-                <li>Gợi ý 2</li>
-                <li>Gợi ý 3</li>
-              </ul>
-            </div>
-          </div>
-          <ul class="navbar-nav align-items-center ms-auto">
-            <li class="nav-item">
-              <a class="btn btn-sm bg-light mx-1 px-2 bd-left" style="min-width: 111px" th:href="@{/home}">
-                Home&nbsp;&nbsp;<i class="fas fa-home"></i>
-              </a>
-            </li>
-            <li class="nav-item dropdown no-arrow">
-              <a class="btn dropdown-toggle btn-sm px-2" id="libraryDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" style="
-                    margin-right: 25px;
-                    background-color: #8854c0;
-                    color: #fff;
-                  ">
-                Create<i class="fas fa-plus" style="margin-left: 5px"></i></a>
-              <!-- Library dropdown -->
-              <div id="libraryDropdown" class="dropdown-menu bg-white shadow animated--grow-in p-0"
-                aria-labelledby="libraryDropdown" style="min-width: 0; width: 100px; right: 25px">
-                <a class="dropdown-item btn btn-sm p-1" href="quiz/quiz-editing.html" th:href="@{/quiz/new}">
-                  Quiz </a><a class="dropdown-item btn btn-sm p-1" th:href="@{/question/list}">
-                  Question
-                </a>
-                <a class="dropdown-item btn btn-sm p-1" th:href="@{/classrooms/created}">
-                  Classroom
-                </a>
-                <a class="dropdown-item btn btn-sm text-center" th:href="@{/quiz/assigned-quizzes}">
-                  Assigned Quiz
-                </a>
-              </div>
-            </li>
-            <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle bg-light rounded-full rounded-circle" id="userDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 6px 12px">
-                <i class="fas fa-bars"></i>
-              </a>
-
-              <!-- Dropdown - User Information -->
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" th:href="@{/profile}">
-                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Profile
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Settings
-                </a>
-                <a class="dropdown-item" th:href="@{/admin/list}">
-                  <i class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"></i>
-                  User Management
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Activity Log
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" th:href="@{/logout}">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
-                </a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-
-  <div class="page-content bg-light py-3">
-    <div class="container-fluid">
-      <div class="d-flex justify-content-center m-0 w-100 h-100 gap-2 gap-lg-3">
-        <!-- Left Nav - Library Nav -->
-        <div class="d-flex justify-content-center m-0 w-100 h-100 gap-3 gap-lg-5">
-          <!-- Left Nav - Library Nav -->
-          <div class="section d-none d-md-block sticky-nav col-lg-3" style="height: fit-content; min-width: 234px">
-            <header>
-              <div>
-                <h4>Library</h4>
-              </div>
-            </header>
-            <ul class="nav d-flex flex-column align-items-center mb-3">
-              <li class="nav-link w-100 p-0 rounded-1 active">
-                <a class="btn btn-sm d-flex" th:href="@{/library}">
-                  <div class="square-33-center-item rotate-on-hover">
-                    <i class="fas fa-list"></i>
-                  </div>
-                  <div class="d-flex align-items-center flex-1">
-                    <span>All</span>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-link w-100 p-0 rounded-1">
-                <a class="btn btn-sm d-flex" th:href="@{/quiz/my-quiz}">
-                  <div class="square-33-center-item rotate-on-hover">
-                    <i class="fas fa-graduation-cap"></i>
-                  </div>
-                  <div class="d-flex align-items-center flex-1">
-                    <span>Quiz</span>
-                  </div>
-                </a>
-              </li>
-              <li class="nav-link w-100 p-0 rounded-1">
-                <a class="btn btn-sm d-flex" th:href="@{/classroom/created-list}">
-                  <div class="square-33-center-item rotate-on-hover">
-                    <i class="fas fa-book"></i>
-                  </div>
-                  <div class="d-flex align-items-center flex-1">
-                    <span>Classroom</span>
-                  </div>
-                </a>
-              </li>
-            </ul>
-            <div class="divider left-content-divider"></div>
-
-            <div th:if="${max > 1}" class="mt-2">
-              <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center bg-light">
-                  <li class="page-item">
-                    <button type="button" class="page-link" onclick="prevPage()" aria-label="Previous">
-                      &lt;&nbsp;Prev
-                    </button>
-                  </li>
-                  <li class="page-item" th:classappend="${page.page == 1 ? 'active' : ''}">
-                    <a class="page-link page-index" role="button">1</a>
-                  </li>
-                  <div th:if="${max > 3}">
-                    <li th:if="${page.page < 3}" class="page-item ms-0 me-3"
-                      th:classappend="${page.page == 2 ? 'active' : ''}">
-                      <a class="page-link page-index" role="button">2</a>
-                    </li>
-                    <li th:if="${page.page > 2 && page.page < max - 1}" class="page-item mx-2 active">
-                      <a class="page-link page-index" role="button" th:text="${page.page}">98</a>
-                    </li>
-                    <li th:if="${page.page > max - 2}" class="page-item ms-3 me-0"
-                      th:classappend="${page.page == max - 1 ? 'active' : ''}">
-                      <a class="page-link page-index" th:text="${max - 1}" role="button">98</a>
-                    </li>
-                  </div>
-                  <div th:if="${max == 3}">
-                    <li class="page-item" th:classappend="${page.page == 2 ? 'active' : ''}">
-                      <a class="page-link page-index" role="button">2</a>
-                    </li>
-                  </div>
-                  <li class="page-item" th:classappend="${page.page == max ? 'active' : ''}">
-                    <a class="page-link page-index" role="button" th:text="${max}">99</a>
-                  </li>
-                  <li class="page-item">
-                    <button type="button" class="page-link" aria-label="Next" onclick="nextPage()">
-                      Next&nbsp;&gt;
-                    </button>
-                  </li>
+  <body>
+    <header class="bg-light" th:fragment="topHeader">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
+              >ezQuiz</a
+            >
+            <div
+              id="navSearch"
+              class="position-relative mx-2 suggest-search"
+              th:fragment="nav-search"
+            >
+              <input
+                type="search"
+                id="navSearchInput"
+                class="form-control"
+                placeholder="Search in Library"
+                autocomplete="off"
+                th:value="${params.search}"
+              />
+              <button
+                id="navSearchButton"
+                type="button"
+                class="btn p-0 h-100 border-0 rounded-2"
+                onclick="searchLibraryItem()"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+              <div class="suggestions-list">
+                <ul>
+                  <li>Gợi ý 1</li>
+                  <li>Gợi ý 2</li>
+                  <li>Gợi ý 3</li>
                 </ul>
-              </nav>
-            </div>
-          </div>
-          <!-- </Left Nav> -->
-
-          <!-- <right content> -->
-          <div id="content" class="d-flex flex-column" style="gap: 0.456789rem; min-width: 678px">
-            <form class="d-flex justify-content-between">
-              <div class="ps-1" style="opacity: 0.69; line-height: 2">
-                Found <span th:text="${totalItemNumber}">69</span> result(s).
-                <span th:if="${#strings.isEmpty(page.search)}">
-                  Displaying
-                  <span th:text="${object != null ? object.size() : 0}">-1</span>
-                  result(s):
-                </span>
-                <span th:unless="${#strings.isEmpty(page.search)}">
-                  Displaying of "<span th:text="${page.search}">err</span>"
-                  (<span th:text="${object != null ? object.size() : 0}">-1</span>
-                  result<span th:if="${object != null && object.size() > 1}">s</span>):
-                </span>
               </div>
-              <div class="d-flex gap-1">
-                <div class="navbar-nav d-flex flex-column">
-                  <div class="nav-item dropdown">
-                    <button class="btn dropdown-toggle btn-sm bg-white p-0 px-2 d-flex align-items-center" role="button"
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <span class="fas fa-sort me-2"></span>
-                      <span th:if="${page.sort==null}"> Latest </span>
-                      <span th:unless="${page.sort==null}" th:text="${page.sort}"
-                        style="text-transform: capitalize"></span>
-                    </button>
-                    <!-- Sort dropdown -->
-                    <div id="sortDropdown" class="dropdown-menu bg-white shadow animated--grow-in p-0"
-                      aria-labelledby="sortDropdown" style="min-width: 0; width: 123px">
-                      <a class="dropdown-item btn btn-sm p-0 sort-type text-center">
-                        <span class="text-capitalize">latest</span>
-                      </a>
-                      <a class="dropdown-item btn btn-sm p-0 sort-type text-center">
-                        <span class="text-capitalize">oldest</span>
-                      </a>
+            </div>
+            <ul class="navbar-nav align-items-center ms-auto">
+              <li class="nav-item">
+                <a class="btn btn-sm bg-light mx-1 px-3" th:href="@{/home}">
+                  Home&nbsp;&nbsp;<i class="fas fa-home"></i>
+                </a>
+              </li>
+              <li th:replace="~{home :: createButton}"></li>
+              <li th:replace="~{home :: barButton}"></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="page-content bg-light py-3 min-vh-100">
+      <div class="container-fluid">
+        <div
+          class="d-flex justify-content-center m-0 w-100 h-100 gap-2 gap-lg-3"
+        >
+          <div
+            th:with="max = ${library.getTotalPages()},
+                    content = ${library.getObjectDtoList()},
+                    totalResult = ${library.getTotalElements()}"
+            class="d-flex justify-content-center m-0 w-100 h-100 gap-3 gap-lg-5"
+          >
+            <!-- Left Nav - Library Nav -->
+            <div
+              th:fragment="leftNav"
+              class="section d-none d-md-block sticky-nav col-lg-3"
+              style="height: fit-content; min-width: 234px"
+            >
+              <header>
+                <h3>Library</h3>
+              </header>
+              <ul class="nav d-flex flex-column align-items-center mb-3">
+                <li
+                  class="nav-link w-100 p-0 rounded-1"
+                  th:classappend="${path.equals('/library/my-library') ? 'active' : ''}"
+                >
+                  <a class="btn btn-sm d-flex" th:href="@{/library/my-library}">
+                    <div class="square-33-center-item rotate-on-hover">
+                      <i class="fas fa-list"></i>
+                    </div>
+                    <div class="d-flex align-items-center flex-1">
+                      My Library
+                    </div>
+                  </a>
+                </li>
+                <li
+                  class="nav-link w-100 p-0 rounded-1"
+                  th:classappend="${path.equals('/library/my-quiz') ? 'active' : ''}"
+                >
+                  <a class="btn btn-sm d-flex" th:href="@{/library/my-quiz}">
+                    <div class="square-33-center-item rotate-on-hover">
+                      <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="d-flex align-items-center flex-1">My Quiz</div>
+                  </a>
+                </li>
+                <li
+                  class="nav-link w-100 p-0 rounded-1"
+                  th:classappend="${path.equals('/library/my-classroom') ? 'active' : ''}"
+                >
+                  <a
+                    class="btn btn-sm d-flex"
+                    th:href="@{/classroom/created-list}"
+                  >
+                    <div class="square-33-center-item rotate-on-hover">
+                      <i class="fas fa-book"></i>
+                    </div>
+                    <div class="d-flex align-items-center flex-1">
+                      <span>Classroom</span>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+              <div class="divider left-content-divider"></div>
+
+              <div th:if="${max > 1}" class="mt-2">
+                <nav aria-label="Page navigation">
+                  <ul class="pagination bg-light">
+                    <li class="page-item">
+                      <button
+                        type="button"
+                        class="page-link"
+                        onclick="prevPage()"
+                        aria-label="Previous"
+                      >
+                        &lt;&nbsp;Prev
+                      </button>
+                    </li>
+                    <li
+                      class="page-item"
+                      th:classappend="${params.page == 1 ? 'active' : ''}"
+                    >
+                      <a class="page-link page-index" role="button">1</a>
+                    </li>
+                    <div th:if="${max > 3}">
+                      <li
+                        th:if="${params.page < 3}"
+                        class="page-item ms-0 me-3"
+                        th:classappend="${params.page == 2 ? 'active' : ''}"
+                      >
+                        <a class="page-link page-index" role="button">2</a>
+                      </li>
+                      <li
+                        th:if="${params.page > 2 && params.page < max - 1}"
+                        class="page-item mx-2 active"
+                      >
+                        <a
+                          class="page-link page-index"
+                          role="button"
+                          th:text="${params.page}"
+                          >98</a
+                        >
+                      </li>
+                      <li
+                        th:if="${params.page > max - 2}"
+                        class="page-item ms-3 me-0"
+                        th:classappend="${params.page == max - 1 ? 'active' : ''}"
+                      >
+                        <a
+                          class="page-link page-index"
+                          th:text="${max - 1}"
+                          role="button"
+                          >98</a
+                        >
+                      </li>
+                    </div>
+                    <div th:if="${max == 3}">
+                      <li
+                        class="page-item"
+                        th:classappend="${params.page == 2 ? 'active' : ''}"
+                      >
+                        <a class="page-link page-index" role="button">2</a>
+                      </li>
+                    </div>
+                    <li
+                      class="page-item"
+                      th:classappend="${params.page == max ? 'active' : ''}"
+                    >
+                      <a
+                        class="page-link page-index"
+                        role="button"
+                        th:text="${max}"
+                        >99</a
+                      >
+                    </li>
+                    <li class="page-item">
+                      <button
+                        type="button"
+                        class="page-link"
+                        aria-label="Next"
+                        onclick="nextPage()"
+                      >
+                        Next&nbsp;&gt;
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+            <!-- </Left Nav> -->
+
+            <!-- <right content> -->
+            <div id="content" class="d-flex flex-column p-1">
+              <form class="d-flex justify-content-between">
+                <div
+                  class="ps-1"
+                  style="line-height: 2; font-size: 1.1rem; color: #6c757d"
+                  th:fragment="searchResult"
+                >
+                  Found
+                  <span th:text="${totalResult}">69</span>
+                  result<span th:if="${totalResult > 1}">s</span
+                  ><span th:if="${content == null}">
+                    of "<span th:text="${params.search}">err</span>" </span
+                  >.
+                  <span th:if="${#strings.isEmpty(params.search)}">
+                    Displaying
+                    <span th:text="${content.size()}">-1</span>
+                    result<span th:if="${totalResult > 1}">s</span>:
+                  </span>
+                  <span th:if="${!params.search.isEmpty() && content != null}">
+                    Displaying of "<span th:text="${params.search}">err</span>"
+                    (<span th:text="${content.size()}">-1</span> result<span
+                      th:if="${content.size() > 1}"
+                      >s</span
+                    >):
+                  </span>
+                </div>
+                <div class="d-flex gap-1">
+                  <div class="navbar-nav d-flex flex-column">
+                    <div class="nav-item dropdown">
+                      <button
+                        class="btn dropdown-toggle btn-sm bg-white p-0 px-2 d-flex align-items-center"
+                        role="button"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        <span class="fas fa-sort me-2"></span>
+                        <span th:if="${params.sort==null}"> Latest </span>
+                        <span
+                          th:unless="${params.sort==null}"
+                          th:text="${params.sort}"
+                          style="text-transform: capitalize"
+                        ></span>
+                      </button>
+                      <!-- Sort dropdown -->
+                      <div
+                        id="sortDropdown"
+                        class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                        aria-labelledby="sortDropdown"
+                        style="min-width: 0; width: 123px"
+                      >
+                        <a
+                          class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                        >
+                          <span class="text-capitalize">latest</span>
+                        </a>
+                        <a
+                          class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                        >
+                          <span class="text-capitalize">oldest</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </form>
-            <div id="data" class="section">
-              <div class="d-flex flex-column gap-2">
-                <div th:each="object : ${object}">
-                  <div sec:authorize="hasRole('ROLE_TEACHER')" class="position-relative">
-                    <div class="dropdown position-absolute ellipsis-toggle">
-                      <button class="btn" aria-expanded="false" data-bs-toggle="dropdown" style="right: 0">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li>
-                          <a class="dropdown-item" type="button">
-                            <i class="fa-regular fa-pen-to-square me-1"> </i>
-                            Edit
-                          </a>
-                        </li>
-                        <li>
-                          <a type="button" class="dropdown-item" onclick="confirm('Are you sure you want to delete?')">
-                            <i class="fa-solid fa-trash me-1"> </i> Delete
-                          </a>
-                        </li>
-                      </ul>
+              </form>
+              <div id="data" class="section">
+                <div class="d-flex flex-column gap-2">
+                  <div th:each="content : ${content}">
+                    <div
+                      sec:authorize="hasRole('ROLE_TEACHER')"
+                      class="position-relative"
+                    >
+                      <div class="dropdown position-absolute ellipsis-toggle">
+                        <button
+                          class="btn"
+                          aria-expanded="false"
+                          data-bs-toggle="dropdown"
+                          style="right: 0"
+                        >
+                          <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <a class="dropdown-item" type="button">
+                              <i class="fa-regular fa-pen-to-square me-1"> </i>
+                              Edit
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              type="button"
+                              class="dropdown-item"
+                              onclick="confirm('Are you sure you want to delete?')"
+                            >
+                              <i class="fa-solid fa-trash me-1"> </i> Delete
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                  <a sec:authorize="hasRole('ROLE_TEACHER')" class="btn item p-1 d-flex gap-1 rounded-1"
-                    style="height: 188px">
-                    <img th:if="${object.image == null}" class="h-100 w-20"
-                      src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg" />
-                    <img th:unless="${object.image == null}" class="h-100 w-20"
-                      style="max-width: 169px; border: #f4f5f6 solid 1px" th:src="${object.image}" />
-                    <div class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2">
-                      <div class="d-flex" style="margin-top: 3px">
-                        <div class="bg-white rounded-2 item-tag px-1" th:text="${object.type}">
-                          quiz
+                    <a
+                      sec:authorize="hasRole('ROLE_TEACHER')"
+                      class="btn item p-1 d-flex gap-1 rounded-1"
+                      style="height: 188px"
+                    >
+                      <img
+                        th:if="${content.image == null}"
+                        class="h-100 w-20"
+                        src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                      />
+                      <img
+                        th:unless="${content.image == null}"
+                        class="h-100 w-20"
+                        style="max-width: 169px; border: #f4f5f6 solid 1px"
+                        th:src="${content.image}"
+                      />
+                      <div
+                        class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2"
+                      >
+                        <div class="d-flex" style="margin-top: 3px">
+                          <div
+                            class="bg-white rounded-2 item-tag px-1"
+                            th:text="${content.type}"
+                          >
+                            quiz
+                          </div>
+                          <div
+                            th:if="${content.isDraft}"
+                            class="rounded-2 item-tag px-1"
+                            style="color: rgb(247, 95, 95)"
+                          >
+                            draft
+                          </div>
                         </div>
-                        <div th:if="${object.isDraft}" class="rounded-2 item-tag px-1" style="color: rgb(247, 95, 95)">
-                          draft
+
+                        <div
+                          th:if="${content.name == null || content.name.isEmpty()}"
+                          class="my-0 h5 opa-25"
+                        >
+                          Untitled Quiz
                         </div>
-                      </div>
+                        <div
+                          th:unless="${content.name == null || content.name.isEmpty()}"
+                          class="my-0 h5"
+                          th:text="${content.name}"
+                        >
+                          Quiz Name
+                        </div>
 
-                      <div th:if="${object.name == null || object.name.isEmpty()}" class="my-0 h5 opa-25">
-                        Untitled Quiz
-                      </div>
-                      <div th:unless="${object.name == null || object.name.isEmpty()}" class="my-0 h5"
-                        th:text="${object.name}">
-                        Quiz Name
-                      </div>
+                        <p
+                          class="text-small m-0 flex-fill fw-light"
+                          th:text="${content.description}"
+                        >
+                          Lorem ipsum dolor sit amet consectetur adipisicing
+                          elit.
+                        </p>
 
-                      <p class="text-small m-0 flex-fill fw-light" th:text="${object.description}">
-                        Lorem ipsum dolor sit amet consectetur adipisicing
-                        elit.
-                      </p>
-
-                      <div class="d-flex justify-content-between align-items-center w-100">
-                        <div class="d-flex flex-row align-items-center" style="
+                        <div
+                          class="d-flex justify-content-between align-items-center w-100"
+                        >
+                          <div
+                            class="d-flex flex-row align-items-center"
+                            style="
                               font-size: 12px;
                               opacity: 0.88;
                               font-weight: 100;
-                            ">
-                          <div class="d-flex flex-row align-items-center">
-                            <i class="fas fa-list h-100" style="opacity: 0.55; margin-right: 3px"></i>
-                            <span style="margin: 0 3px" th:text="${object.itemNumber}">99</span><span
-                              th:if="${object.type=='Quiz'}">question(s)</span>
-                            <span th:if="${object.type=='Classroom'}">student(s)</span>
+                            "
+                          >
+                            <div class="d-flex flex-row align-items-center">
+                              <i
+                                class="fas fa-list h-100"
+                                style="opacity: 0.55; margin-right: 3px"
+                              ></i>
+                              <span
+                                style="margin: 0 3px"
+                                th:text="${content.itemNumber}"
+                                >99</span
+                              ><span th:if="${content.type=='Quiz'}"
+                                >question(s)</span
+                              >
+                              <span th:if="${content.type=='Classroom'}"
+                                >student(s)</span
+                              >
+                            </div>
+                            <div
+                              class="d-flex flex-row align-items-center mx-2"
+                            >
+                              <i
+                                class="fas fa-history h-100"
+                                style="opacity: 0.55; margin-right: 3px"
+                              ></i>
+                              <span
+                                style="margin: 0 3px"
+                                th:text="${content.getTimeString()}"
+                                >99</span
+                              >
+                            </div>
                           </div>
-                          <div class="d-flex flex-row align-items-center mx-2">
-                            <i class="fas fa-history h-100" style="opacity: 0.55; margin-right: 3px"></i>
-                            <span style="margin: 0 3px" th:text="${object.timeString}">99</span>
-                          </div>
-                        </div>
 
-                        <div>
-                          <button class="btn btn-sm btn-primary m-0 py-0">
-                            Assign
-                            <i class="fas fa-caret-down"></i>
-                          </button>
+                          <div>
+                            <button class="btn btn-sm btn-primary m-0 py-0">
+                              Assign
+                              <i class="fas fa-caret-down"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </a>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -422,70 +462,87 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
 
-  <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
+    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
 
-  <script th:inline="javascript">
-    /*<![CDATA[*/
-    const sort = /*[[${page.sort}]]*/ "";
-    const pageSize = /*[[${page.size}]]*/ 1;
-    const page = /*[[${page.page}]]*/ 1;
-    const search = /*[[${page.search}]]*/ "";
-    $(document).ready(function () {
-      $(".sort-type").each(function () {
-        let sortType = $(this).find("span").text();
-        $(this).on("click", function () {
-          console.log(sortType);
-          location.href = `/library?search=${search}&sort=${sortType}&page=${page}&size=${pageSize}`;
+    <script th:inline="javascript" th:fragment="js-pagination">
+      /*<![CDATA[*/
+      const path = /*[[${path}]]*/ "";
+      const params = {
+        search: /*[[${params.search}]]*/ "",
+        sort: /*[[${params.sort}]]*/ "",
+        page: /*[[${params.page}]]*/ 1,
+        size: /*[[${params.size}]]*/ 1,
+
+        getUrl: function () {
+          const params = Object.keys(this)
+            .filter(
+              (key) => typeof this[key] !== "function" && this[key] !== ""
+            )
+            .map((key) => `${key}=${this[key]}`);
+          console.log(params);
+          const paramStr = params.join("&");
+          return `${path}?${paramStr}`;
+        },
+      };
+
+      $(document).ready(function () {
+        $(".sort-type").each(function () {
+          $(this).on("click", function () {
+            params.sort = $(this).find("span").text();
+            params.page = 1;
+            location.href = params.getUrl();
+          });
+        });
+
+        $(".page-index").each(function () {
+          if (params.page <= 9) {
+            $(this).css("padding", "5px 13px");
+          } else if (params.page > 9) {
+            $(this).css("padding", "5px 8px");
+          }
+          $(this).on("click", function () {
+            params.page = $(this).text();
+            location.href = params.getUrl();
+          });
+        });
+
+        $("#navSearchInput").on("keydown", function (event) {
+          if (event.keyCode === 13) {
+            searchLibraryItem();
+          }
         });
       });
 
-      $(".page-index").each(function () {
-        const pageIndex = $(this).text();
-        if (pageIndex <= 9) {
-          $(this).css("padding", "5px 13px");
-        } else if (pageIndex > 9) {
-          $(this).css("padding", "5px 8px");
-        }
-        $(this).on("click", function () {
-          location.href = `/library?search=${search}&sort=${sort}&page=${pageIndex}&size=${pageSize}`;
-        });
-      });
-    });
+      function prevPage() {
+        params.page = params.page - 1;
+        location.href = params.getUrl();
+      }
 
-    function prevPage() {
-      location.href = `/library?search=${search}&sort=${sort}&page=${page - 1
-        }&size=${pageSize}`;
-    }
+      function nextPage() {
+        params.page = params.page + 1;
+        location.href = params.getUrl();
+      }
 
-    function nextPage() {
-      location.href = `/library?search=${search}&sort=${sort}&page=${page + 1
-        }&size=${pageSize}`;
-    }
-
-    $(document).ready(function () {
-      $("#navSearchInput").on("keydown", function (event) {
-        if (event.keyCode === 13) {
-          searchLibraryItem();
-        }
-      });
-    });
-
-    function searchLibraryItem() {
-      let term = $("#navSearchInput").val();
-      location.href = `/library?search=${term}&sort=${sort}&page=${page}&size=${pageSize}`;
-    }
-    /*]]>*/
-  </script>
-</body>
-
+      function searchLibraryItem() {
+        params.page = 1;
+        params.search = $("#navSearchInput").val();
+        location.href = params.getUrl();
+      }
+      /*]]>*/
+    </script>
+  </body>
 </html>
