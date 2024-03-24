@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -69,8 +70,11 @@ public class Quiz {
   private User creator;
 
   @ManyToMany(cascade = CascadeType.ALL)
-  @JoinTable(name = "_quiz_question", joinColumns = @JoinColumn(name = "quiz_id"), inverseJoinColumns = @JoinColumn(name = "quest_id"))
-  List<Question> questions;
+  @JoinTable(name = "_question_creating", joinColumns = @JoinColumn(name = "quiz_id"), inverseJoinColumns = @JoinColumn(name = "quest_id"))
+  private List<Question> questions;
+
+  @OneToMany(mappedBy = "quiz")
+  private List<QuizTaking> quizTakingList;
 
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp

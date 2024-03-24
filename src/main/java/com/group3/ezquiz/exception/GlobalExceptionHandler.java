@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public String handleResourceNotFoundException(
-          ResourceNotFoundException exception, Model model) {
+      ResourceNotFoundException exception, Model model) {
     model.addAttribute("message", exception.getMessage());
     return "error/404";
   }
@@ -40,8 +40,8 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(BindException.class)
   public ResponseEntity<ErrorDetails> handleBindException(
-          BindException exception,
-          WebRequest webRequest) {
+      BindException exception,
+      WebRequest webRequest) {
     Map<String, String> errors = new HashMap<>();
     exception.getBindingResult().getAllErrors().forEach((error) -> {
       String fieldName = ((FieldError) error).getField() + "Error";
@@ -50,68 +50,79 @@ public class GlobalExceptionHandler {
     });
 
     return ResponseEntity.badRequest().body(
-            ErrorDetails.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("An error occured!")
-                    .details(webRequest.getDescription(false))
-                    .errors(errors)
-                    .build());
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("An error occured!")
+            .details(webRequest.getDescription(false))
+            .errors(errors)
+            .build());
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(
-          DataIntegrityViolationException ex,
-          WebRequest webRequest) {
+      DataIntegrityViolationException ex,
+      WebRequest webRequest) {
 
     return new ResponseEntity<>(
-            ErrorDetails.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("Data Integrity Violation: " + ex.getMessage())
-                    .details(webRequest.getDescription(false))
-                    .build(),
-            HttpStatus.BAD_REQUEST);
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Data Integrity Violation: " + ex.getMessage())
+            .details(webRequest.getDescription(false))
+            .build(),
+        HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(InvalidEmailException.class)
   public ResponseEntity<ErrorDetails> handleInvalidEmailException(
-          InvalidEmailException ex,
-          WebRequest webRequest) {
+      InvalidEmailException ex,
+      WebRequest webRequest) {
     return new ResponseEntity<>(
-            ErrorDetails.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("Invalid Email Exception.")
-                    .details(webRequest.getDescription(false))
-                    .errors(Map.of("emailError", ex.getMessage()))
-                    .build(),
-            HttpStatus.BAD_REQUEST);
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Invalid Email Exception.")
+            .details(webRequest.getDescription(false))
+            .errors(Map.of("emailError", ex.getMessage()))
+            .build(),
+        HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(InvalidQuestionException.class)
   public ResponseEntity<ErrorDetails> handleInvalidQuestionException(
-          InvalidQuestionException ex,
-          WebRequest webRequest) {
+      InvalidQuestionException ex,
+      WebRequest webRequest) {
     return new ResponseEntity<>(
-            ErrorDetails.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("Invalid Question Exception.")
-                    .details(webRequest.getDescription(false))
-                    .errors(Map.of("questionError", ex.getMessage()))
-                    .build(),
-            HttpStatus.BAD_REQUEST);
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Invalid Question Exception.")
+            .details(webRequest.getDescription(false))
+            .errors(Map.of("questionError", ex.getMessage()))
+            .build(),
+        HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(InvalidClassroomException.class)
   public ResponseEntity<ErrorDetails> handleInvalidClassroomException(
-          InvalidClassroomException ex,
-          WebRequest webRequest) {
+      InvalidClassroomException ex,
+      WebRequest webRequest) {
     return new ResponseEntity<>(
-            ErrorDetails.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("Invalid Classroom Exception.")
-                    .details(webRequest.getDescription(false))
-                    .errors(Map.of("nameError", ex.getMessage()))
-                    .build(),
-            HttpStatus.BAD_REQUEST);
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message("Invalid Classroom Exception.")
+            .details(webRequest.getDescription(false))
+            .errors(Map.of("nameError", ex.getMessage()))
+            .build(),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(InvalidAttemptException.class)
+  public ResponseEntity<?> handleInvalidAttemptException(
+      InvalidAttemptException ex) {
+    return new ResponseEntity<>(
+        ErrorDetails.builder()
+            .timestamp(LocalDateTime.now())
+            .message(ex.getMessage())
+            .build(),
+        HttpStatus.CONFLICT);
   }
 
 }

@@ -16,6 +16,8 @@ import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.payload.quiz.QuizResult;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -33,9 +35,11 @@ public interface IQuizService {
 
   ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
 
-  QuizToLearner getQuizByLearnerForTaking(UUID id);
+  QuizToLearner getQuizByLearnerForTaking(HttpServletRequest request, UUID id);
 
-  ResponseEntity<?> handleAnswersChecking(UUID quizId, Long questId, String questIndex, Map<String, String> params);
+  ResponseEntity<?> handleAnswersChecking(HttpServletRequest request, UUID quizId, Long questId, Long questId2,
+      String questIndex,
+      Map<String, String> params);
 
   List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
 
@@ -46,5 +50,11 @@ public interface IQuizService {
   Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
 
   void deleteQuiz(UUID id);
+
+  ResponseEntity<?> handleAnswerSelected(HttpServletRequest request, UUID quizId, Long answerId, Long answerId2);
+
+  void handleFinishQuizAttempt(HttpServletRequest request, UUID quizId, Long attemptId);
+
+  QuizResult findLastFinishAttemptResult(HttpServletRequest request, UUID quizId);
 
 }

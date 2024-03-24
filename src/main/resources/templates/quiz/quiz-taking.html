@@ -80,13 +80,24 @@
         font-weight: 600 !important;
         border: solid 2px #fce77d;
       }
+
+      .alert {
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .alert.hide {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
     </style>
   </head>
 
   <body class="bg-light p-3">
     <header>
       <nav
-        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top shadow-sm"
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white fixed-top"
         id="header-nav"
         role="navigation"
       >
@@ -108,7 +119,23 @@
                     <a class="nav-link" href="#about">About</a>
                   </li> -->
             </ul>
-            <button class="btn btn-sm btn-primary px-2">
+            <form
+              id="submitAttempt"
+              th:action="@{/quiz/{id}/finish(id=${quiz.id})}"
+              method="post"
+            >
+              <input
+                type="hidden"
+                name="attemptId"
+                th:value="${quiz.attempt.id}"
+              />
+            </form>
+            <button
+              type="submit"
+              form="submitAttempt"
+              class="btn btn-sm btn-purple px-2"
+              style="border-bottom: #8854c0 3px solid"
+            >
               <i class="fas fa-save me-1"></i> FINISH
             </button>
           </div>
@@ -117,18 +144,44 @@
     </header>
 
     <div class="container d-flex flex-column gap-2">
-      <div class="flex-fill p-2 bg-white rounded-2 custom-box-shadow">
+      <div class="flex-fill p-2 bg-white rounded-2 shadow">
         <div
           id="initialContent"
-          class="h-100 d-flex align-items-center justify-content-center"
+          class="h-100 d-flex flex-column align-items-center justify-content-center pb-3"
         >
+          <table class="table" style="max-width: 456px">
+            <tr>
+              <th>Title:</th>
+              <td th:text="${quiz.title}">Quiz Title</td>
+            </tr>
+            <tr>
+              <th>Number of questions:</th>
+              <td th:text="${quiz.questions.size()}">15</td>
+            </tr>
+            <tr th:if="${quiz.attempt.currentAttempt > 1}">
+              <th>Last Attempt:</th>
+              <td th:text="${quiz.attempt.lastTaking}">3 hours ago</td>
+            </tr>
+            <tr th:if="${quiz.attempt.currentAttempt > 1}">
+              <th>Best Result:</th>
+              <td th:text="${quiz.attempt.bestResult()}">69/100</td>
+            </tr>
+            <tr>
+              <th>Attempt:</th>
+              <td th:text="${quiz.attempt.currentAttempt}">2</td>
+            </tr>
+            <!-- <tr>
+              <th>Time limit:</th>
+              <td>15 minutes</td>
+            </tr> -->
+          </table>
           <button class="btn btn-sm btn-primary p-2 px-5" onclick="startQuiz()">
             Start Quiz
           </button>
         </div>
         <div
           id="carouselControlsNoTouching"
-          class="carousel slide"
+          class="carousel slide carousel-fade"
           data-bs-touch="false"
           data-bs-interval="false"
         >
@@ -136,10 +189,16 @@
             <form
               th:each="question, questIter : ${quiz.questions}"
               th:id="'question' + ${questIter.index + 1}"
-              th:action="@{/quiz/{id}/check-answer(id=${quiz.id})}"
+              th:action="@{/quiz/{id}(id=${quiz.id})}"
               id="question1"
               class="carousel-item"
             >
+              <input
+                type="hidden"
+                id="attemptId"
+                name="attemptId"
+                th:value="${quiz.attempt.id}"
+              />
               <input
                 type="hidden"
                 name="questIndex"
@@ -147,14 +206,14 @@
               />
               <input type="hidden" name="questId" th:value="${question.id}" />
               <div class="h-100 d-flex flex-column">
-                <div class="top flex-fill bg-light mb-1 rounded-3">
+                <div class="top flex-fill bg-light mb-1 rounded-3 pb-1">
                   <p class="m-0 text-center" th:text="${question.text}">
                     Lorem ipsum d
                   </p>
                 </div>
 
                 <div class="bottom px-1">
-                  <div class="h6 mx-1">
+                  <div class="h6 m-0 mx-1">
                     Select all correct answers (<span
                       class="number-of-correct"
                       th:text="${question.numberOfCorrect}"
@@ -197,6 +256,12 @@
                 </div>
               </div>
             </form>
+            <div
+              class="carousel-item d-flex flex-column h-100 justify-content-center align-items-center"
+            >
+              <div class="h3">Congratulation!</div>
+              <div>You have finished all the questions in this Quiz!</div>
+            </div>
           </div>
         </div>
       </div>
@@ -208,10 +273,48 @@
           data-bs-target="#carouselControlsNoTouching"
           data-bs-slide="next"
           disabled
+          onclick="nextQuestion(this)"
         >
           Next
         </button>
       </div>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+      <symbol id="check-circle-fill" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+      </symbol>
+    </svg>
+
+    <div
+      class="alert alert-success d-flex align-items-center d-none"
+      role="alert"
+    >
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>Congratulation! Your answers are correct!</div>
+    </div>
+
+    <div
+      class="alert alert-danger d-flex align-items-center d-none"
+      role="alert"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="23"
+        height="23"
+        fill="currentColor"
+        class="bi bi-x-circle-fill me-2"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"
+        />
+      </svg>
+      <div>Sorry. Your answers are incorrect!</div>
     </div>
 
     <script
@@ -227,8 +330,6 @@
       crossorigin="anonymous"
     ></script>
 
-    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
-
     <script>
       function startQuiz() {
         console.log($("#question1").find("input[name = 'answer1']").parent());
@@ -243,31 +344,21 @@
           .classList.remove("d-none");
       }
 
-      function handleAnswerClick(button) {
-        console.log("Selected an answer...");
-        $(button).find("input").val("true");
+      function nextQuestion(btn) {
+        $(btn).prop("disabled", true);
+      }
 
-        $(button)
-          .removeClass("btn bg-light unselected")
-          .addClass("bg-primary selected");
+      async function handleAnswerClick(button) {
+        const form = $("#question" + $(button).find(".questIndex").text());
 
-        $(button).attr("disabled", true);
-
-        const formId = "#question" + $(button).find(".questIndex").text();
-        console.log(formId);
-
-        let ansNumRemain = $(formId).find(".number-of-correct").text();
-        ansNumRemain--;
-        $(formId).find(".number-of-correct").text(ansNumRemain);
-
+        const ansNumRemain = await selectAnswer(button, form);
         if (ansNumRemain === 0) {
-          const form = $(formId);
           form.find(".unselected").each(function () {
             $(this).removeAttr("onclick").removeClass("btn");
           });
 
           $.ajax({
-            url: form.attr("action"),
+            url: form.attr("action") + "/check-answer",
             method: "post",
             data: form.serialize(),
             success: (resp) => {
@@ -277,9 +368,12 @@
                 .each(function () {
                   $(this).addClass("correct");
                 });
+              $(".alert.alert-success").each(function () {
+                $(this).removeClass("d-none");
+              });
             },
             error: (xhr, status, error) => {
-              if (xhr.status == 400) {
+              if (xhr.status == 422) {
                 console.log("incorrect...");
                 const question = $("#" + xhr.responseJSON.questIndex);
                 Object.entries(xhr.responseJSON.answers).forEach(
@@ -292,14 +386,59 @@
                     }
                   }
                 );
+                $(".alert.alert-danger").each(function () {
+                  $(this).removeClass("d-none");
+                });
               } else {
                 console.error("an error occured " + error);
               }
             },
           });
-
-          $("#nextQuestionButton").removeAttr("disabled");
+          const alert = setTimeout(function () {
+            $(".alert").each(function () {
+              $(this).addClass("hide");
+            });
+          }, 2345);
+          $(".alert").each(function () {
+            $(this).addClass("d-none");
+            $(this).removeClass("hide");
+          });
+          setTimeout(function () {
+            $("#nextQuestionButton").removeAttr("disabled");
+          }, 1999);
         }
+      }
+
+      function selectAnswer(button, form) {
+        console.log("Selected an answer...");
+        $(button).find("input").val("true");
+
+        $(button)
+          .removeClass("btn bg-light unselected")
+          .addClass("bg-primary selected");
+
+        $(button).attr("disabled", true);
+
+        const formData = new FormData();
+        formData.append("attemptId", $("#attemptId").val());
+        formData.append("answerId", $(button).find("input").attr("name"));
+        return fetch(form.attr("action") + "/select-answer", {
+          method: "post",
+          body: formData,
+        })
+          .then((resp) => {
+            if (resp.ok) {
+              return resp.json();
+            } else if (resp.status == 409) {
+              location.href = "/error";
+            }
+          })
+          .then((responseJSON) => {
+            return responseJSON.ansNumRemain;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     </script>
   </body>

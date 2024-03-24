@@ -7,8 +7,8 @@ import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.payload.quiz.QuizResult;
 import com.group3.ezquiz.service.IQuizService;
-import com.group3.ezquiz.service.impl.QuestionServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindException;
@@ -34,15 +34,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/quiz")
 public class QuizController {
-
-  private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
   private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
@@ -116,17 +112,15 @@ public class QuizController {
 
   @PostMapping("{id}/import")
   public String importData(HttpServletRequest request,
-      @PathVariable UUID id, @ModelAttribute ExcelFileDto fileDto, Model model)
-      throws BindException {
+      @PathVariable UUID id,
+      @ModelAttribute ExcelFileDto fileDto,
+      Model model) throws BindException {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     List<Question> errorQuestions = quizService.importQuizDataFromExcel(request,
         fileDto.getExcelFile(), id);
     model.addAttribute("quiz", quiz);
     if (errorQuestions.size() > 0) {
       model.addAttribute("errorQuestions", errorQuestions);
-      for (Question errorQuestion : errorQuestions) {
-        log.info(errorQuestion.getText());
-      }
     }
     return "quiz/quiz-editing";
   }
@@ -195,25 +189,64 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @GetMapping("/{id}/play")
   public String takeQuizByLearner(
+      HttpServletRequest request,
       @PathVariable UUID id,
       Model model) {
-    QuizToLearner toLearner = quizService.getQuizByLearnerForTaking(id);
+
+    QuizToLearner toLearner = quizService.getQuizByLearnerForTaking(request, id);
     model.addAttribute("quiz", toLearner);
     return "quiz/quiz-taking";
   }
 
   @PreAuthorize(LEARNER_AUTHORITY)
+  @PostMapping("/{quizId}/select-answer")
+  public ResponseEntity<?> checkQuestionAnswers(
+      HttpServletRequest request,
+      @PathVariable UUID quizId,
+      @RequestParam Long attemptId,
+      @RequestParam Long answerId) {
+
+    return quizService.handleAnswerSelected(request, quizId, attemptId, answerId);
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
   @PostMapping("/{quizId}/check-answer")
   public ResponseEntity<?> checkQuestionAnswers(
+      HttpServletRequest request,
       @PathVariable UUID quizId,
+      @RequestParam Long attemptId,
       @RequestParam Long questId,
       @RequestParam String questIndex,
       @RequestParam Map<String, String> params) {
 
+    params.remove("attemptId");
     params.remove("questId");
     params.remove("questIndex");
 
-    return quizService.handleAnswersChecking(quizId, questId, questIndex, params);
+    return quizService.handleAnswersChecking(request, quizId, attemptId, questId, questIndex, params);
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @PostMapping("/{quizId}/finish")
+  public String finishQuizAttempt(
+      HttpServletRequest request,
+      @PathVariable UUID quizId,
+      @RequestParam Long attemptId) {
+
+    quizService.handleFinishQuizAttempt(request, quizId, attemptId);
+    return "redirect:/quiz/" + quizId + "/result";
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @GetMapping("/{quizId}/result")
+  public String viewQuizResultByLearner(
+      HttpServletRequest request,
+      @PathVariable UUID quizId, Model model) {
+
+    QuizResult quiz = quizService.findLastFinishAttemptResult(request, quizId);
+
+    model.addAttribute("quiz", quiz);
+    return "quiz/quiz-result";
   }
 
 }
