@@ -81,6 +81,7 @@
               </button>
             </div>
           </form>
+          <a th:href="@{/admin/create}">Add new user</a>
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -105,14 +106,14 @@
                     th:onclick="'confirmChangeStatus(' + ${user.id} + ')'"
                   ></button>
                 </td>
-<!--                <td>-->
+                <td>
 <!--                  <a th:href="@{/admin/edit/{id}(id=${user.id})}" title="Edit">-->
 <!--                    <i class="fa fa-edit edit-icon" style="color: #f6bb42"></i>-->
 <!--                  </a>-->
-<!--                  &lt;!&ndash;                  <a th:href="@{/delete/{userId}(userId=${user.id})}" title="Delete">&ndash;&gt;-->
-<!--                  &lt;!&ndash;                    <i class="fa fa-trash delete-icon"></i>&ndash;&gt;-->
-<!--                  &lt;!&ndash;                  </a>&ndash;&gt;-->
-<!--                  &lt;!&ndash;/*@thymesVar id="id" type=""*/&ndash;&gt;-->
+                  <!--                  <a th:href="@{/delete/{userId}(userId=${user.id})}" title="Delete">-->
+                  <!--                    <i class="fa fa-trash delete-icon"></i>-->
+                  <!--                  </a>-->
+                  <!--/*@thymesVar id="id" type=""*/-->
 <!--                  <a-->
 <!--                    href="#"-->
 <!--                    th:onclick="'confirmDelete(' + ${user.id} + ')'"-->
@@ -123,7 +124,7 @@
 <!--                      style="color: #f6bb42"-->
 <!--                    ></i>-->
 <!--                  </a>-->
-<!--                </td>-->
+                </td>
               </tr>
             </tbody>
           </table>

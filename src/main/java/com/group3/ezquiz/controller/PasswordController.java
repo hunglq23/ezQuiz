@@ -89,24 +89,47 @@ public class PasswordController {
     return "password-change";
   }
 
-  @PostMapping("/update-password")
-  public String updatePass(HttpServletRequest http, Model model,
+  @PostMapping("/update-profile")
+  public String updateProfile(HttpServletRequest http, Model model,
                            @Valid @ModelAttribute("fullName") String fullName,
                            @Valid @ModelAttribute("note") String note,
-      @Valid @ModelAttribute("oldPass") String oldPass,
-                           @Valid   @ModelAttribute("newPass") String newPass,
-      @Valid @ModelAttribute("reNewPass") String reNewPass, RedirectAttributes redirectAttributes, BindingResult result) {
+                           @Valid @ModelAttribute("phone") String phone,
+//      @Valid @ModelAttribute("oldPass") String oldPass,
+//                           @Valid   @ModelAttribute("newPass") String newPass,
+//      @Valid @ModelAttribute("reNewPass") String reNewPass,
+                           RedirectAttributes redirectAttributes, BindingResult result) {
     User userRequesting = userService.getUserRequesting(http);
     userRequesting.setFullName(fullName);
     userRequesting.setNote(note);
+    userRequesting.setPhone(phone);
     userService.save(userRequesting);
-    boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
+//    boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
     model.addAttribute("user", userRequesting);
     String successMessage = "Updated information successfully! Check your password again!";
+//    if (isPasswordCorrect && newPass.equals(reNewPass)) {
+//      userService.updatePassword(userRequesting.getEmail(), newPass);
+//      model.addAttribute("message", "success");
+//      successMessage = "Updated successfully!";
+//    }
+    redirectAttributes.addFlashAttribute("successMessage", successMessage);
+    return "redirect:/change-password";
+  }
+
+  @PostMapping("/update-password")
+  public String updatePass(HttpServletRequest http, Model model,
+      @Valid @ModelAttribute("oldPassModal") String oldPass,
+                           @Valid   @ModelAttribute("newPassModal") String newPass,
+      @Valid @ModelAttribute("reNewPassModal") String reNewPass,
+                              RedirectAttributes redirectAttributes, BindingResult result) {
+    User userRequesting = userService.getUserRequesting(http);
+
+    boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
+    model.addAttribute("user", userRequesting);
+    String successMessage = "Updated password wrong!";
     if (isPasswordCorrect && newPass.equals(reNewPass)) {
       userService.updatePassword(userRequesting.getEmail(), newPass);
       model.addAttribute("message", "success");
-      successMessage = "Updated successfully!";
+      successMessage = "Updated password successfully!";
     }
     redirectAttributes.addFlashAttribute("successMessage", successMessage);
     return "redirect:/change-password";
