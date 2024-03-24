@@ -33,7 +33,7 @@ public class AdminController {
       @RequestParam(required = false, defaultValue = "", name = "email") String email,
       @RequestParam(required = false, defaultValue = "all", name = "status") String statusReq) {
     Boolean status = Objects.equals(statusReq, "all") ? null : Boolean.valueOf(statusReq);
-    Page<User> userList = userService.getListUser(http, email, status, PageRequest.of(page, 2));
+    Page<User> userList = userService.getListUser(http, email.trim(), status, PageRequest.of(page, 2));
     model.addAttribute("userList", userList);
     model.addAttribute("items", userList.getContent());
     model.addAttribute("currentPage", page);

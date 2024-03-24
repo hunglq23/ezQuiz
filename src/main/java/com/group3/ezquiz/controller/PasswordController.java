@@ -105,7 +105,7 @@ public class PasswordController {
     userService.save(userRequesting);
 //    boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
     model.addAttribute("user", userRequesting);
-    String successMessage = "Updated information successfully! Check your password again!";
+    String successMessage = "Updated information successfully!";
 //    if (isPasswordCorrect && newPass.equals(reNewPass)) {
 //      userService.updatePassword(userRequesting.getEmail(), newPass);
 //      model.addAttribute("message", "success");

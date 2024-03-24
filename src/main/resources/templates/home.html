@@ -353,7 +353,7 @@
             </h6>
             <a href="#" class="btn btn-sm btn-purple">See more</a>
           </div>
-          <div class="row row-cols-3 g-1 g-md-2 g-lg-4">
+          <div class="row row-cols-4 g-1 g-md-2 g-lg-4">
             <!-- Card 1 -->
             <div th:each="quiz : ${quizList}" class="col">
 <!--            <div class="col">-->
@@ -375,7 +375,7 @@
 
                   </p>
                 </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3" th:text="${quiz.questions.size}">
+                <div class="card-footer d-flex bg-white w-100 p-0 px-3" th:text="${quiz.itemNumber}">
 
                 </div>
               </button>

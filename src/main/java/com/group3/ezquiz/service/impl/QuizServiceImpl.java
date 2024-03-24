@@ -591,14 +591,10 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public List<Quiz> getListQuizUUID(HttpServletRequest request) {
+  public List<QuizDto> getListQuizUUID(HttpServletRequest request) {
     List<Quiz> data = quizRepo.findQuizUUID();
-    return data;
+    return data.stream().map(this::mapToQuizDto).collect(Collectors.toList());
+
   }
 
-    @Override
-    public List<QuizUUID> getListQuizUUID(HttpServletRequest request) {
-        List<QuizUUID> data = quizUUIDRepo.findQuizUUID();
-        return data;
-    }
 }

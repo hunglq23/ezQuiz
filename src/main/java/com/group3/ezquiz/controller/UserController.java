@@ -1,11 +1,14 @@
 package com.group3.ezquiz.controller;
 
+import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.LibraryResponse;
 
 import java.util.List;
 
+import com.group3.ezquiz.payload.quiz.QuizDto;
+import com.group3.ezquiz.service.impl.QuizServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,12 +30,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
   private final IUserService userService;
+  private final QuizServiceImpl quizService;
 
   @GetMapping("/home")
   public String getHomePage(HttpServletRequest http, Model model) {
     User userRequesting = userService.getUserRequesting(http);
     model.addAttribute("user", userRequesting);
-    List<QuizUUID> quizList = quizService.getListQuizUUID(http);
+    List<QuizDto> quizList = quizService.getListQuizUUID(http);
 //    quizList.getContent()
     model.addAttribute("quizList", quizList);
 

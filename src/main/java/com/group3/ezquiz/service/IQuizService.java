@@ -44,7 +44,7 @@ public interface IQuizService {
   List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
 
   ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
-        List<Quiz> getListQuizUUID(HttpServletRequest request);
+        List<QuizDto> getListQuizUUID(HttpServletRequest request);
         List<QuizDto> searchQuizUUID(HttpServletRequest request, String search);
 
   Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
@@ -57,5 +57,4 @@ public interface IQuizService {
 
   QuizResult findLastFinishAttemptResult(HttpServletRequest request, UUID quizId);
 
-    List<QuizUUID> getListQuizUUID(HttpServletRequest request);
 }
