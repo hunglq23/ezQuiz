@@ -189,14 +189,14 @@
                             <strong>Start Date:</strong> <span th:text="${asignedQuiz.startDate}">Start Date</span><br>
                             <strong>End Date:</strong> <span th:text="${asignedQuiz.dueDate}">End Date</span>
                         </p>
-                        <a sec:authorize="hasRole('ROLE_TEACHER')"
+                        <!-- <a sec:authorize="hasRole('ROLE_TEACHER')"
                             th:href="@{/quiz/assigned/{id}/detail(id=${asignedQuiz.id})}" class="btn btn-primary">View
-                            Detail</a>
+                            Detail</a> -->
                         <a sec:authorize="hasRole('ROLE_LEARNER')"
                             th:href="@{/quiz/{id}/play(id=${asignedQuiz.quiz.id})}" class="btn btn-success">Do
                             Quiz</a>
-                        <a sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/quiz/remove/{id}(id=${asignedQuiz.id})}"
-                            class="btn btn-danger">Remove</a>
+                        <!-- <a sec:authorize="hasRole('ROLE_TEACHER')" th:href="@{/quiz/remove/{id}(id=${asignedQuiz.id})}"
+                            class="btn btn-danger">Remove</a> -->
                     </div>
                 </div>
 

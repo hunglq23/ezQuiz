@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
@@ -59,8 +60,12 @@ public interface IQuizService {
 
   void deleteQuestionById(UUID id, Long questionId);
 
-  void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
+  void assignQuiz(HttpServletRequest request, UUID quizId, Long id, AssignedQuizDto assignedQuizDTO)
       throws Exception;
+
+  List<QuizAssigning> findAssignedQuizForTeacher(HttpServletRequest request);
+
+  List<QuizAssigning> findAssignedQuizForLearner(HttpServletRequest request);
 
   ResponseEntity<?> handleAnswerSelected(HttpServletRequest request, UUID quizId, Long answerId, Long answerId2);
 

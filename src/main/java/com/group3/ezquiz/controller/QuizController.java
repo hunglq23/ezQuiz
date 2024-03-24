@@ -14,8 +14,6 @@ import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
-import com.group3.ezquiz.service.impl.QuestionServiceImpl;
-import com.group3.ezquiz.service.impl.QuizAssigningService;
 import com.group3.ezquiz.payload.quiz.QuizResult;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +56,6 @@ public class QuizController {
   private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
 
   private final IQuizService quizService;
-  private final QuizAssigningService quizAssignService;
   private final IUserService userService;
   private final IClassroomService classroomService;
 
@@ -274,17 +270,13 @@ public class QuizController {
   @PostMapping("/{id}/assign")
   public String assignQuiz(HttpServletRequest request,
       @PathVariable("id") UUID quizId,
+      @ModelAttribute("selectedClassroom") Long selectedClassroon,
       @ModelAttribute("assignedQuizDto") AssignedQuizDto assignedQuizDTO,
       RedirectAttributes redirectAttributes) {
-
     try {
-      quizService.assignQuiz(request, quizId, assignedQuizDTO);
-      redirectAttributes.addFlashAttribute("successMessage", "Homework assigned successfully");
+      quizService.assignQuiz(request, quizId, selectedClassroon, assignedQuizDTO);
     } catch (Exception e) {
-      String errorMessage = "Failed to assign homework: " + e.getMessage();
-      redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
     }
-
     return "redirect:/quiz/" + quizId + "/edit";
   }
 
@@ -294,9 +286,9 @@ public class QuizController {
     List<QuizAssigning> assignedQuizList = new ArrayList<>();
 
     if (user.getRole().toString().equalsIgnoreCase("TEACHER")) {
-      assignedQuizList = quizAssignService.getAssignedQuizForTeacher(user.getId());
+      assignedQuizList = quizService.findAssignedQuizForTeacher(request);
     } else if (user.getRole().toString().equalsIgnoreCase("LEARNER")) {
-      assignedQuizList = quizAssignService.getAssignedQuizzesForLearner(user.getId());
+      assignedQuizList = quizService.findAssignedQuizForLearner(request);
     }
 
     model.addAttribute("assignedQuizList", assignedQuizList);
@@ -304,22 +296,25 @@ public class QuizController {
     return "assign-quiz/assigned-quiz-list";
   }
 
-  @PreAuthorize(TEACHER_AUTHORITY)
-  @GetMapping("assigned/{id}/detail")
-  public String getHomeworkDetail(HttpServletRequest request, @PathVariable Long id, Model model) {
-    User teacher = userService.getUserRequesting(request);
-    QuizAssigning assignedQuiz = quizAssignService.findById(id);
-    model.addAttribute("user", teacher);
-    model.addAttribute("assignedQuiz", assignedQuiz);
-    return "assign-quiz/assigned-quiz-detail";
-  }
+  // @PreAuthorize(TEACHER_AUTHORITY)
+  // @GetMapping("assigned/{id}/detail")
+  // public String getHomeworkDetail(HttpServletRequest request, @PathVariable
+  // Long id, Model model) {
+  // User teacher = userService.getUserRequesting(request);
+  // QuizAssigning assignedQuiz = quizAssignService.findById(id);
+  // model.addAttribute("user", teacher);
+  // model.addAttribute("assignedQuiz", assignedQuiz);
+  // return "assign-quiz/assigned-quiz-detail";
+  // }
 
-  @GetMapping("/remove/{id}")
-  public String removeAssignedQuiz(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-    quizAssignService.removeAssignedQuiz(id);
-    redirectAttributes.addFlashAttribute("successMessage", "Assigned quiz removed successfully");
-    return "redirect:/quiz/assigned-quizzes";
-  }
+  // @GetMapping("/remove/{id}")
+  // public String removeAssignedQuiz(@PathVariable("id") Long id,
+  // RedirectAttributes redirectAttributes) {
+  // quizAssignService.removeAssignedQuiz(id);
+  // redirectAttributes.addFlashAttribute("successMessage", "Assigned quiz removed
+  // successfully");
+  // return "redirect:/quiz/assigned-quizzes";
+  // }
 
   @GetMapping("/{id}/edit-question")
   public String editQuestion(

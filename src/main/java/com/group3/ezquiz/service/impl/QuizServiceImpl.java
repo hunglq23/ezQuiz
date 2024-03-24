@@ -12,6 +12,7 @@ import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.payload.quiz.QuizResult;
 import com.group3.ezquiz.utils.Utility;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,10 +71,12 @@ public class QuizServiceImpl implements IQuizService {
 
   private final QuizRepo quizRepo;
   private final IUserService userService;
-  private final QuizAssigningService quizAssignService;
-  private final IClassroomService classroomService;
   private final IQuestionService questionService;
   private final IAttemptService attemptService;
+
+  @Autowired
+  @Lazy
+  private IClassroomService classroomService;
 
   @Override
   public Quiz getDraftQuiz(HttpServletRequest request) {
@@ -604,41 +608,21 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
-
+  public void assignQuiz(HttpServletRequest request, UUID quizId, Long id, AssignedQuizDto assignedQuizDTO)
       throws Exception {
-    Quiz quiz = getQuizByRequestAndID(request, quizId);
-    if (quiz == null) {
-      log.error("Không tìm thấy quiz với ID: {}", quizId);
-      throw new Exception("Quiz not found with ID: " + quizId);
-    }
+    classroomService.addAssignQuiz(request, quizId, id, assignedQuizDTO);
+  }
 
-    Long classroomId = assignedQuizDTO.getSelectedClassroom();
-    Classroom selectedClassroom = classroomService.getClassroomByRequestAndId(request, classroomId);
-    if (selectedClassroom == null) {
-      log.error("Không tìm thấy classroom với ID: {}", classroomId);
-      throw new Exception("Classroom not found with ID: " + classroomId);
-    }
+  @Override
+  public List<QuizAssigning> findAssignedQuizForTeacher(HttpServletRequest request) {
+    List<QuizAssigning> assignings = classroomService.findAssignedQuizForTeacher(request);
+    return assignings;
+  }
 
-    if (assignedQuizDTO.isShuffleQuestions()) {
-      Collections.shuffle(quiz.getQuestions());
-      if (assignedQuizDTO.isShuffleAnswers()) {
-        quiz.getQuestions().forEach(question -> Collections.shuffle(question.getAnswers()));
-      }
-    }
-
-    QuizAssigning quizAssigning = new QuizAssigning();
-    quizAssigning.setQuiz(quiz); // Gán Quiz
-    quizAssigning.setMaxAttempt(assignedQuizDTO.getMaxAttempt()); // Gán Classroom
-    quizAssigning.setDurationInMins(assignedQuizDTO.getDurationInMins()); // Gán Classroom
-    quizAssigning.setClassroom(selectedClassroom); // Gán Classroom
-    quizAssigning.setStartDate(assignedQuizDTO.getStartDate());
-    quizAssigning.setDueDate(assignedQuizDTO.getDueDate());
-    quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions());
-    quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers());
-    quizAssigning.setNote(assignedQuizDTO.getNote()); // Gán note hoặc thông tin khác
-
-    quizAssignService.create(quizAssigning);
+  @Override
+  public List<QuizAssigning> findAssignedQuizForLearner(HttpServletRequest request) {
+    List<QuizAssigning> assignings = classroomService.findAssignedQuizForLearner(request);
+    return assignings;
   }
 
 }

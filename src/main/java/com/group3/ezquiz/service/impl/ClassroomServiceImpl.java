@@ -12,9 +12,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,12 +30,16 @@ import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.ClassJoining;
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.ClassroomDetailDto;
 import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.service.IClassroomService;
+import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +52,10 @@ public class ClassroomServiceImpl implements IClassroomService {
   private final Integer MAX_MEMBER_PER_CLASS = 30;
   private final ClassroomRepo classroomRepo;
   private final IUserService userService;
+
+  @Autowired
+  @Lazy
+  private IQuizService quizService;
 
   @Override
   public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDetailDto dto) {
@@ -270,6 +281,60 @@ public class ClassroomServiceImpl implements IClassroomService {
   @Override
   public List<Classroom> findClassroomsByCreatorId(Long creatorId) {
     return classroomRepo.findByCreatorId(creatorId);
+  }
+
+  @Override
+  public void addAssignQuiz(HttpServletRequest request, UUID quizId, Long id, AssignedQuizDto assignedQuizDTO) {
+
+    Classroom selectedClassroom = getClassroomByRequestAndId(request, id);
+    List<QuizAssigning> assign = selectedClassroom.getAssignedQuizList();
+    Quiz quiz = quizService.getQuizByRequestAndID(request, quizId);
+
+    QuizAssigning quizAssigning = new QuizAssigning();
+    quizAssigning.setQuiz(quiz);
+    quizAssigning.setMaxAttempt(assignedQuizDTO.getMaxAttempt());
+    quizAssigning.setDurationInMins(assignedQuizDTO.getDurationInMins());
+    quizAssigning.setClassroom(selectedClassroom);
+    quizAssigning.setStartDate(assignedQuizDTO.getStartDate());
+    quizAssigning.setDueDate(assignedQuizDTO.getDueDate());
+    quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions());
+    quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers());
+    quizAssigning.setNote(assignedQuizDTO.getNote());
+
+    assign.add(quizAssigning);
+    classroomRepo.save(selectedClassroom);
+  }
+
+  @Override
+  public List<QuizAssigning> findAssignedQuizForTeacher(HttpServletRequest request) {
+    User userRequesting = userService.getUserRequesting(request);
+    List<Classroom> classrooms = findClassroomsByCreatorId(userRequesting.getId());
+    List<QuizAssigning> quizAssignings = new ArrayList<>();
+    for (Classroom classroom : classrooms) {
+      quizAssignings.addAll(classroom.getAssignedQuizList());
+    }
+
+    return quizAssignings;
+  }
+
+  @Override
+  public List<QuizAssigning> findAssignedQuizForLearner(HttpServletRequest request) {
+    User userRequesting = userService.getUserRequesting(request);
+    List<ClassJoining> classJoinings = userRequesting.getClassJoinings();
+    List<Classroom> classrooms = new ArrayList<>();
+
+    List<QuizAssigning> quizAssignings = new ArrayList<>();
+
+    for (ClassJoining classroom : classJoinings) {
+      classrooms.add(classroom.getClassroom());
+    }
+
+    for (Classroom classroom : classrooms) {
+      quizAssignings.addAll(classroom.getAssignedQuizList());
+    }
+
+    return quizAssignings;
+
   }
 
 }
