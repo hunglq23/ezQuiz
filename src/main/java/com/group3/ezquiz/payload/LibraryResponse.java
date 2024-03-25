@@ -13,5 +13,5 @@ public class LibraryResponse {
     private Integer totalPages;
     private List<ObjectDto> objectDtoList;
     private Boolean exceedMaxPage;
-    private Long totalItemNumber;
+    private Long totalElements;
 }

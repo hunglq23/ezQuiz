@@ -7,8 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Classroom;
-import com.group3.ezquiz.payload.ClassroomDetailDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public interface IClassroomService {
 
     boolean joinClassroom(HttpServletRequest request, String code);
 
-    Page<Classroom> getClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
+    Page<ClassroomDto> getCreatedClassrooms(HttpServletRequest request, LibraryReqParam libraryDto);
 
     List<Classroom> findClassroomsByCreatorId(Long creatorId);
 }

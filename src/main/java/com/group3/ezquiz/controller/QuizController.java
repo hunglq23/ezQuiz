@@ -61,9 +61,9 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/{id}/edit")
   public String getQuizEditPage(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      Model model) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     model.addAttribute("quiz", quiz);
     return "quiz/quiz-editing";
@@ -72,10 +72,10 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/{id}/edit/create-question")
   public String getQuestionCreatingForm(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @RequestParam(required = false, defaultValue = "") String type,
-      Model model) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @RequestParam(required = false, defaultValue = "") String type,
+          Model model) {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     if (!Quiz.AVAILABLE_TYPES.contains(type)) {
       return "redirect:/quiz/" + id + "/edit/create-question?type=single-choice";
@@ -88,11 +88,11 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @PostMapping("/{id}/add-question")
   public ResponseEntity<?> submitQuestionCreatingInQuiz(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @RequestParam String type,
-      @RequestParam(name = "qText") String questionText,
-      @RequestParam Map<String, String> params) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @RequestParam String type,
+          @RequestParam(name = "qText") String questionText,
+          @RequestParam Map<String, String> params) {
 
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     Quiz saved = quizService.handleQuestionCreatingInQuiz(quiz, type, questionText, params);
@@ -100,18 +100,18 @@ public class QuizController {
       return ResponseEntity.badRequest().body("Failed!");
     }
     return ResponseEntity.ok(
-        MessageResponse.builder()
-            .message(questionText)
-            .timestamp(LocalDateTime.now())
-            .build());
+            MessageResponse.builder()
+                    .message(questionText)
+                    .timestamp(LocalDateTime.now())
+                    .build());
   }
 
   @PreAuthorize(TEACHER_AUTHORITY)
   @PutMapping("/{id}/edit")
   public ResponseEntity<?> updateQuizDetails(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @Valid @ModelAttribute QuizDetailsDto dto) throws BindException {
 
     return quizService.handleQuizUpdatingRequest(request, id, dto);
   }
@@ -119,12 +119,12 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @PostMapping("{id}/import")
   public String importData(HttpServletRequest request,
-      @PathVariable UUID id,
-      @ModelAttribute ExcelFileDto fileDto,
-      Model model) throws BindException {
+                           @PathVariable UUID id,
+                           @ModelAttribute ExcelFileDto fileDto,
+                           Model model) throws BindException {
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     List<Question> errorQuestions = quizService.importQuizDataFromExcel(request,
-        fileDto.getExcelFile(), id);
+            fileDto.getExcelFile(), id);
     model.addAttribute("quiz", quiz);
     if (errorQuestions.size() > 0) {
       model.addAttribute("errorQuestions", errorQuestions);
@@ -142,20 +142,20 @@ public class QuizController {
     headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Template.xlsx");
 
     return ResponseEntity
-        .ok()
-        .headers(headers)
-        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-        .body(new InputStreamResource(inputStream));
+            .ok()
+            .headers(headers)
+            .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+            .body(new InputStreamResource(inputStream));
   }
 
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/{id}/edit-question")
   public String editQuestion(
-      HttpServletRequest request,
-      @PathVariable("id") UUID quizId,
-      @RequestParam("questionId") Long questionId,
-      @RequestParam("type") String type,
-      Model model) {
+          HttpServletRequest request,
+          @PathVariable("id") UUID quizId,
+          @RequestParam("questionId") Long questionId,
+          @RequestParam("type") String type,
+          Model model) {
 
     Quiz quiz = quizService.getQuizByRequestAndID(request, quizId);
 
@@ -170,12 +170,12 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @PostMapping("/{id}/edit-question")
   public ResponseEntity<?> submitQuestionEditingInQuiz(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      @RequestParam Long questionId,
-      @RequestParam String type,
-      @RequestParam("qText") String questionText,
-      @RequestParam Map<String, String> params) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          @RequestParam Long questionId,
+          @RequestParam String type,
+          @RequestParam("qText") String questionText,
+          @RequestParam Map<String, String> params) {
 
     Quiz quiz = quizService.getQuizByRequestAndID(request, id);
     Quiz saved = quizService.handleQuestionEditingInQuiz(quiz, questionId, type, questionText, params);
@@ -183,17 +183,17 @@ public class QuizController {
       return ResponseEntity.badRequest().body("Failed!");
     }
     return ResponseEntity.ok(
-        MessageResponse.builder()
-            .message(questionText)
-            .timestamp(LocalDateTime.now())
-            .build());
+            MessageResponse.builder()
+                    .message(questionText)
+                    .timestamp(LocalDateTime.now())
+                    .build());
   }
 
   @PreAuthorize(TEACHER_AUTHORITY)
   @PostMapping("/{id}/delete-question")
   public String deleteQuestion(
-      @PathVariable UUID id,
-      @RequestParam Long questionId) {
+          @PathVariable UUID id,
+          @RequestParam Long questionId) {
     quizService.deleteQuestionById(id, questionId);
     return "redirect:/quiz/" + id + "/edit";
   }
@@ -201,9 +201,9 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @GetMapping("/{id}/play")
   public String takeQuizByLearner(
-      HttpServletRequest request,
-      @PathVariable UUID id,
-      Model model) {
+          HttpServletRequest request,
+          @PathVariable UUID id,
+          Model model) {
 
     QuizToLearner toLearner = quizService.getQuizByLearnerForTaking(request, id);
     model.addAttribute("quiz", toLearner);
@@ -213,10 +213,10 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @PostMapping("/{quizId}/select-answer")
   public ResponseEntity<?> checkQuestionAnswers(
-      HttpServletRequest request,
-      @PathVariable UUID quizId,
-      @RequestParam Long attemptId,
-      @RequestParam Long answerId) {
+          HttpServletRequest request,
+          @PathVariable UUID quizId,
+          @RequestParam Long attemptId,
+          @RequestParam Long answerId) {
 
     return quizService.handleAnswerSelected(request, quizId, attemptId, answerId);
   }
@@ -224,12 +224,12 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @PostMapping("/{quizId}/check-answer")
   public ResponseEntity<?> checkQuestionAnswers(
-      HttpServletRequest request,
-      @PathVariable UUID quizId,
-      @RequestParam Long attemptId,
-      @RequestParam Long questId,
-      @RequestParam String questIndex,
-      @RequestParam Map<String, String> params) {
+          HttpServletRequest request,
+          @PathVariable UUID quizId,
+          @RequestParam Long attemptId,
+          @RequestParam Long questId,
+          @RequestParam String questIndex,
+          @RequestParam Map<String, String> params) {
 
     params.remove("attemptId");
     params.remove("questId");
@@ -241,9 +241,9 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @PostMapping("/{quizId}/finish")
   public String finishQuizAttempt(
-      HttpServletRequest request,
-      @PathVariable UUID quizId,
-      @RequestParam Long attemptId) {
+          HttpServletRequest request,
+          @PathVariable UUID quizId,
+          @RequestParam Long attemptId) {
 
     quizService.handleFinishQuizAttempt(request, quizId, attemptId);
     return "redirect:/quiz/" + quizId + "/result";
@@ -252,8 +252,8 @@ public class QuizController {
   @PreAuthorize(LEARNER_AUTHORITY)
   @GetMapping("/{quizId}/result")
   public String viewQuizResultByLearner(
-      HttpServletRequest request,
-      @PathVariable UUID quizId, Model model) {
+          HttpServletRequest request,
+          @PathVariable UUID quizId, Model model) {
 
     QuizResult quiz = quizService.findLastFinishAttemptResult(request, quizId);
 
@@ -268,10 +268,10 @@ public class QuizController {
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/available-list")
   public String showAvailableQuizList(
-      @Valid @ModelAttribute LibraryReqParam params,
-      BindingResult bindingResult,
-      RedirectAttributes redirectAttributes,
-      Model model) {
+          @Valid @ModelAttribute LibraryReqParam params,
+          BindingResult bindingResult,
+          RedirectAttributes redirectAttributes,
+          Model model) {
 
     if (bindingResult.hasErrors()) {
       // if any invalid request params, set that param to default value
@@ -287,35 +287,11 @@ public class QuizController {
   }
 
   @PreAuthorize(TEACHER_AUTHORITY)
-  @GetMapping("/created-list")
-  public String showCreatedQuizList(
-      HttpServletRequest request,
-      @Valid @ModelAttribute QuizReqParam params,
-      BindingResult bindingResult,
-      RedirectAttributes redirectAttributes,
-      Model model) {
-
-    if (bindingResult.hasErrors()) {
-      // if any invalid request params, set that param to default value
-      params.handleWhenError(bindingResult);
-      redirectAttributes.addAllAttributes(params.getAttrMap());
-      return "redirect:/quiz/created-list";
-    }
-
-    Page<QuizDto> quizPage = quizService.getCreatedQuizList(request, params);
-
-    model.addAttribute("path", "/quiz/created-list");
-    model.addAttribute("quizList", quizPage);
-    model.addAttribute("params", params);
-    return "quiz/quiz-list";
-  }
-
-  @PreAuthorize(TEACHER_AUTHORITY)
   @PostMapping("/{id}/assign")
   public String assignQuiz(HttpServletRequest request,
-      @PathVariable("id") UUID quizId,
-      @ModelAttribute("assignedQuizDto") AssignedQuizDto assignedQuizDTO,
-      RedirectAttributes redirectAttributes) {
+                           @PathVariable("id") UUID quizId,
+                           @ModelAttribute("assignedQuizDto") AssignedQuizDto assignedQuizDTO,
+                           RedirectAttributes redirectAttributes) {
 
     try {
       quizService.assignQuiz(request, quizId, assignedQuizDTO);

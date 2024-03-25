@@ -1,5 +1,9 @@
 package com.group3.ezquiz.payload;
 
+import java.sql.Timestamp;
+
+import com.group3.ezquiz.utils.MyUtils;
+
 import lombok.*;
 
 @Builder
@@ -14,9 +18,9 @@ public class ObjectDto {
     private String image;
     private Boolean isDraft;
     private Integer itemNumber;
-    private String timeString;
+    private Timestamp timestamp;
 
-    public String timeString(){
-        return timeString.substring(0, "yyyy-MM-dd HH:mm:ss".length());
+    public String getTimeString() {
+        return MyUtils.calculateTimeElapsed(timestamp);
     }
 }

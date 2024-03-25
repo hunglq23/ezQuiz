@@ -10,34 +10,49 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.With;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class LibraryReqParam {
 
   private final String DEFAULT_SORT = "latest";
   private final int DEFAULT_PAGE = 1;
   private final int DEFAULT_SIZE = 3;
 
+  @With
   private String search = "";
 
-  @Pattern(regexp = "^(oldest|latest|A -> Z|Z -> A)$")
+  @NotNull
+  @Pattern(regexp = "^(oldest|latest|AtoZ|ZtoA)$")
   private String sort = "latest";
-  @Min(1)
-  private Integer size = 3;
+  @NotNull
   @Min(1)
   private Integer page = 1;
+  @NotNull
+  @Min(1)
+  private Integer size = 3;
+
+  public String getSearch() {
+    return search == null ? "" : search;
+  }
 
   public HashMap<String, String> getAttrMap() {
-
-    return new HashMap<>(Map.of(
-        "search", this.search,
-        "sort", this.sort,
-        "page", this.page.toString(),
-        "size", this.size.toString()));
+    HashMap<String, String> attrMap = new HashMap<>();
+    if (search != null && !search.isEmpty()) {
+      attrMap.put("search", search);
+    }
+    attrMap.putAll(new HashMap<>(Map.of(
+            "sort", this.sort,
+            "page", this.page.toString(),
+            "size", this.size.toString())));
+    return attrMap;
   }
 
   public void handleWhenError(BindingResult bindingResult) {
@@ -58,11 +73,11 @@ public class LibraryReqParam {
   public Sort getSortType() {
     switch (sort) {
 
-      case "A -> Z":
-        return Sort.by(Direction.ASC, "title");
+      case "AtoZ":
+        return Sort.by(Direction.ASC, "name");
 
-      case "Z -> A":
-        return Sort.by(Direction.DESC, "title");
+      case "ZtoA":
+        return Sort.by(Direction.DESC, "name");
 
       case "oldest":
         return Sort.by(Direction.ASC, "createdAt");
@@ -71,6 +86,35 @@ public class LibraryReqParam {
       case "latest":
         return Sort.by(Direction.DESC, "createdAt");
     }
+  }
+
+  public ObjectDto compare(ObjectDto o1, ObjectDto o2) {
+    switch (sort) {
+      case "AtoZ":
+        return o1.getName().compareToIgnoreCase(o2.getName()) < 0 ? o1 : o2;
+
+      case "ZtoA":
+        return o1.getName().compareToIgnoreCase(o2.getName()) > 0 ? o1 : o2;
+
+      case "oldest":
+        return o1.getTimestamp().compareTo(o2.getTimestamp()) < 0 ? o1 : o2;
+
+      default:
+      case "latest":
+        return o1.getTimestamp().compareTo(o2.getTimestamp()) > 0 ? o1 : o2;
+    }
+  }
+
+  public int getStartIndex() {
+    return size * (page - 1);
+  }
+
+  public int getEndIndex() {
+    return size * page;
+  }
+
+  public LibraryReqParam getCustom() {
+    return new LibraryReqParam(getSearch(), getSort(), 1, getEndIndex());
   }
 
 }

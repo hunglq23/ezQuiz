@@ -3,16 +3,8 @@ package com.group3.ezquiz.utils;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-public class Utility {
-
-    public static Timestamp convertStringToTimestamp(String dateString, String pattern) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-        LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
-        return Timestamp.valueOf(dateTime);
-    }
+public class MyUtils {
 
     public static String calculateTimeElapsed(Timestamp creationTime) {
         Instant instant = creationTime.toInstant();
@@ -28,15 +20,24 @@ public class Utility {
         long minutes = seconds / 60;
         seconds %= 60;
 
-        if (days > 0) {
-            return days + " day(s) ago";
+        if (days > 1) {
+            return days + " days ago";
+        } else if (days == 1) {
+            return days + " day ago";
         }
-        if (hours > 0) {
-            return hours + " hour(s) ago";
+        if (hours > 1) {
+            return hours + " hours ago";
+        } else if (hours == 1) {
+            return hours + " hour ago";
         }
-        if (minutes > 0) {
-            return minutes + " minute(s) ago";
+        if (minutes > 1) {
+            return minutes + " minutes ago";
+        } else if (minutes == 1) {
+            return minutes + " minute ago";
         }
-        return seconds + " second(s) ago";
+        if (seconds > 1) {
+            return seconds + " seconds ago";
+        }
+        return seconds + " second ago";
     }
 }

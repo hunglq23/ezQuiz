@@ -24,7 +24,8 @@ import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
-import com.group3.ezquiz.payload.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
@@ -70,7 +71,7 @@ public class ClassroomController {
             redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
             return "redirect:/classroom/created-list";
         }
-        Page<Classroom> classroom = classroomService.getClassroomByTeacher(request, libraryDto);
+        Page<ClassroomDto> classroom = classroomService.getCreatedClassrooms(request, libraryDto);
         Pageable pageable = classroom.getPageable();
         if (pageable.getPageNumber() != 0 &&
                 pageable.getPageNumber() >= classroom.getTotalPages()) {
