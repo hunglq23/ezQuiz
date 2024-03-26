@@ -40,7 +40,7 @@
   </head>
 
   <body>
-    <header class="bg-light" th:fragment="topHeader">
+    <header th:fragment="topHeader">
       <nav
         class="navbar navbar-expand-sm p-0 navbar-light bg-white"
         id="header-nav"
@@ -309,7 +309,10 @@
             </div>
             <div th:fragment="showData(content)" id="data">
               <div class="d-flex flex-column gap-2">
-                <div th:each="data : ${content}">
+                <div
+                  th:each="data : ${content}"
+                  th:with="url='/' + ${data.type} + '/' + ${data.id}"
+                >
                   <div
                     sec:authorize="hasRole('ROLE_TEACHER')"
                     class="position-relative"
@@ -345,6 +348,7 @@
                   <a
                     sec:authorize="hasRole('ROLE_TEACHER')"
                     class="btn item p-1 d-flex gap-1 rounded-1 shadow-sm"
+                    th:href="@{${url}}"
                   >
                     <div style="width: 169px">
                       <img

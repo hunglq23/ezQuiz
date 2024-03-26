@@ -106,6 +106,7 @@ public class LibraryServiceImpl implements ILibraryService {
 
   private ObjectDto convertFromQuiz(QuizDto quizDto) {
     return ObjectDto.builder()
+        .id(quizDto.getId().toString())
         .type(quizDto.getType())
         .name(quizDto.getTitle())
         .description(quizDto.getDescription())
@@ -118,6 +119,7 @@ public class LibraryServiceImpl implements ILibraryService {
 
   private ObjectDto converFromClassroom(ClassroomDto classroomDto) {
     return ObjectDto.builder()
+        .id(classroomDto.getId().toString())
         .type(classroomDto.getType())
         .name(classroomDto.getName())
         .description(classroomDto.getDescription())

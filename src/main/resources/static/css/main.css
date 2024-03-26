@@ -637,3 +637,12 @@ input[type="password"]::-webkit-autocomplete {
   background-repeat: no-repeat;
   height: 159px;
 }
+
+.classroom-default {
+  color: #fff !important;
+  background-image: url("../images/class-default.png");
+  background-size: 36px;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 159px;
+}

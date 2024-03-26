@@ -1,5 +1,5 @@
-.body {
-  height: 100vh;
+.page-content {
+  min-height: 100vh;
 }
 
 .sticky-nav {

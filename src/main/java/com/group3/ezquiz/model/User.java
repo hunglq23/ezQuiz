@@ -67,8 +67,7 @@ public class User {
   @OneToMany(mappedBy = "learner")
   private List<ClassJoining> classJoinings;
 
-  @ManyToMany
-  @JoinTable(name = "_class_joining", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "classroom_id"))
+  @OneToMany(mappedBy = "creator")
   private List<Classroom> classrooms;
 
   @OneToMany(mappedBy = "learner")

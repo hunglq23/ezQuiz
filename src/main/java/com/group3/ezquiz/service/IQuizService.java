@@ -74,8 +74,8 @@ public interface IQuizService {
 
 	Page<QuizDto> getAvailableQuizList(@Valid LibraryReqParam params);
 
-	HomeContent getContentForLearner();
-
 	HomeContent getHomeContent();
+
+	Quiz getQuizById(UUID id);
 
 }

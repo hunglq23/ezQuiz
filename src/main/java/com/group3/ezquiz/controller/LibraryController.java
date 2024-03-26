@@ -126,4 +126,9 @@ public class LibraryController {
     return "classroom/classroom-list";
   }
 
+  @GetMapping("/my-classroom/new")
+  public String newClassroom() {
+    return "redirect:/library/my-classroom?page=1&sort=latest&size=3&new";
+  }
+
 }

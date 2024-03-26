@@ -1,7 +1,7 @@
 package com.group3.ezquiz.repository;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.group3.ezquiz.model.Classroom;
@@ -21,7 +21,7 @@ public interface ClassroomRepo extends JpaRepository<Classroom, Long> {
 
         Classroom findByCode(String code);
 
-        Page<Classroom> findByCreatorAndNameContaining(User userRequest, String search, PageRequest of);
+        Page<Classroom> findByCreatorAndNameContaining(User userRequest, String search, Pageable of);
 
         List<Classroom> findByCreatorId(Long creatorId);
 }

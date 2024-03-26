@@ -22,13 +22,8 @@ public class UserController {
   @GetMapping("/home")
   public String getHomePage(HttpServletRequest request, Model model) {
     User userRequesting = userService.getUserRequesting(request);
+    HomeContent content = quizService.getHomeContent();
 
-    HomeContent content = null;
-    if (userRequesting.isLearner()) {
-      content = quizService.getContentForLearner();
-    } else {
-      content = quizService.getHomeContent();
-    }
     model.addAttribute("content", content);
     model.addAttribute("user", userRequesting);
     return "home";
