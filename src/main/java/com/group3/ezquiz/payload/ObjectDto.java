@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ObjectDto {
+    private String id;
     private String type;
     private String name;
     private String description;

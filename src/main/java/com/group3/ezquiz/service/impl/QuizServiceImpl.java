@@ -204,7 +204,8 @@ public class QuizServiceImpl implements IQuizService {
         .checkQuestionAnswers(attempt, uncheckQuestion.getId(), params, questIndex);
   }
 
-  private Quiz getQuizById(UUID id) {
+  @Override
+  public Quiz getQuizById(UUID id) {
     return quizRepo.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException(
             "Not found quiz by ID " + id));
@@ -675,12 +676,6 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public HomeContent getContentForLearner() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
   public HomeContent getHomeContent() {
     List<QuizDto> highlightQuiz = quizRepo
         .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAt()
@@ -694,9 +689,16 @@ public class QuizServiceImpl implements IQuizService {
         .map(this::mapToQuizDto)
         .collect(Collectors.toList());
 
+    List<QuizDto> popularQuiz = quizRepo
+        .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAtDesc()
+        .stream()
+        .map(this::mapToQuizDto)
+        .collect(Collectors.toList());
+
     return HomeContent.builder()
         .highlight(highlightQuiz)
         .recentQuiz(recentQuiz)
+        .popularQuiz(popularQuiz)
         .build();
   }
 

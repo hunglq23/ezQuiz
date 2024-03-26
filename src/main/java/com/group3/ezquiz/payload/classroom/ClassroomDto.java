@@ -11,7 +11,7 @@ import lombok.Getter;
 @Builder
 public class ClassroomDto {
   @Builder.Default
-  private String type = "Classroom";
+  private String type = "classroom";
   @Builder.Default
   private Boolean isDraft = false;
   private Long id;

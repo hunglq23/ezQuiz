@@ -14,7 +14,7 @@ import com.group3.ezquiz.utils.MyUtils;
 @NoArgsConstructor
 public class QuizDto {
     @Builder.Default
-    private String type = "Quiz";
+    private String type = "quiz";
     private UUID id;
     private String title;
     private String name;

@@ -299,7 +299,7 @@
         handleFormSubmitByIdAndMethod(
           "createClassroomForm",
           function (message) {
-            window.location.href = "/classroom/created-list?created";
+            location.href = "/library/my-classroom?created";
           }
         );
       }
@@ -314,14 +314,14 @@
 
       function clickSaveAndContinue() {
         handleFormSubmitByIdAndMethod("excelImportForm", function () {
-          window.location.href = "/classroom/created-list?imported";
+          location.href = "/library/my-classroom?imported";
         });
       }
     </script>
 
     <script th:replace="~{library :: js-pagination}"></script>
 
-    <script th:if="${param.newClass}">
+    <script th:if="${param.new}">
       $(document).ready(function () {
         $("#createClassModal").modal("show");
       });

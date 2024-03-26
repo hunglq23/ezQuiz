@@ -178,6 +178,12 @@ public class UserServiceImpl implements IUserService {
     return null;
   }
 
+  @Override
+  public Boolean isCreator(HttpServletRequest request, User user) {
+    User userRequesting = getUserRequesting(request);
+    return user.getId() == userRequesting.getId();
+  }
+
   private void sendMailTo(String email) {
     String subject = "ezQuiz Verify Account";
     Resource resource = new ClassPathResource("static/email/email-verify.html");

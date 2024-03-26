@@ -34,4 +34,6 @@ public interface IUserService {
 
   void updatePassword(String email, String pass);
 
+  Boolean isCreator(HttpServletRequest request, User user);
+
 }

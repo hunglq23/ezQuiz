@@ -21,9 +21,10 @@ public class HomeContent {
 
   private List<QuizDto> highlight;
   private List<QuizDto> recentQuiz;
+  private List<QuizDto> popularQuiz;
 
   public List<List<QuizDto>> categories() {
-    return List.of(highlight, recentQuiz);
+    return List.of(highlight, recentQuiz, popularQuiz);
   }
 
   public String getTitle(int index) {

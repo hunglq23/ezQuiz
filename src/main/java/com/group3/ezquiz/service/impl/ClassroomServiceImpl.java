@@ -217,7 +217,7 @@ public class ClassroomServiceImpl implements IClassroomService {
         log.info("Description: " + description);
         classroom.setDescription(description);
       }
-      rowIterator.next();
+
     } else if (rowIterator.hasNext()) {
       // skip the third row
       classJoinings = classroom.getClassJoinings();

@@ -11,6 +11,7 @@ import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.service.IQuizService;
+import com.group3.ezquiz.service.IUserService;
 import com.group3.ezquiz.payload.quiz.QuizResult;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,6 +50,20 @@ public class QuizController {
   private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
 
   private final IQuizService quizService;
+  private final IUserService userService;
+
+  @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_LEARNER')")
+  @GetMapping("/{id}")
+  public String getQuizDetails(
+      HttpServletRequest request,
+      @PathVariable UUID id,
+      Model model) {
+
+    Quiz quiz = quizService.getQuizById(id);
+    model.addAttribute("quiz", quiz);
+    model.addAttribute("canEdit", userService.isCreator(request, quiz.getCreator()));
+    return "quiz/quiz-details";
+  }
 
   @PreAuthorize(TEACHER_AUTHORITY)
   @GetMapping("/new")

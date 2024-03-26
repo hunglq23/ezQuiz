@@ -36,16 +36,15 @@
   </head>
 
   <body>
-    <header class="bg-light">
+    <header th:fragment="topNav">
       <nav
         class="navbar navbar-expand-sm p-0 navbar-light bg-white"
         id="header-nav"
         role="navigation"
-        th:fragment="header-navbar"
       >
         <div class="container-fluid mx-2">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="link-dark navbar-brand site-title mb-0" href="./home"
+            <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
               >ezQuiz</a
             >
             <div id="navSearch" class="position-relative mx-2 suggest-search">
@@ -131,7 +130,7 @@
                   </a>
                   <a
                     class="dropdown-item btn btn-sm"
-                    th:href="@{/classrooms/created}"
+                    th:href="@{/library/my-classroom/new}"
                   >
                     New Class
                   </a>
@@ -349,7 +348,7 @@
                     >See more</a
                   >
                 </div>
-                <button class="btn w-100 p-0">
+                <a class="btn w-100 p-0" th:href="@{/quiz/{id}(id=${quiz.id})}">
                   <img
                     th:if="${quiz.imageUrl}"
                     th:src="${quiz.imageUrl}"
@@ -395,7 +394,7 @@
                       >
                     </div>
                   </div>
-                </button>
+                </a>
               </div>
             </div>
           </div>

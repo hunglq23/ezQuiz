@@ -84,7 +84,7 @@ public class LibraryController {
     }
 
     Page<QuizDto> page = libraryService.getMyQuizInLibrary(request, params);
-    if (page.getTotalPages() < params.getPage()) {
+    if (page.getTotalPages() > 0 && page.getTotalPages() < params.getPage()) {
       params.setPage(page.getTotalPages());
       redirectAttributes.addAllAttributes(params.getAttrMap());
       return DO_REDIRECT;
@@ -114,7 +114,7 @@ public class LibraryController {
     }
 
     Page<ClassroomDto> page = libraryService.getMyClassroomInLibrary(request, params);
-    if (page.getTotalPages() < params.getPage()) {
+    if (page.getTotalPages() > 0 && page.getTotalPages() < params.getPage()) {
       params.setPage(page.getTotalPages());
       redirectAttributes.addAllAttributes(params.getAttrMap());
       return DO_REDIRECT;
@@ -124,6 +124,11 @@ public class LibraryController {
     model.addAttribute("page", page);
     model.addAttribute("params", params);
     return "classroom/classroom-list";
+  }
+
+  @GetMapping("/my-classroom/new")
+  public String newClassroom() {
+    return "redirect:/library/my-classroom?page=1&sort=latest&size=3&new";
   }
 
 }
