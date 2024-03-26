@@ -321,121 +321,79 @@
         </div>
       </div>
 
-      <!-- Recent Quiz Attempts -->
       <div
         id="bottom-content"
         class="container-fluid d-flex flex-column px-3 px-lg-5 gap-5"
       >
-        <div class="section">
-          <div class="h6 fs-3">
-            Recent<span class="marker marker-center"> quiz</span>
+        <div class="section" th:each="category, cStat: ${content.categories()}">
+          <div class="h6 fs-3 m-0">
+            <i class="fas fa-star me-1 text-primary"></i>
+            <span th:text="${content.getTitle(cStat.index)}">err</span>
           </div>
           <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
-            <!-- Card 1 -->
-            <div class="col">
-              <div class="card">
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                    </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="col">
-              <div class="card">
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                    </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="col">
-              <div class="card p-0">
-                <div class="d-xxl-none see-more">
-                  <a href="#" class="btn btn-sm btn-purple">See more</a>
+            <div
+              th:each="quiz, qStat: ${category}"
+              class="col"
+              th:classappend="${qStat.index == 3 ? 'd-none d-xxl-block' : ''}"
+            >
+              <div class="card shadow-sm">
+                <div
+                  th:if="${qStat.index > 1}"
+                  class="see-more"
+                  th:classappend="${qStat.index == 2 ? 'd-xxl-none' : ''}"
+                >
+                  <a
+                    href="#"
+                    class="btn btn-sm btn-purple"
+                    style="border-bottom: solid 3px #8854c0"
+                    >See more</a
+                  >
                 </div>
                 <button class="btn w-100 p-0">
                   <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                    th:if="${quiz.imageUrl}"
+                    th:src="${quiz.imageUrl}"
                     class="card-img-top"
+                    style="border-bottom: solid #eee 1px"
                     alt="Quiz Image"
                   />
+                  <div
+                    th:unless="${quiz.imageUrl}"
+                    class="card-img-top default-image"
+                    th:style="'background-color: ' + ${content.randomBgColor()}"
+                  ></div>
 
                   <div class="card-body p-1 px-2 mb-3">
                     <div class="d-flex flex-row-reverse">
                       <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
                     </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
+                    <h5
+                      class="card-title p-0 text-start"
+                      th:text="${quiz.title}"
+                    >
+                      Card title
+                    </h5>
+
+                    <p
+                      class="card-text d-none d-md-flex text-start"
+                      th:text="${quiz.description} ? ${quiz.description} : 'Lorem ipsum dolor sit amet consectetur adipisicing
+                      elit.'"
+                      style="height: 36px"
+                    >
                       Some quick example text.
                     </p>
                   </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="col d-none d-xxl-block">
-              <div class="card p-0">
-                <div class="see-more">
-                  <a href="#" class="btn btn-sm btn-purple">See more</a>
-                </div>
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                  <div class="card-footer bg-white w-100 p-0 px-3">
+                    <div>
+                      <i class="fas fa-user"></i>
+                      <span th:text="${quiz.creatorName}">error</span>
                     </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
+                    <div>
+                      <span th:text="${quiz.itemNumber}">-1</span> question<span
+                        th:if="${quiz.itemNumber > 1}"
+                        >s</span
+                      >
+                    </div>
                   </div>
                 </button>
               </div>
@@ -501,9 +459,9 @@
 
             <!-- Card 3 -->
             <div class="col">
-              <div class="card p-0">
+              <div class="card">
                 <div class="d-xxl-none see-more">
-                  <a href="#" class="btn btn-sm btn-purple">See more</a>
+                  <a href="#" class="btn btn-sm btn-secondary">See more</a>
                 </div>
                 <button class="btn w-100 p-0">
                   <img
@@ -530,7 +488,7 @@
 
             <!-- Card 4 -->
             <div class="col d-none d-xxl-block">
-              <div class="card p-0">
+              <div class="card">
                 <div class="see-more">
                   <a href="#" class="btn btn-sm btn-purple">See more</a>
                 </div>

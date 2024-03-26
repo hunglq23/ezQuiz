@@ -461,7 +461,7 @@ input[type="password"]::-webkit-autocomplete {
   .see-more {
     position: absolute;
     right: 0;
-    top: -36px;
+    top: -38px;
     a {
       border-radius: 3px;
     }
@@ -490,9 +490,14 @@ input[type="password"]::-webkit-autocomplete {
     font-weight: 100;
   }
   .card-footer {
+    display: flex;
+    justify-content: space-between;
     font-size: 12px;
     font-weight: 100;
     opacity: 0.5;
+    .fa-user {
+      margin-right: 3px;
+    }
   }
   &:hover {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -624,4 +629,11 @@ input[type="password"]::-webkit-autocomplete {
   &:hover {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   }
+}
+
+.default-image {
+  background-image: url("../images/quiz-default.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 159px;
 }

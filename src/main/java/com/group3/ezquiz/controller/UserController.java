@@ -5,6 +5,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.HomeContent;
+import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,12 +17,20 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
   private final IUserService userService;
+  private final IQuizService quizService;
 
   @GetMapping("/home")
-  public String getHomePage(HttpServletRequest http, Model model) {
-    User userRequesting = userService.getUserRequesting(http);
-    model.addAttribute("user", userRequesting);
+  public String getHomePage(HttpServletRequest request, Model model) {
+    User userRequesting = userService.getUserRequesting(request);
 
+    HomeContent content = null;
+    if (userRequesting.isLearner()) {
+      content = quizService.getContentForLearner();
+    } else {
+      content = quizService.getHomeContent();
+    }
+    model.addAttribute("content", content);
+    model.addAttribute("user", userRequesting);
     return "home";
   }
 

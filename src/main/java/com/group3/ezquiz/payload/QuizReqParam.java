@@ -1,7 +1,6 @@
 package com.group3.ezquiz.payload;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;

@@ -15,7 +15,7 @@ public class ObjectDto {
     private String type;
     private String name;
     private String description;
-    private String image;
+    private String imageUrl;
     private Boolean isDraft;
     private Integer itemNumber;
     private Timestamp timestamp;

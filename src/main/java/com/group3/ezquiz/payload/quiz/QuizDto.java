@@ -13,14 +13,17 @@ import com.group3.ezquiz.utils.MyUtils;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuizDto {
+    @Builder.Default
+    private String type = "Quiz";
     private UUID id;
-    private String type;
     private String title;
+    private String name;
     private String description;
-    private String image;
+    private String imageUrl;
     private Boolean isDraft;
     private Integer itemNumber;
     private Timestamp timestamp;
+    private String creatorName;
 
     public String getTimeString() {
         return MyUtils.calculateTimeElapsed(timestamp);

@@ -48,22 +48,10 @@
     transform: rotate(0deg);
   }
 }
-#content {
-  min-width: 678px;
-}
-#content .dropdown-menu {
-  position: absolute;
 
-  .filter-label,
-  .sort-label {
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-  }
-
-  .filter-label {
-    margin-left: 12px;
-  }
+.container-fluid {
+  display: flex;
+  justify-content: center;
 }
 
 .pagination {
@@ -87,5 +75,35 @@
 
   &:hover {
     color: #fff;
+  }
+}
+
+#content {
+  min-width: 678px;
+}
+#content .dropdown-menu {
+  position: absolute;
+
+  .filter-label,
+  .sort-label {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .filter-label {
+    margin-left: 12px;
+  }
+}
+
+.btn.item {
+  border: solid 1px #f4f5f6;
+  height: 188px;
+}
+.btn.item:hover {
+  border: solid 1px #dedede !important;
+  background-color: #f4f5f6 !important;
+  .item-tag:first-child {
+    background-color: #fff !important;
   }
 }
