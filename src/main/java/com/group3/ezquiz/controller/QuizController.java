@@ -7,7 +7,6 @@ import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
-import com.group3.ezquiz.payload.QuizReqParam;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;

@@ -14,6 +14,7 @@ import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.LibraryResponse;
 import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.QuizReqParam;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.ILibraryService;
 
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/library")
 @PreAuthorize("hasRole('ROLE_TEACHER')")
 public class LibraryController {
+
   @Autowired
   private ILibraryService libraryService;
 
@@ -72,20 +74,56 @@ public class LibraryController {
       RedirectAttributes redirectAttributes,
       Model model) {
     final String PATH = "/library/my-quiz";
+    final String DO_REDIRECT = "redirect:" + PATH;
 
     if (bindingResult.hasErrors()) {
       // if any invalid request params, set that param to default value
       params.handleWhenError(bindingResult);
       redirectAttributes.addAllAttributes(params.getAttrMap());
-      return "redirect:" + PATH;
+      return DO_REDIRECT;
     }
 
-    Page<QuizDto> quizPage = libraryService.getMyQuizInLibrary(request, params);
+    Page<QuizDto> page = libraryService.getMyQuizInLibrary(request, params);
+    if (page.getTotalPages() < params.getPage()) {
+      params.setPage(page.getTotalPages());
+      redirectAttributes.addAllAttributes(params.getAttrMap());
+      return DO_REDIRECT;
+    }
 
     model.addAttribute("path", PATH);
-    model.addAttribute("quizList", quizPage);
+    model.addAttribute("page", page);
     model.addAttribute("params", params);
     return "quiz/quiz-list";
+  }
+
+  @GetMapping("/my-classroom")
+  public String showCreatedClassrooms(
+      HttpServletRequest request,
+      @Valid @ModelAttribute LibraryReqParam params,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes,
+      Model model) {
+    final String PATH = "/library/my-classroom";
+    final String DO_REDIRECT = "redirect:" + PATH;
+
+    if (bindingResult.hasErrors()) {
+      // if any invalid request params, set that param to default value
+      params.handleWhenError(bindingResult);
+      redirectAttributes.addAllAttributes(params.getAttrMap());
+      return DO_REDIRECT;
+    }
+
+    Page<ClassroomDto> page = libraryService.getMyClassroomInLibrary(request, params);
+    if (page.getTotalPages() < params.getPage()) {
+      params.setPage(page.getTotalPages());
+      redirectAttributes.addAllAttributes(params.getAttrMap());
+      return DO_REDIRECT;
+    }
+
+    model.addAttribute("path", PATH);
+    model.addAttribute("page", page);
+    model.addAttribute("params", params);
+    return "classroom/classroom-list";
   }
 
 }

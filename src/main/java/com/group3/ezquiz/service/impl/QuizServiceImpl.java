@@ -44,6 +44,7 @@ import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.model.UserResponse;
 import com.group3.ezquiz.payload.AssignedQuizDto;
+import com.group3.ezquiz.payload.HomeContent;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuestionToLearner;
@@ -71,6 +72,7 @@ public class QuizServiceImpl implements IQuizService {
   private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final QuizRepo quizRepo;
+
   private final IUserService userService;
   private final IClassroomService classroomService;
   private final IQuestionService questionService;
@@ -568,12 +570,6 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
-  public List<Quiz> getListQuizUUID(HttpServletRequest request) {
-    List<Quiz> data = quizRepo.findQuizUUID();
-    return data;
-  }
-
-  @Override
   public Question getQuestionByIdAndQuiz(Long questionId, Quiz quiz) {
     return questionService.getByIdAndQuiz(questionId, quiz);
   }
@@ -667,13 +663,40 @@ public class QuizServiceImpl implements IQuizService {
   private QuizDto mapToQuizDto(Quiz quiz) {
     return QuizDto.builder()
         .id(quiz.getId())
-        .type("Quiz")
         .title(quiz.getTitle())
+        .name(quiz.getTitle())
         .description(quiz.getDescription())
-        .image(quiz.getImageUrl())
+        .imageUrl(quiz.getImageUrl())
         .isDraft(quiz.getIsDraft())
         .itemNumber(quiz.getQuestions().size())
         .timestamp(quiz.getCreatedAt())
+        .creatorName(quiz.getCreator().getFullName())
+        .build();
+  }
+
+  @Override
+  public HomeContent getContentForLearner() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public HomeContent getHomeContent() {
+    List<QuizDto> highlightQuiz = quizRepo
+        .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAt()
+        .stream()
+        .map(this::mapToQuizDto)
+        .collect(Collectors.toList());
+
+    List<QuizDto> recentQuiz = quizRepo
+        .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAtDesc()
+        .stream()
+        .map(this::mapToQuizDto)
+        .collect(Collectors.toList());
+
+    return HomeContent.builder()
+        .highlight(highlightQuiz)
+        .recentQuiz(recentQuiz)
         .build();
   }
 

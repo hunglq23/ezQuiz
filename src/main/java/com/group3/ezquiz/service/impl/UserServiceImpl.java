@@ -1,7 +1,5 @@
 package com.group3.ezquiz.service.impl;
 
-import com.group3.ezquiz.payload.LibraryReqParam;
-import com.group3.ezquiz.payload.LibraryResponse;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
@@ -42,10 +40,11 @@ public class UserServiceImpl implements IUserService {
 
   private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
+  private final UserRepo userRepo;
+
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final EmailService emailService;
-  private final UserRepo userRepo;
 
   @Override
   public BindingResult registerUser(RegisterRequest regUser, BindingResult result) {
@@ -131,13 +130,6 @@ public class UserServiceImpl implements IUserService {
         .note(user.getNote())
         .build();
     userRepo.save(saveUser);
-  }
-
-  @Override
-  public LibraryResponse getQuizAndClassroomByTeacher(
-      HttpServletRequest request, LibraryReqParam libraryDto) {
-
-    return null;
   }
 
   @Override

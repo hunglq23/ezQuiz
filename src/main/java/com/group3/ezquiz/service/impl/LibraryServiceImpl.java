@@ -60,6 +60,13 @@ public class LibraryServiceImpl implements ILibraryService {
     return quizService.getCreatedQuizList(request, params);
   }
 
+  @Override
+  public Page<ClassroomDto> getMyClassroomInLibrary(
+      HttpServletRequest request, @Valid LibraryReqParam params) {
+
+    return classroomService.getCreatedClassrooms(request, params);
+  }
+
   private List<ObjectDto> findContent(
       Page<QuizDto> quizPage,
       Page<ClassroomDto> classroomPage,
@@ -99,10 +106,10 @@ public class LibraryServiceImpl implements ILibraryService {
 
   private ObjectDto convertFromQuiz(QuizDto quizDto) {
     return ObjectDto.builder()
-        .type("Quiz")
+        .type(quizDto.getType())
         .name(quizDto.getTitle())
         .description(quizDto.getDescription())
-        .image(quizDto.getImage())
+        .imageUrl(quizDto.getImageUrl())
         .isDraft(quizDto.getIsDraft())
         .itemNumber(quizDto.getItemNumber())
         .timestamp(quizDto.getTimestamp())
@@ -111,10 +118,10 @@ public class LibraryServiceImpl implements ILibraryService {
 
   private ObjectDto converFromClassroom(ClassroomDto classroomDto) {
     return ObjectDto.builder()
-        .type("Classroom")
+        .type(classroomDto.getType())
         .name(classroomDto.getName())
         .description(classroomDto.getDescription())
-        .image(classroomDto.getImageUrl())
+        .imageUrl(classroomDto.getImageUrl())
         .itemNumber(classroomDto.getItemNumber())
         .timestamp(classroomDto.getTimestamp())
         .build();

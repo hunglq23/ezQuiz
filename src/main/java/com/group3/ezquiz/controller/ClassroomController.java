@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,18 +12,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ExcelFileDto;
-import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
-import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
@@ -47,45 +40,6 @@ public class ClassroomController {
 
     private final String TEACHER_AUTHORITY = "hasRole('ROLE_TEACHER')";
     private final String LEARNER_AUTHORITY = "hasRole('ROLE_LEARNER')";
-
-    @PreAuthorize(TEACHER_AUTHORITY)
-    @GetMapping("/created-list")
-    public String getCreatedClassroomPage(
-            HttpServletRequest request,
-            @Valid @ModelAttribute LibraryReqParam libraryDto,
-            BindingResult bindingResult, RedirectAttributes redirectAttributes,
-            Model model) {
-        if (bindingResult.hasErrors()) {
-            for (ObjectError objectError : bindingResult.getAllErrors()) {
-                FieldError fieldError = (FieldError) objectError;
-                if (fieldError.getField().equals("sort")) {
-                    libraryDto.setSort("latest");
-                }
-                if (fieldError.getField().equals("page")) {
-                    libraryDto.setPage(1);
-                }
-                if (fieldError.getField().equals("size")) {
-                    libraryDto.setSize(3);
-                }
-            }
-            redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
-            return "redirect:/classroom/created-list";
-        }
-        Page<ClassroomDto> classroom = classroomService.getCreatedClassrooms(request, libraryDto);
-        Pageable pageable = classroom.getPageable();
-        if (pageable.getPageNumber() != 0 &&
-                pageable.getPageNumber() >= classroom.getTotalPages()) {
-            libraryDto.setPage(classroom.getTotalPages());
-            redirectAttributes.addAllAttributes(libraryDto.getAttrMap());
-            return "redirect:/classroom/created-list";
-        }
-        model.addAttribute("classroom", classroom);
-        model.addAttribute("max", classroom.getTotalPages());
-        model.addAttribute("page", libraryDto);
-        model.addAttribute("totalItemNumber", classroom.getTotalElements());
-        model.addAttribute("object", classroom.getContent());
-        return "classroom/classroom-list";
-    }
 
     @PreAuthorize(TEACHER_AUTHORITY)
     @PostMapping("/create")

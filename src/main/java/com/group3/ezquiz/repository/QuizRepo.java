@@ -17,36 +17,37 @@ import com.group3.ezquiz.model.User;
 @Repository
 public interface QuizRepo extends JpaRepository<Quiz, UUID> {
 
-    Optional<Quiz> findByIdAndCreator(UUID id, User creator);
+        Optional<Quiz> findByIdAndCreator(UUID id, User creator);
 
-    @Query("SELECT q FROM Quiz q WHERE q.creator = :creator AND ( q.isDraft = :isDraft) " +
-            "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
-            "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
-    Page<Quiz> findByCreatorAndIsDraftAndSort(@Param("creator") User creator,
-            @Param("isDraft") Boolean isDraft,
-            @Param("sort") String sortOrder,
-            Pageable pageable);
+        @Query("SELECT q FROM Quiz q WHERE q.creator = :creator AND ( q.isDraft = :isDraft) " +
+                        "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
+                        "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
+        Page<Quiz> findByCreatorAndIsDraftAndSort(@Param("creator") User creator,
+                        @Param("isDraft") Boolean isDraft,
+                        @Param("sort") String sortOrder,
+                        Pageable pageable);
 
-    @Query("SELECT q FROM Quiz q WHERE q.creator = :creator " +
-            "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
-            "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
-    Page<Quiz> findByCreatorAndSort(@Param("creator") User creator,
-            @Param("sort") String sortOrder,
-            Pageable pageable);
+        @Query("SELECT q FROM Quiz q WHERE q.creator = :creator " +
+                        "ORDER BY CASE WHEN :sort = 'latest' THEN q.createdAt END DESC, " +
+                        "CASE WHEN :sort = 'oldest' THEN q.createdAt END ASC")
+        Page<Quiz> findByCreatorAndSort(@Param("creator") User creator,
+                        @Param("sort") String sortOrder,
+                        Pageable pageable);
 
-    List<Quiz> findByCreator(User userRequesting);
+        List<Quiz> findByCreator(User userRequesting);
 
-    @Query(value = "select q from Quiz q order by q.updatedAt DESC limit 3")
-    List<Quiz> findQuizUUID();
+        @Query(value = "select q from Quiz q where q.title like %:search%")
+        List<Quiz> searchQuizUUID(@Param(value = "search") String search);
 
-    @Query(value = "select q from Quiz q where q.title like %:search%")
-    List<Quiz> searchQuizUUID(@Param(value = "search") String search);
+        Page<Quiz> findByIsDraftIsFalseAndTitleContaining(String title, Pageable pageable);
 
-    Page<Quiz> findByIsDraftIsFalseAndTitleContaining(String title, Pageable pageable);
+        Page<Quiz> findByCreatorAndIsDraftAndTitleContaining(
+                        User creator, Boolean isDraft, String title, Pageable pageable);
 
-    Page<Quiz> findByCreatorAndIsDraftAndTitleContaining(
-            User creator, Boolean isDraft, String title, Pageable pageable);
+        Page<Quiz> findByCreatorAndTitleContaining(User creator, String title, Pageable pageable);
 
-    Page<Quiz> findByCreatorAndTitleContaining(User creator, String title, Pageable pageable);
+        List<Quiz> findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAtDesc();
+
+        List<Quiz> findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAt();
 
 }

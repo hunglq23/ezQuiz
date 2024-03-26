@@ -1,6 +1,8 @@
 package com.group3.ezquiz.payload;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Sort;
@@ -29,6 +31,7 @@ public class LibraryReqParam {
   @With
   private String search = "";
 
+  @With
   @NotNull
   @Pattern(regexp = "^(oldest|latest|AtoZ|ZtoA)$")
   private String sort = "latest";
@@ -115,6 +118,34 @@ public class LibraryReqParam {
 
   public LibraryReqParam getCustom() {
     return new LibraryReqParam(getSearch(), getSort(), 1, getEndIndex());
+  }
+
+  public String sort() {
+    if (sort.equals("AtoZ")) {
+      return "A to Z";
+    } else if (sort.equals("ZtoA")) {
+      return "Z to A";
+    }
+    return sort.substring(0, 1).toUpperCase() + sort.substring(1);
+  }
+
+  private final String[] COLORS = {
+      "#FFC107", "#FF5722", "#4CAF50",
+      "#2196F3", "#9C27B0", "#ec3c6c",
+      "#04cc84", "#6c6c6c", "#8c54c4" };
+  private final List<Integer> colorIndexUsed = new ArrayList<>();
+
+  public String randomBgColor() {
+
+    Integer randomIndex = null;
+    do {
+      randomIndex = (int) (Math.random() * COLORS.length);
+      if (colorIndexUsed.size() == COLORS.length) {
+        colorIndexUsed.clear();
+      }
+    } while (colorIndexUsed.contains(randomIndex));
+    colorIndexUsed.add(randomIndex);
+    return COLORS[randomIndex];
   }
 
 }

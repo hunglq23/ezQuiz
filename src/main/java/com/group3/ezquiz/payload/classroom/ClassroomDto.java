@@ -10,6 +10,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ClassroomDto {
+  @Builder.Default
+  private String type = "Classroom";
+  @Builder.Default
+  private Boolean isDraft = false;
   private Long id;
   private String name;
   private String description;

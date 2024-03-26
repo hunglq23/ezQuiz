@@ -94,367 +94,362 @@
       </nav>
     </header>
 
-    <div class="page-content bg-light py-3 min-vh-100">
-      <div class="container-fluid">
-        <div
-          class="d-flex justify-content-center m-0 w-100 h-100 gap-2 gap-lg-3"
-        >
+    <div
+      th:with="
+        max = ${library.getTotalPages()},
+        content = ${library.getObjectDtoList()},
+        totalResult = ${library.getTotalElements()}
+      "
+    >
+      <div class="page-content bg-light py-3 min-vh-100">
+        <div class="container-fluid gap-3 gap-lg-5">
           <div
-            th:with="max = ${library.getTotalPages()},
-                    content = ${library.getObjectDtoList()},
-                    totalResult = ${library.getTotalElements()}"
-            class="d-flex justify-content-center m-0 w-100 h-100 gap-3 gap-lg-5"
+            th:fragment="leftNav"
+            class="section d-none d-md-block sticky-nav col-lg-3"
+            style="height: fit-content; min-width: 234px"
           >
-            <!-- Left Nav - Library Nav -->
-            <div
-              th:fragment="leftNav"
-              class="section d-none d-md-block sticky-nav col-lg-3"
-              style="height: fit-content; min-width: 234px"
-            >
-              <header>
-                <h3>Library</h3>
-              </header>
-              <ul class="nav d-flex flex-column align-items-center mb-3">
-                <li
-                  class="nav-link w-100 p-0 rounded-1"
-                  th:classappend="${path.equals('/library/my-library') ? 'active' : ''}"
-                >
-                  <a class="btn btn-sm d-flex" th:href="@{/library/my-library}">
-                    <div class="square-33-center-item rotate-on-hover">
-                      <i class="fas fa-list"></i>
-                    </div>
-                    <div class="d-flex align-items-center flex-1">
-                      My Library
-                    </div>
-                  </a>
-                </li>
-                <li
-                  class="nav-link w-100 p-0 rounded-1"
-                  th:classappend="${path.equals('/library/my-quiz') ? 'active' : ''}"
-                >
-                  <a class="btn btn-sm d-flex" th:href="@{/library/my-quiz}">
-                    <div class="square-33-center-item rotate-on-hover">
-                      <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="d-flex align-items-center flex-1">My Quiz</div>
-                  </a>
-                </li>
-                <li
-                  class="nav-link w-100 p-0 rounded-1"
-                  th:classappend="${path.equals('/library/my-classroom') ? 'active' : ''}"
-                >
-                  <a
-                    class="btn btn-sm d-flex"
-                    th:href="@{/classroom/created-list}"
-                  >
-                    <div class="square-33-center-item rotate-on-hover">
-                      <i class="fas fa-book"></i>
-                    </div>
-                    <div class="d-flex align-items-center flex-1">
-                      <span>Classroom</span>
-                    </div>
-                  </a>
-                </li>
-              </ul>
-              <div class="divider left-content-divider"></div>
+            <header>
+              <h3>Library</h3>
+            </header>
+            <ul class="nav d-flex flex-column align-items-center mb-3">
+              <li
+                class="nav-link w-100 p-0 rounded-1"
+                th:classappend="${path.equals('/library/my-library') ? 'active' : ''}"
+              >
+                <a class="btn btn-sm d-flex" th:href="@{/library/my-library}">
+                  <div class="square-33-center-item rotate-on-hover">
+                    <i class="fas fa-list"></i>
+                  </div>
+                  <div class="d-flex align-items-center flex-1">My Library</div>
+                </a>
+              </li>
+              <li
+                class="nav-link w-100 p-0 rounded-1"
+                th:classappend="${path.equals('/library/my-quiz') ? 'active' : ''}"
+              >
+                <a class="btn btn-sm d-flex" th:href="@{/library/my-quiz}">
+                  <div class="square-33-center-item rotate-on-hover">
+                    <i class="fas fa-graduation-cap"></i>
+                  </div>
+                  <div class="d-flex align-items-center flex-1">My Quiz</div>
+                </a>
+              </li>
+              <li
+                class="nav-link w-100 p-0 rounded-1"
+                th:classappend="${path.equals('/library/my-classroom') ? 'active' : ''}"
+              >
+                <a class="btn btn-sm d-flex" th:href="@{/library/my-classroom}">
+                  <div class="square-33-center-item rotate-on-hover">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="d-flex align-items-center flex-1">
+                    <span>Classroom</span>
+                  </div>
+                </a>
+              </li>
+            </ul>
+            <div class="divider left-content-divider"></div>
 
-              <div th:if="${max > 1}" class="mt-2">
-                <nav aria-label="Page navigation">
-                  <ul class="pagination bg-light">
-                    <li class="page-item">
-                      <button
-                        type="button"
-                        class="page-link"
-                        onclick="prevPage()"
-                        aria-label="Previous"
-                      >
-                        &lt;&nbsp;Prev
-                      </button>
-                    </li>
-                    <li
-                      class="page-item"
-                      th:classappend="${params.page == 1 ? 'active' : ''}"
+            <div th:if="${max > 1}" class="mt-2">
+              <nav aria-label="Page navigation">
+                <ul class="pagination bg-light">
+                  <li class="page-item">
+                    <button
+                      type="button"
+                      class="page-link"
+                      onclick="prevPage()"
+                      aria-label="Previous"
                     >
-                      <a class="page-link page-index" role="button">1</a>
-                    </li>
-                    <div th:if="${max > 3}">
-                      <li
-                        th:if="${params.page < 3}"
-                        class="page-item ms-0 me-3"
-                        th:classappend="${params.page == 2 ? 'active' : ''}"
-                      >
-                        <a class="page-link page-index" role="button">2</a>
-                      </li>
-                      <li
-                        th:if="${params.page > 2 && params.page < max - 1}"
-                        class="page-item mx-2 active"
-                      >
-                        <a
-                          class="page-link page-index"
-                          role="button"
-                          th:text="${params.page}"
-                          >98</a
-                        >
-                      </li>
-                      <li
-                        th:if="${params.page > max - 2}"
-                        class="page-item ms-3 me-0"
-                        th:classappend="${params.page == max - 1 ? 'active' : ''}"
-                      >
-                        <a
-                          class="page-link page-index"
-                          th:text="${max - 1}"
-                          role="button"
-                          >98</a
-                        >
-                      </li>
-                    </div>
-                    <div th:if="${max == 3}">
-                      <li
-                        class="page-item"
-                        th:classappend="${params.page == 2 ? 'active' : ''}"
-                      >
-                        <a class="page-link page-index" role="button">2</a>
-                      </li>
-                    </div>
+                      &lt;&nbsp;Prev
+                    </button>
+                  </li>
+                  <li
+                    class="page-item"
+                    th:classappend="${params.page == 1 ? 'active' : ''}"
+                  >
+                    <a class="page-link page-index" role="button">1</a>
+                  </li>
+                  <div th:if="${max > 3}">
                     <li
-                      class="page-item"
-                      th:classappend="${params.page == max ? 'active' : ''}"
+                      th:if="${params.page < 3}"
+                      class="page-item ms-0 me-3"
+                      th:classappend="${params.page == 2 ? 'active' : ''}"
+                    >
+                      <a class="page-link page-index" role="button">2</a>
+                    </li>
+                    <li
+                      th:if="${params.page > 2 && params.page < max - 1}"
+                      class="page-item mx-2 active"
                     >
                       <a
                         class="page-link page-index"
                         role="button"
-                        th:text="${max}"
-                        >99</a
+                        th:text="${params.page}"
+                        >98</a
                       >
                     </li>
-                    <li class="page-item">
-                      <button
-                        type="button"
-                        class="page-link"
-                        aria-label="Next"
-                        onclick="nextPage()"
+                    <li
+                      th:if="${params.page > max - 2}"
+                      class="page-item ms-3 me-0"
+                      th:classappend="${params.page == max - 1 ? 'active' : ''}"
+                    >
+                      <a
+                        class="page-link page-index"
+                        th:text="${max - 1}"
+                        role="button"
+                        >98</a
                       >
-                        Next&nbsp;&gt;
-                      </button>
                     </li>
-                  </ul>
-                </nav>
+                  </div>
+                  <div th:if="${max == 3}">
+                    <li
+                      class="page-item"
+                      th:classappend="${params.page == 2 ? 'active' : ''}"
+                    >
+                      <a class="page-link page-index" role="button">2</a>
+                    </li>
+                  </div>
+                  <li
+                    class="page-item"
+                    th:classappend="${params.page == max ? 'active' : ''}"
+                  >
+                    <a
+                      class="page-link page-index"
+                      role="button"
+                      th:text="${max}"
+                      >99</a
+                    >
+                  </li>
+                  <li class="page-item">
+                    <button
+                      type="button"
+                      class="page-link"
+                      aria-label="Next"
+                      onclick="nextPage()"
+                    >
+                      Next&nbsp;&gt;
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <!-- <right content> -->
+          <div id="content" class="d-flex flex-column p-1">
+            <div class="d-flex justify-content-between">
+              <div
+                class="ps-1"
+                style="line-height: 2; font-size: 1.1rem; color: #6c757d"
+                th:fragment="searchResult"
+              >
+                Found
+                <span th:text="${totalResult}">69</span>
+                result<span th:if="${totalResult > 1}">s</span
+                ><span th:if="${content == null}">
+                  of "<span th:text="${params.search}">err</span>" </span
+                >.
+                <span th:if="${#strings.isEmpty(params.search)}">
+                  Displaying
+                  <span th:text="${content.size()}">-1</span>
+                  result<span th:if="${totalResult > 1}">s</span>:
+                </span>
+                <span th:if="${!params.search.isEmpty() && content != null}">
+                  Displaying of "<span th:text="${params.search}">err</span>"
+                  (<span th:text="${content.size()}">-1</span> result<span
+                    th:if="${content.size() > 1}"
+                    >s</span
+                  >):
+                </span>
+              </div>
+              <div class="d-flex gap-1" th:fragment="sort">
+                <div class="navbar-nav d-flex flex-column">
+                  <div class="nav-item dropdown">
+                    <button
+                      class="btn dropdown-toggle btn-sm bg-white p-0 px-2 d-flex align-items-center gap-1"
+                      role="button"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      <span class="fas fa-sort"></span>
+                      <span th:text="${params.sort()}">error</span>
+                    </button>
+                    <!-- Sort dropdown -->
+                    <div
+                      id="sortDropdown"
+                      class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                      aria-labelledby="sortDropdown"
+                      style="min-width: 0; width: 123px"
+                    >
+                      <a
+                        class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                      >
+                        <span class="text-capitalize">latest</span>
+                      </a>
+                      <a
+                        class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                      >
+                        <span class="text-capitalize">oldest</span>
+                      </a>
+                      <a
+                        class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                      >
+                        <span>A to Z</span>
+                      </a>
+                      <a
+                        class="dropdown-item btn btn-sm p-0 sort-type text-center"
+                      >
+                        <span>Z to A</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <!-- </Left Nav> -->
-
-            <!-- <right content> -->
-            <div id="content" class="d-flex flex-column p-1">
-              <form class="d-flex justify-content-between">
-                <div
-                  class="ps-1"
-                  style="line-height: 2; font-size: 1.1rem; color: #6c757d"
-                  th:fragment="searchResult"
-                >
-                  Found
-                  <span th:text="${totalResult}">69</span>
-                  result<span th:if="${totalResult > 1}">s</span
-                  ><span th:if="${content == null}">
-                    of "<span th:text="${params.search}">err</span>" </span
-                  >.
-                  <span th:if="${#strings.isEmpty(params.search)}">
-                    Displaying
-                    <span th:text="${content.size()}">-1</span>
-                    result<span th:if="${totalResult > 1}">s</span>:
-                  </span>
-                  <span th:if="${!params.search.isEmpty() && content != null}">
-                    Displaying of "<span th:text="${params.search}">err</span>"
-                    (<span th:text="${content.size()}">-1</span> result<span
-                      th:if="${content.size() > 1}"
-                      >s</span
-                    >):
-                  </span>
-                </div>
-                <div class="d-flex gap-1">
-                  <div class="navbar-nav d-flex flex-column">
-                    <div class="nav-item dropdown">
+            <div th:fragment="showData(content)" id="data">
+              <div class="d-flex flex-column gap-2">
+                <div th:each="data : ${content}">
+                  <div
+                    sec:authorize="hasRole('ROLE_TEACHER')"
+                    class="position-relative"
+                  >
+                    <div class="dropdown position-absolute ellipsis-toggle">
                       <button
-                        class="btn dropdown-toggle btn-sm bg-white p-0 px-2 d-flex align-items-center"
-                        role="button"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
+                        class="btn"
                         aria-expanded="false"
+                        data-bs-toggle="dropdown"
+                        style="right: 0"
                       >
-                        <span class="fas fa-sort me-2"></span>
-                        <span th:if="${params.sort==null}"> Latest </span>
-                        <span
-                          th:unless="${params.sort==null}"
-                          th:text="${params.sort}"
-                          style="text-transform: capitalize"
-                        ></span>
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
                       </button>
-                      <!-- Sort dropdown -->
-                      <div
-                        id="sortDropdown"
-                        class="dropdown-menu bg-white shadow animated--grow-in p-0"
-                        aria-labelledby="sortDropdown"
-                        style="min-width: 0; width: 123px"
-                      >
-                        <a
-                          class="dropdown-item btn btn-sm p-0 sort-type text-center"
-                        >
-                          <span class="text-capitalize">latest</span>
-                        </a>
-                        <a
-                          class="dropdown-item btn btn-sm p-0 sort-type text-center"
-                        >
-                          <span class="text-capitalize">oldest</span>
-                        </a>
-                      </div>
+                      <ul class="dropdown-menu">
+                        <li>
+                          <a class="dropdown-item" type="button">
+                            <i class="fa-regular fa-pen-to-square me-1"> </i>
+                            Edit
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            type="button"
+                            class="dropdown-item"
+                            onclick="confirm('Are you sure you want to delete?')"
+                          >
+                            <i class="fa-solid fa-trash me-1"> </i> Delete
+                          </a>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                </div>
-              </form>
-              <div id="data" class="section">
-                <div class="d-flex flex-column gap-2">
-                  <div th:each="content : ${content}">
+                  <a
+                    sec:authorize="hasRole('ROLE_TEACHER')"
+                    class="btn item p-1 d-flex gap-1 rounded-1 shadow-sm"
+                  >
+                    <div style="width: 169px">
+                      <img
+                        th:if="${data.imageUrl}"
+                        class="h-100 rounded-1"
+                        style="border: #f4f5f6 solid 1px; max-width: 169px"
+                        th:src="${data.imageUrl}"
+                      />
+                      <div
+                        th:unless="${data.imageUrl}"
+                        class="h-100 rounded-1"
+                        th:style="'background-color: ' + ${params.randomBgColor()}"
+                        th:classappend="${data.type == 'Classroom' ? 'classroom-default' : 'default-image'}"
+                      ></div>
+                    </div>
+
                     <div
-                      sec:authorize="hasRole('ROLE_TEACHER')"
-                      class="position-relative"
+                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2"
                     >
-                      <div class="dropdown position-absolute ellipsis-toggle">
-                        <button
-                          class="btn"
-                          aria-expanded="false"
-                          data-bs-toggle="dropdown"
-                          style="right: 0"
+                      <div class="d-flex" style="margin-top: 3px">
+                        <div
+                          class="bg-light rounded-2 item-tag px-1"
+                          th:text="${data.type}"
                         >
-                          <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" type="button">
-                              <i class="fa-regular fa-pen-to-square me-1"> </i>
-                              Edit
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              type="button"
-                              class="dropdown-item"
-                              onclick="confirm('Are you sure you want to delete?')"
+                          quiz
+                        </div>
+                        <div
+                          th:if="${data.isDraft}"
+                          class="rounded-2 item-tag px-1"
+                          style="color: rgb(247, 95, 95)"
+                        >
+                          draft
+                        </div>
+                      </div>
+
+                      <div
+                        th:if="${data.name == null || data.name.isEmpty()}"
+                        class="my-0 h5 opa-25"
+                      >
+                        Untitled Quiz
+                      </div>
+                      <div
+                        th:unless="${data.name == null || data.name.isEmpty()}"
+                        class="my-0 h5"
+                        th:text="${data.name}"
+                      >
+                        Quiz Name
+                      </div>
+
+                      <p
+                        class="text-small m-0 flex-fill fw-light"
+                        th:text="${data.description}"
+                      >
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      </p>
+
+                      <div
+                        class="d-flex justify-content-between align-items-center w-100"
+                      >
+                        <div
+                          class="d-flex flex-row align-items-center"
+                          style="
+                            font-size: 12px;
+                            opacity: 0.88;
+                            font-weight: 100;
+                          "
+                        >
+                          <div class="d-flex flex-row align-items-center">
+                            <i
+                              class="fas fa-list h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span
+                              style="margin: 0 3px"
+                              th:text="${data.itemNumber}"
+                              >99</span
+                            ><span th:if="${data.type=='Quiz'}"
+                              >question(s)</span
                             >
-                              <i class="fa-solid fa-trash me-1"> </i> Delete
-                            </a>
-                          </li>
-                        </ul>
+                            <span th:if="${data.type=='Classroom'}"
+                              >student(s)</span
+                            >
+                          </div>
+                          <div class="d-flex flex-row align-items-center mx-2">
+                            <i
+                              class="fas fa-history h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span
+                              style="margin: 0 3px"
+                              th:text="${data.getTimeString()}"
+                              >99</span
+                            >
+                          </div>
+                        </div>
+
+                        <div>
+                          <button class="btn btn-sm btn-primary m-0 py-0">
+                            Assign
+                            <i class="fas fa-caret-down"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <a
-                      sec:authorize="hasRole('ROLE_TEACHER')"
-                      class="btn item p-1 d-flex gap-1 rounded-1"
-                      style="height: 188px"
-                    >
-                      <img
-                        th:if="${content.image == null}"
-                        class="h-100 w-20"
-                        src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                      />
-                      <img
-                        th:unless="${content.image == null}"
-                        class="h-100 w-20"
-                        style="max-width: 169px; border: #f4f5f6 solid 1px"
-                        th:src="${content.image}"
-                      />
-                      <div
-                        class="bg-light d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2"
-                      >
-                        <div class="d-flex" style="margin-top: 3px">
-                          <div
-                            class="bg-white rounded-2 item-tag px-1"
-                            th:text="${content.type}"
-                          >
-                            quiz
-                          </div>
-                          <div
-                            th:if="${content.isDraft}"
-                            class="rounded-2 item-tag px-1"
-                            style="color: rgb(247, 95, 95)"
-                          >
-                            draft
-                          </div>
-                        </div>
-
-                        <div
-                          th:if="${content.name == null || content.name.isEmpty()}"
-                          class="my-0 h5 opa-25"
-                        >
-                          Untitled Quiz
-                        </div>
-                        <div
-                          th:unless="${content.name == null || content.name.isEmpty()}"
-                          class="my-0 h5"
-                          th:text="${content.name}"
-                        >
-                          Quiz Name
-                        </div>
-
-                        <p
-                          class="text-small m-0 flex-fill fw-light"
-                          th:text="${content.description}"
-                        >
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit.
-                        </p>
-
-                        <div
-                          class="d-flex justify-content-between align-items-center w-100"
-                        >
-                          <div
-                            class="d-flex flex-row align-items-center"
-                            style="
-                              font-size: 12px;
-                              opacity: 0.88;
-                              font-weight: 100;
-                            "
-                          >
-                            <div class="d-flex flex-row align-items-center">
-                              <i
-                                class="fas fa-list h-100"
-                                style="opacity: 0.55; margin-right: 3px"
-                              ></i>
-                              <span
-                                style="margin: 0 3px"
-                                th:text="${content.itemNumber}"
-                                >99</span
-                              ><span th:if="${content.type=='Quiz'}"
-                                >question(s)</span
-                              >
-                              <span th:if="${content.type=='Classroom'}"
-                                >student(s)</span
-                              >
-                            </div>
-                            <div
-                              class="d-flex flex-row align-items-center mx-2"
-                            >
-                              <i
-                                class="fas fa-history h-100"
-                                style="opacity: 0.55; margin-right: 3px"
-                              ></i>
-                              <span
-                                style="margin: 0 3px"
-                                th:text="${content.getTimeString()}"
-                                >99</span
-                              >
-                            </div>
-                          </div>
-
-                          <div>
-                            <button class="btn btn-sm btn-primary m-0 py-0">
-                              Assign
-                              <i class="fas fa-caret-down"></i>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                  </div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -502,7 +497,7 @@
       $(document).ready(function () {
         $(".sort-type").each(function () {
           $(this).on("click", function () {
-            params.sort = $(this).find("span").text();
+            params.sort = $(this).find("span").text().split(" ").join("");
             params.page = 1;
             location.href = params.getUrl();
           });
