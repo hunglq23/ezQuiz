@@ -36,6 +36,7 @@ import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -125,15 +126,6 @@ public class ClassroomServiceImpl implements IClassroomService {
     }
     return false;
   }
-
-  // public void removeLearnerFromClassroomLearnerId(Classroom classroom, Long
-  // learnerId) {
-
-  // List<ClassJoining> classJoinings = classroom.getClassJoinings();
-  // classJoinings.removeIf(joining ->
-  // joining.getLearner().getId().equals(learnerId));
-  // classroomRepo.save(classroom);
-  // }
 
   @Override
   public void importClassroomDataFromExcel(HttpServletRequest request, MultipartFile file) {
@@ -278,6 +270,18 @@ public class ClassroomServiceImpl implements IClassroomService {
         .itemNumber(classroom.getClassJoinings().size())
         .timestamp(classroom.getCreatedAt())
         .build();
+  }
+
+  @Override
+  public Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params) {
+
+    return classroomRepo.findByClassJoinings_LearnerAndNameContaining(
+      userService.getUserRequesting(request), 
+      params.getSearch(), 
+      PageRequest.of(params.getPage() - 1,
+                params.getSize(),
+                params.getSortType())
+    ).map(this::mapToClassroomDto);
   }
 
 }

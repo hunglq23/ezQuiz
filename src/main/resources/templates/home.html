@@ -136,6 +136,29 @@
                   </a>
                 </div>
               </li>
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-item dropdown no-arrow"
+              >
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purple mx-1 d-flex gap-1"
+                  style="padding: 4px 23px"
+                  th:href="@{/classroom/joined-list}"
+                  >My Classroom</a
+                >
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-item dropdown no-arrow"
+              >
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purpleee mx-1 d-flex gap-1"
+                  style="padding: 4px 23px"
+                  th:href="@{/quiz/assigned-list}"
+                  >Assigned Quiz</a
+                >
+              </li>
+
               <li class="nav-item dropdown no-arrow" th:fragment="barButton">
                 <a
                   class="nav-link dropdown-toggle bg-light rounded-full rounded-circle"

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,13 +13,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ExcelFileDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
@@ -159,11 +163,34 @@ public class ClassroomController {
 
     @PreAuthorize(LEARNER_AUTHORITY)
     @GetMapping("/joined-list")
-    public String JoinClassroomForm(
+    public String showCreatedClassrooms(
             HttpServletRequest request,
+            @Valid @ModelAttribute LibraryReqParam params,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
             Model model) {
+        final String PATH = "/classroom/joined-list";
+        final String DO_REDIRECT = "redirect:" + PATH;
+
+        if (bindingResult.hasErrors()) {
+            // if any invalid request params, set that param to default value
+            params.handleWhenError(bindingResult);
+            redirectAttributes.addAllAttributes(params.getAttrMap());
+            return DO_REDIRECT;
+        }
+
+        Page<ClassroomDto> page = classroomService.getJoinedClassrooms(request, params);
+
+        if (page.getTotalPages() < params.getPage() && page.getTotalPages() > 0) {
+            params.setPage(page.getTotalPages());
+            redirectAttributes.addAllAttributes(params.getAttrMap());
+            return DO_REDIRECT;
+        }
+
+        model.addAttribute("path", PATH);
+        model.addAttribute("page", page);
+        model.addAttribute("params", params);
         model.addAttribute("classroom", new CodeFormDto());
-        model.addAttribute("classrooms", userService.getUserRequesting(request).getClassJoinings());
         return "classroom/classroom-list";
     }
 
