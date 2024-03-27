@@ -36,11 +36,9 @@ import com.group3.ezquiz.exception.InvalidAttemptException;
 import com.group3.ezquiz.exception.InvalidQuestionException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.Answer;
-import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.model.Attempt;
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
-import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.model.UserResponse;
 import com.group3.ezquiz.payload.AssignedQuizDto;
@@ -589,38 +587,9 @@ public class QuizServiceImpl implements IQuizService {
 
   @Override
   public void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
-
       throws Exception {
     Quiz quiz = getQuizByRequestAndID(request, quizId);
-    if (quiz == null) {
-      log.error("Không tìm thấy quiz với ID: {}", quizId);
-      throw new Exception("Quiz not found with ID: " + quizId);
-    }
-
-    Long classroomId = assignedQuizDTO.getSelectedClassroom();
-    Classroom selectedClassroom = classroomService.getClassroomByRequestAndId(request, classroomId);
-    if (selectedClassroom == null) {
-      log.error("Không tìm thấy classroom với ID: {}", classroomId);
-      throw new Exception("Classroom not found with ID: " + classroomId);
-    }
-
-    if (assignedQuizDTO.isShuffleQuestions()) {
-      Collections.shuffle(quiz.getQuestions());
-      if (assignedQuizDTO.isShuffleAnswers()) {
-        quiz.getQuestions().forEach(question -> Collections.shuffle(question.getAnswers()));
-      }
-    }
-
-    QuizAssigning quizAssigning = new QuizAssigning();
-    quizAssigning.setQuiz(quiz); // Gán Quiz
-    quizAssigning.setMaxAttempt(assignedQuizDTO.getMaxAttempt()); // Gán Classroom
-    quizAssigning.setDurationInMins(assignedQuizDTO.getDurationInMins()); // Gán Classroom
-    quizAssigning.setClassroom(selectedClassroom); // Gán Classroom
-    quizAssigning.setStartDate(assignedQuizDTO.getStartDate());
-    quizAssigning.setDueDate(assignedQuizDTO.getDueDate());
-    quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions());
-    quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers());
-    quizAssigning.setNote(assignedQuizDTO.getNote()); // Gán note hoặc thông tin khác
+    classroomService.addAssignQuiz(request, quiz, assignedQuizDTO);
   }
 
   @Override

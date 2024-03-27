@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
 import com.group3.ezquiz.payload.classroom.ClassroomDto;
@@ -33,4 +35,6 @@ public interface IClassroomService {
     Page<ClassroomDto> getCreatedClassrooms(HttpServletRequest request, LibraryReqParam libraryDto);
 
     List<Classroom> findClassroomsByCreatorId(Long creatorId);
+
+    void addAssignQuiz(HttpServletRequest request, Quiz quiz, AssignedQuizDto assignedQuizDTO);
 }
