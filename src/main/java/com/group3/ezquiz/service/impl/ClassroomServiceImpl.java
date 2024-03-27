@@ -60,6 +60,7 @@ public class ClassroomServiceImpl implements IClassroomService {
         .creator(userService.getUserRequesting(request))
         .isEnable(true)
         .build();
+    creator.getClassrooms().add(classroom);
     if (classroom != null) {
       classroomRepo.save(classroom);
       return new ResponseEntity<>(
