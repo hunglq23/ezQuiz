@@ -94,7 +94,7 @@
             <i class="fas fa-user" style="margin-right: 3px"></i>
             <span th:text="${quiz.creator.fullName}">Admin</span>
           </div>
-          <a href="" class="btn btn-sm bg-light">
+          <a th:href="@{/quiz/{id}/edit(id=${quiz.id})}" th:if="${canEdit}" class="btn btn-sm bg-light">
             <i class="fas fa-pen-to-square me-1"></i>Edit</a>
         </div>
       </div>
@@ -148,15 +148,7 @@
               <i class="far fa-check-square mx-1"></i>
               Question <span th:text="${iStat.index + 1}">1</span>
             </div>
-            <!-- edit, delete,... to the right -->
-            <div class="d-flex">
-              <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"><i class="fas fa-edit mx-1"></i>
-                Edit
-                <span class="d-md-none d-lg-inline">this question</span>
-              </a>
-              <div style="border-left: 1px solid #e8e8e8"></div>
-              <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"><i class="fas fa-trash mx-1"></i></a>
-            </div>
+
           </div>
           <div class="card-body px-3 pb-1 pt-2">
             <div style="min-height: 123px">
@@ -169,6 +161,7 @@
                   Single Choice
                 </span>
                 <span th:if="${question.type.equals('multiple-choice')}">
+                  Multiple Choice
                 </span>
               </div>
             </div>
@@ -239,7 +232,7 @@
               <div class="form-check form-switch">
                 <label class="form-check-label" for="shuffleQuestions">Shuffle Questions</label>
                 <input class="form-check-input" type="checkbox" id="shuffleQuestions" name="shuffleQuestions"
-                  value="true" checked />
+                  value="true" />
                 <input class="form-check-input" type="hidden" name="_shuffleQuestions" value="false" />
               </div>
               <div class="form-check form-switch">
