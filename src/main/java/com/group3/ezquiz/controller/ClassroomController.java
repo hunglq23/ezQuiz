@@ -207,4 +207,15 @@ public class ClassroomController {
         return "redirect:error";
     }
 
+    @PreAuthorize(TEACHER_AUTHORITY)
+    @PostMapping("/{id}/remove-member")
+    public String removeLearnerByTeacher(
+            HttpServletRequest request,
+            @PathVariable Long id,
+            @RequestParam Long classJoiningId, Model model) {
+        Classroom classroom = classroomService.getClassroomByRequestAndId(request, id);
+        classroomService.removeLearnerFromClassroomByClassJoiningId(classroom, classJoiningId);
+        model.addAttribute("classroom", classroom);
+        return "redirect:/classroom/" + id;
+    }
 }

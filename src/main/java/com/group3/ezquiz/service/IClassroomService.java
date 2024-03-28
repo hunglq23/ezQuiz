@@ -35,4 +35,6 @@ public interface IClassroomService {
     List<Classroom> findClassroomsByCreatorId(Long creatorId);
 
     Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params);
+
+    void removeLearnerFromClassroomByClassJoiningId(Classroom classroom, Long classJoiningId);
 }

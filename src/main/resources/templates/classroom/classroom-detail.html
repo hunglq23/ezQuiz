@@ -285,19 +285,29 @@
                 <tr>
                   <!-- <div class="d-none" th:text="${classJoining.id}"></div> -->
                   <th scope="row" th:text="${iStat.index + 1}">1</th>
-                  <td th:text="${classJoining.getLearner().fullName}">Mark</td>
+                  <td th:text="${classJoining.learnerDisplayedName}">Mark</td>
                   <td th:text="${classJoining.getLearner().email}">Otto</td>
                   <td th:text="${classJoining.learnerDisplayedPhone}">
                     123456799
                   </td>
                   <td class="action">
-                    <a
-                      class="btn btn-sm bg-light"
-                      th:href="@{./{id}/remove-member(id=${classroom.id}, classJoiningId=${classJoining.id})}"
-                      onclick="removeMember(event)"
-                      id="classroom"
-                      ><i class="fa-solid fa-trash"></i
-                    ></a>
+                    <form
+                      th:action="@{./{id}/remove-member(id=${classroom.id})}"
+                      method="post"
+                    >
+                      <button
+                        class="btn btn-sm bg-light"
+                        onclick="removeMember()"
+                        type="submit"
+                      >
+                        <span class="fa-solid fa-trash"> </span>
+                      </button>
+                      <input
+                        type="hidden"
+                        name="classJoiningId"
+                        th:value="${classJoining.id}"
+                      />
+                    </form>
                   </td>
                 </tr>
               </tbody>
@@ -551,6 +561,8 @@
           window.location.href = "/classroom/{id}?imported";
         });
       }
+
+      
     </script>
   </body>
 </html>

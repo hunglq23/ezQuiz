@@ -84,7 +84,7 @@ public class LibraryController {
     }
 
     Page<QuizDto> page = libraryService.getMyQuizInLibrary(request, params);
-    if (page.getTotalPages() < params.getPage()) {
+    if (page.getTotalPages() > 0 && page.getTotalPages() < params.getPage()) {
       params.setPage(page.getTotalPages());
       redirectAttributes.addAllAttributes(params.getAttrMap());
       return DO_REDIRECT;
@@ -114,7 +114,7 @@ public class LibraryController {
     }
 
     Page<ClassroomDto> page = libraryService.getMyClassroomInLibrary(request, params);
-    if (page.getTotalPages() < params.getPage()) {
+    if (page.getTotalPages() > 0 && page.getTotalPages() < params.getPage()) {
       params.setPage(page.getTotalPages());
       redirectAttributes.addAllAttributes(params.getAttrMap());
       return DO_REDIRECT;

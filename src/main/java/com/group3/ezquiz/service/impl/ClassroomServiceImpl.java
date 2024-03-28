@@ -120,6 +120,8 @@ public class ClassroomServiceImpl implements IClassroomService {
     if (classroom != null && learner != null) {
       classJoining.setLearner(learner);
       classJoining.setClassroom(classroom);
+      classJoining.setLearnerDisplayedName(learner.getFullName());
+      classJoining.setLearnerDisplayedPhone(learner.getPhone());
       classroom.getClassJoinings().add(classJoining);
       classroomRepo.save(classroom);
       return true;
@@ -209,7 +211,7 @@ public class ClassroomServiceImpl implements IClassroomService {
         log.info("Description: " + description);
         classroom.setDescription(description);
       }
-      rowIterator.next();
+
     } else if (rowIterator.hasNext()) {
       // skip the third row
       classJoinings = classroom.getClassJoinings();
@@ -276,12 +278,19 @@ public class ClassroomServiceImpl implements IClassroomService {
   public Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params) {
 
     return classroomRepo.findByClassJoinings_LearnerAndNameContaining(
-      userService.getUserRequesting(request), 
-      params.getSearch(), 
-      PageRequest.of(params.getPage() - 1,
-                params.getSize(),
-                params.getSortType())
-    ).map(this::mapToClassroomDto);
+        userService.getUserRequesting(request),
+        params.getSearch(),
+        PageRequest.of(params.getPage() - 1,
+            params.getSize(),
+            params.getSortType()))
+        .map(this::mapToClassroomDto);
+  }
+
+  @Override
+  public void removeLearnerFromClassroomByClassJoiningId(Classroom classroom, Long classJoiningId) {
+
+    classroom.getClassJoinings().removeIf(classJoining -> classJoining.getId() == classJoiningId);
+    classroomRepo.save(classroom);
   }
 
 }
