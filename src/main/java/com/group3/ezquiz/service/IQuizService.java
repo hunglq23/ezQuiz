@@ -13,6 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.payload.AssignedQuizDto;
+import com.group3.ezquiz.payload.HomeContent;
+import com.group3.ezquiz.payload.LibraryReqParam;
+import com.group3.ezquiz.payload.QuizReqParam;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.QuizDto;
@@ -26,35 +30,54 @@ import jakarta.validation.Valid;
 
 public interface IQuizService {
 
-  Quiz getDraftQuiz(HttpServletRequest request);
+	Quiz getDraftQuiz(HttpServletRequest request);
 
-  Quiz getQuizByRequestAndID(HttpServletRequest request, UUID id);
-  QuizDetail getQuizWhenSearch(UUID id);
+	Quiz getQuizByRequestAndID(HttpServletRequest request, UUID id);
 
-  Quiz handleQuestionCreatingInQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
+	QuizDetail getQuizWhenSearch(UUID id);
 
-  ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
+	Quiz handleQuestionCreatingInQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
 
-  QuizToLearner getQuizByLearnerForTaking(HttpServletRequest request, UUID id);
+	ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
 
-  ResponseEntity<?> handleAnswersChecking(HttpServletRequest request, UUID quizId, Long questId, Long questId2,
-      String questIndex,
-      Map<String, String> params);
+	QuizToLearner getQuizByLearnerForTaking(HttpServletRequest request, UUID id);
 
-  List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
+	ResponseEntity<?> handleAnswersChecking(
+			HttpServletRequest request, UUID quizId, Long questId, Long questId2,
+			String questIndex,
+			Map<String, String> params);
 
-  ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
-        List<QuizDto> getListQuizUUID(HttpServletRequest request);
-        List<QuizDto> searchQuizUUID(HttpServletRequest request, String search);
+	List<Question> importQuizDataFromExcel(HttpServletRequest request, MultipartFile excelFile, UUID id);
 
-  Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
+	ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
 
-  void deleteQuiz(UUID id);
+	Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
 
-  ResponseEntity<?> handleAnswerSelected(HttpServletRequest request, UUID quizId, Long answerId, Long answerId2);
+	List<QuizDto> searchQuizUUID(HttpServletRequest request, String search);
 
-  void handleFinishQuizAttempt(HttpServletRequest request, UUID quizId, Long attemptId);
+	void deleteQuiz(UUID id);
 
-  QuizResult findLastFinishAttemptResult(HttpServletRequest request, UUID quizId);
+	Question getQuestionByIdAndQuiz(Long questionId, Quiz quiz);
+
+	Quiz handleQuestionEditingInQuiz(Quiz quiz, Long questionId, String type, String questionText,
+			Map<String, String> params);
+
+	void deleteQuestionById(UUID id, Long questionId);
+
+	void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO);
+
+	ResponseEntity<?> handleAnswerSelected(HttpServletRequest request, UUID quizId, Long answerId, Long answerId2);
+
+	void handleFinishQuizAttempt(HttpServletRequest request, UUID quizId, Long attemptId);
+
+	QuizResult findLastFinishAttemptResult(HttpServletRequest request, UUID quizId);
+
+	Page<QuizDto> getCreatedQuizList(HttpServletRequest request, @Valid QuizReqParam params);
+
+	Page<QuizDto> getAvailableQuizList(@Valid LibraryReqParam params);
+
+	HomeContent getHomeContent();
+
+	Quiz getQuizById(UUID id);
 
 }

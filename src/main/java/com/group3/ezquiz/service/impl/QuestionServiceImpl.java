@@ -61,23 +61,6 @@ public class QuestionServiceImpl implements IQuestionService {
   }
 
   @Override
-  public Integer getCorrectAnswerNumberInQuestion(Long questId) {
-
-    return questionRepo.countByIdAndAnswers_IsCorrectIsTrue(questId);
-  }
-
-  @Override
-  public Question getByIdAndQuiz(Long questId, Quiz quiz) {
-
-    return questionRepo
-        .findByIdAndQuizList_Id(questId, quiz.getId())
-        .orElseThrow(
-            () -> new ResourceNotFoundException(
-                "Not found question ID (" + questId +
-                    ") in quiz ID: " + quiz.getId()));
-  }
-
-  @Override
   public ResponseEntity<?> checkQuestionAnswers(
       Attempt attempt,
       Long questionId,
@@ -161,4 +144,64 @@ public class QuestionServiceImpl implements IQuestionService {
     }
     return answers;
   }
+
+  @Override
+  public Integer getCorrectAnswerNumberInQuestion(Long questId) {
+
+    return questionRepo.countByIdAndAnswers_IsCorrectIsTrue(questId);
+  }
+
+  @Override
+  public Question getByIdAndQuiz(Long questId, Quiz quiz) {
+
+    return questionRepo
+        .findByIdAndQuizList_Id(questId, quiz.getId())
+        .orElseThrow(
+            () -> new ResourceNotFoundException(
+                "Not found question ID (" + questId +
+                    ") in quiz ID: " + quiz.getId()));
+  }
+
+  // @Override
+  // public ResponseEntity<?> checkQuestionAnswers(
+  // Long questionId,
+  // Map<String, String> uncheckAnswers,
+  // String questIndex) {
+
+  // Boolean allAnswerCorrect = true;
+  // IncorrectQuestion incorrectQuestion = new IncorrectQuestion(questIndex, new
+  // HashMap<>());
+
+  // for (Entry<String, String> ansEntry : uncheckAnswers.entrySet()) {
+  // if (questionRepo
+  // .findByIdAndAnswers_IdAndAnswers_IsCorrect(
+  // questionId,
+  // Long.parseLong(ansEntry.getKey()),
+  // Boolean.parseBoolean(ansEntry.getValue()))
+  // .isPresent() == false) {
+
+  // incorrectQuestion.getAnswers().put(ansEntry.getKey(), false);
+  // allAnswerCorrect = false;
+  // } else {
+  // incorrectQuestion.getAnswers().put(ansEntry.getKey(), true);
+  // }
+  // }
+
+  // if (allAnswerCorrect) {
+  // return ResponseEntity.ok(
+  // CorrectQuestion.builder()
+  // .message("All the answers in question are correct!")
+  // .questIndex(questIndex)
+  // .timestamp(LocalDateTime.now())
+  // .build());
+  // }
+
+  // return new ResponseEntity<>(incorrectQuestion, HttpStatus.BAD_REQUEST);
+  // }
+
+  @Override
+  public void saveQuestion(Question question) {
+    questionRepo.save(question);
+  }
+
 }

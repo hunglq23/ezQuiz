@@ -1,10 +1,10 @@
 package com.group3.ezquiz.payload.quiz;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
 import com.group3.ezquiz.payload.QuestionDto;
-import com.group3.ezquiz.payload.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class QuizDetail {
     private Boolean isExam;
     private String imageUrl;
     private String description;
-    private UserDto creator;
+    private String creatorName;
     private List<QuestionDto> questions;
     private Timestamp createdAt;
     private Timestamp updatedAt;

@@ -67,6 +67,9 @@ public class User {
   @OneToMany(mappedBy = "learner")
   private List<ClassJoining> classJoinings;
 
+  @OneToMany(mappedBy = "creator")
+  private List<Classroom> classrooms;
+
   @OneToMany(mappedBy = "learner")
   private List<QuizTaking> takenQuizList;
 

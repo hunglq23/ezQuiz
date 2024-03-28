@@ -4,16 +4,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,32 +27,34 @@ import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.ClassJoining;
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.payload.ClassroomDto;
+import com.group3.ezquiz.payload.AssignedQuizDto;
+import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
+import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
+import com.group3.ezquiz.payload.classroom.ClassroomDto;
 import com.group3.ezquiz.repository.ClassroomRepo;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
+
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ClassroomServiceImpl implements IClassroomService {
 
-  private final Integer MAX_MEMBER_PER_CLASS = 30;
   private final static Logger log = LoggerFactory.getLogger(ClassroomServiceImpl.class);
+  private final int MAX_MEMBER_PER_CLASS = 30;
+
   private final ClassroomRepo classroomRepo;
   private final IUserService userService;
 
   @Override
-  public List<Classroom> getCreatedClassroomList(HttpServletRequest request) {
-    User creator = userService.getUserRequesting(request);
-    return classroomRepo.findByCreator(creator);
-  }
-
-  @Override
-  public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDto dto) {
+  public ResponseEntity<?> createClass(HttpServletRequest request, ClassroomDetailDto dto) {
     User creator = userService.getUserRequesting(request);
     if (classroomRepo.findByCreatorAndName(creator, dto.getName()).isPresent()) {
       throw new InvalidClassroomException("Classroom name existed!");
@@ -59,6 +66,7 @@ public class ClassroomServiceImpl implements IClassroomService {
         .creator(userService.getUserRequesting(request))
         .isEnable(true)
         .build();
+    creator.getClassrooms().add(classroom);
     if (classroom != null) {
       classroomRepo.save(classroom);
       return new ResponseEntity<>(
@@ -113,23 +121,22 @@ public class ClassroomServiceImpl implements IClassroomService {
   @Override
   public boolean joinClassroom(HttpServletRequest request, String code) {
     User learner = userService.getUserRequesting(request);
-    Classroom classroom = classroomRepo.findByCode(code)
-        .orElseThrow(() -> new ResourceNotFoundException("Code not found!"));
-    ClassJoining classJoining = new ClassJoining();
+    Classroom classroom = classroomRepo.findByCode(code);
     if (classroom != null && learner != null) {
-      classJoining.setLearner(learner);
-      classJoining.setClassroom(classroom);
+
+      ClassJoining classJoining = ClassJoining.builder()
+          .learner(learner)
+          .classroom(classroom)
+          .learnerDisplayedName(learner.getFullName())
+          .learnerDisplayedPhone(learner.getPhone())
+          .build();
+
+      learner.getClassJoinings().add(classJoining);
       classroom.getClassJoinings().add(classJoining);
       classroomRepo.save(classroom);
       return true;
     }
     return false;
-  }
-
-  private String generateClassCode() {
-    UUID codeUUID = UUID.randomUUID();
-    String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
-    return codeClass;
   }
 
   @Override
@@ -171,6 +178,38 @@ public class ClassroomServiceImpl implements IClassroomService {
 
   }
 
+  @Override
+  public Page<ClassroomDto> getCreatedClassrooms(HttpServletRequest request, LibraryReqParam params) {
+
+    User userRequest = userService.getUserRequesting(request);
+    Page<Classroom> classroomPage = classroomRepo
+        .findByCreatorAndNameContaining(
+            userRequest,
+            params.getSearch(),
+            PageRequest.of(params.getPage() - 1,
+                params.getSize(),
+                params.getSortType()));
+
+    return classroomPage.map(this::mapToClassroomDto);
+  }
+
+  @Override
+  public List<Classroom> findClassroomsByCreatorId(Long creatorId) {
+    return classroomRepo.findByCreatorId(creatorId);
+  }
+
+  @Override
+  public Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params) {
+
+    return classroomRepo.findByClassJoinings_LearnerAndNameContaining(
+        userService.getUserRequesting(request),
+        params.getSearch(),
+        PageRequest.of(params.getPage() - 1,
+            params.getSize(),
+            params.getSortType()))
+        .map(this::mapToClassroomDto);
+  }
+
   private Classroom processSheet(Sheet sheet, Classroom classroom) {
     List<ClassJoining> classJoinings = new ArrayList<>();
 
@@ -196,7 +235,7 @@ public class ClassroomServiceImpl implements IClassroomService {
       }
 
     } else if (rowIterator.hasNext()) {
-      rowIterator.next(); // skip the third row
+      // skip the third row
       classJoinings = classroom.getClassJoinings();
     }
 
@@ -238,6 +277,52 @@ public class ClassroomServiceImpl implements IClassroomService {
     classroom.setClassJoinings(classJoinings);
     Classroom saved = classroomRepo.save(classroom);
     return saved;
+  }
+
+  private String generateClassCode() {
+    UUID codeUUID = UUID.randomUUID();
+    String codeClass = codeUUID.toString().replace("-", "").substring(0, 8).toUpperCase();
+    return codeClass;
+  }
+
+  private ClassroomDto mapToClassroomDto(Classroom classroom) {
+    return ClassroomDto.builder()
+        .id(classroom.getId())
+        .name(classroom.getName())
+        .description(classroom.getDescription())
+        .imageUrl(classroom.getImageURL())
+        .itemNumber(classroom.getClassJoinings().size())
+        .timestamp(classroom.getCreatedAt())
+        .teacherName(classroom.getCreator().getFullName())
+        .build();
+  }
+
+  @Override
+  public void addAssignQuiz(HttpServletRequest request, Quiz quiz, AssignedQuizDto assignedQuizDTO) {
+
+    Long classroomId = assignedQuizDTO.getSelectedClassroom();
+    Classroom selectedClassroom = getClassroomByRequestAndId(request, classroomId);
+
+    if (assignedQuizDTO.isShuffleQuestions()) {
+      Collections.shuffle(quiz.getQuestions());
+      if (assignedQuizDTO.isShuffleAnswers()) {
+        quiz.getQuestions().forEach(question -> Collections.shuffle(question.getAnswers()));
+      }
+    }
+
+    QuizAssigning quizAssigning = new QuizAssigning();
+    quizAssigning.setQuiz(quiz); // Set the Quiz
+    quizAssigning.setMaxAttempt(assignedQuizDTO.getMaxAttempt()); // Set max attempts
+    quizAssigning.setDurationInMins(assignedQuizDTO.getDurationInMins()); // Set duration
+    quizAssigning.setClassroom(selectedClassroom); // Set the Classroom
+    quizAssigning.setStartDate(assignedQuizDTO.getStartDate()); // Set start date
+    quizAssigning.setDueDate(assignedQuizDTO.getDueDate()); // Set due date
+    quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions()); // Set shuffle questions
+    quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers()); // Set shuffle answers
+    quizAssigning.setNote(assignedQuizDTO.getNote());
+
+    selectedClassroom.getAssignedQuizList().add(quizAssigning);
+    classroomRepo.save(selectedClassroom);
   }
 
 }

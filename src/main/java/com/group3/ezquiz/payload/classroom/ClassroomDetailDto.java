@@ -1,4 +1,4 @@
-package com.group3.ezquiz.payload;
+package com.group3.ezquiz.payload.classroom;
 
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ClassroomDto {
+public class ClassroomDetailDto {
 
     @Size(min = 3, message = "Name at lease 3 characters!")
     private String name;
@@ -19,7 +19,5 @@ public class ClassroomDto {
     public void setDescription(String description) {
         this.description = description.trim().isEmpty() ? null : description;
     }
- 
-    
-    
+
 }

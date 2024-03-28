@@ -12,8 +12,9 @@ import com.group3.ezquiz.payload.QuestionDto;
 import com.group3.ezquiz.payload.quiz.QuizDetail;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.payload.quiz.QuizResult;
-import com.group3.ezquiz.utils.Utility;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +43,24 @@ import com.group3.ezquiz.model.Question;
 import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.model.UserResponse;
+import com.group3.ezquiz.payload.AssignedQuizDto;
+import com.group3.ezquiz.payload.HomeContent;
+import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.QuestionToLearner;
+import com.group3.ezquiz.payload.QuizReqParam;
 import com.group3.ezquiz.payload.quiz.QuizDetailsDto;
 import com.group3.ezquiz.payload.quiz.QuizToLearner;
 import com.group3.ezquiz.payload.quiz.attempt.AttemptDto;
 import com.group3.ezquiz.repository.QuizRepo;
 import com.group3.ezquiz.service.IQuizService;
 import com.group3.ezquiz.service.IUserService;
+import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IAttemptService;
 import com.group3.ezquiz.service.IQuestionService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +72,9 @@ public class QuizServiceImpl implements IQuizService {
   private final static Logger log = LoggerFactory.getLogger(QuestionServiceImpl.class);
 
   private final QuizRepo quizRepo;
+
   private final IUserService userService;
+  private final IClassroomService classroomService;
   private final IQuestionService questionService;
   private final IAttemptService attemptService;
 
@@ -94,14 +103,12 @@ public class QuizServiceImpl implements IQuizService {
 
   @Override
   public QuizDetail getQuizWhenSearch(UUID id) {
-
-    return quizToQuizDTO(quizRepo
-            .findById(id)
-            .orElseThrow(
-                    () -> new ResourceNotFoundException("Not found your quiz with ID " + id)));
+    return quizToQuizDTO(
+        quizRepo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Not found your quiz with ID " + id)));
   }
 
-  public static QuizDetail quizToQuizDTO(Quiz quiz) {
+  private QuizDetail quizToQuizDTO(Quiz quiz) {
     QuizDetail quizDTO = new QuizDetail();
     quizDTO.setId(quiz.getId());
     quizDTO.setTitle(quiz.getTitle());
@@ -110,9 +117,10 @@ public class QuizServiceImpl implements IQuizService {
     quizDTO.setIsExam(quiz.getIsExam());
     quizDTO.setImageUrl(quiz.getImageUrl());
     quizDTO.setDescription(quiz.getDescription());
+    quizDTO.setCreatorName(quiz.getCreator().getFullName());
     List<Question> questions = quiz.getQuestions();
     List<QuestionDto> questionDtoList = questions.stream().map(question -> {
-      QuestionDto questionDto  = new QuestionDto();
+      QuestionDto questionDto = new QuestionDto();
       questionDto.setText(question.getText());
       return questionDto;
     }).collect(Collectors.toList());
@@ -225,7 +233,8 @@ public class QuizServiceImpl implements IQuizService {
         .checkQuestionAnswers(attempt, uncheckQuestion.getId(), params, questIndex);
   }
 
-  private Quiz getQuizById(UUID id) {
+  @Override
+  public Quiz getQuizById(UUID id) {
     return quizRepo.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException(
             "Not found quiz by ID " + id));
@@ -270,7 +279,8 @@ public class QuizServiceImpl implements IQuizService {
           // Parse question type from the second cell of the row
           Cell typeCell = cellIterator.next();
           String questionType = getCellValue(typeCell).trim();
-          if (!List.of("Single Choice", "Multiple Choice").contains(questionType)) {
+          if (!List.of("single-choice", "multiple-choice",
+              "Single Choice", "Multiple Choice").contains(questionType)) {
             validQuestion = false;
             log.error("type " + questionType);
 
@@ -317,7 +327,7 @@ public class QuizServiceImpl implements IQuizService {
 
           // For single choice questions, find the matching Answer for the correct answer
           // and mark it as correct
-          if (questionType.equalsIgnoreCase("single choice")) {
+          if (questionType.equalsIgnoreCase("single-choice")) {
             if (correctAnswerNumber != 1) {
               validQuestion = false;
               log.error("single != 1");
@@ -326,7 +336,7 @@ public class QuizServiceImpl implements IQuizService {
 
           // For multiple choice questions, parse the correct answer indices and mark the
           // corresponding Answers as correct
-          else if (questionType.equalsIgnoreCase("multiple choice")) {
+          else if (questionType.equalsIgnoreCase("multiple-choice")) {
             if (correctAnswerNumber < 2) {
               validQuestion = false;
               log.error(" MTP < 2");
@@ -554,23 +564,11 @@ public class QuizServiceImpl implements IQuizService {
     }
     Page<QuizDto> quizDtoList = quizByCreator.map(this::mapToQuizDto);
 
-    quizDtoList.forEach(objectDto -> objectDto.setTimeString(
-        Utility.calculateTimeElapsed(
-            Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd HH:mm:ss"))));
+    // quizDtoList.forEach(objectDto -> objectDto.setTimeString(
+    // Utility.calculateTimeElapsed(
+    // Utility.convertStringToTimestamp(objectDto.timeString(), "yyyy-MM-dd
+    // HH:mm:ss"))));
     return quizDtoList;
-  }
-
-  private QuizDto mapToQuizDto(Quiz quiz) {
-    return QuizDto.builder()
-        .id(quiz.getId())
-        .type("Quiz")
-        .title(quiz.getTitle())
-        .description(quiz.getDescription())
-        .image(quiz.getImageUrl())
-        .isDraft(quiz.getIsDraft())
-        .itemNumber(quiz.getQuestions().size())
-        .timeString(quiz.getCreatedAt().toString())
-        .build();
   }
 
   @Override
@@ -585,16 +583,123 @@ public class QuizServiceImpl implements IQuizService {
   }
 
   @Override
+  public void deleteQuestionById(UUID id, Long questionId) {
+    Quiz quiz = getQuizById(id);
+    List<Question> questions = quiz.getQuestions();
+    if (questions.removeIf(question -> question.getId() == questionId)) {
+      quizRepo.save(quiz);
+    } else {
+      throw new ResourceNotFoundException("Question with id " + questionId + "not found!");
+    }
+  }
+
+  @Override
   public List<QuizDto> searchQuizUUID(HttpServletRequest request, String search) {
-    List<Quiz> data = quizRepo.searchQuizUUID(search);
+    List<Quiz> data = quizRepo.findByIsEnableIsTrueAndIsDraftIsFalseAndTitleContaining(search);
     return data.stream().map(this::mapToQuizDto).collect(Collectors.toList());
   }
 
   @Override
-  public List<QuizDto> getListQuizUUID(HttpServletRequest request) {
-    List<Quiz> data = quizRepo.findQuizUUID();
-    return data.stream().map(this::mapToQuizDto).collect(Collectors.toList());
+  public Question getQuestionByIdAndQuiz(Long questionId, Quiz quiz) {
+    return questionService.getByIdAndQuiz(questionId, quiz);
+  }
 
+  @Override
+  public Quiz handleQuestionEditingInQuiz(Quiz quiz, Long questionId, String type, String questionText,
+      Map<String, String> params) {
+    Question newQuestion = questionService
+        .createNewQuestionOfQuiz(quiz, type, questionText, params);
+    quiz.getQuestions().add(newQuestion);
+    Question quest = getQuestionByIdAndQuiz(questionId, quiz);
+    quiz.getQuestions().remove(quest);
+    quizRepo.save(quiz);
+    return quizRepo.save(quiz);
+  }
+
+  @Override
+  public void assignQuiz(
+      HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO) {
+    Quiz quiz = getQuizByRequestAndID(request, quizId);
+    classroomService.addAssignQuiz(request, quiz, assignedQuizDTO);
+  }
+
+  @Override
+  public Page<QuizDto> getCreatedQuizList(HttpServletRequest request, @Valid QuizReqParam params) {
+    User userRequesting = userService.getUserRequesting(request);
+
+    Page<Quiz> page = null;
+    if (params.getDraft() == null) {
+      page = quizRepo.findByCreatorAndTitleContaining(
+          userRequesting,
+          params.getSearch(),
+          PageRequest.of(
+              params.getPage() - 1,
+              params.getSize(),
+              params.getSortType()));
+    } else {
+      page = quizRepo.findByCreatorAndIsDraftAndTitleContaining(
+          userRequesting,
+          params.getDraft(),
+          params.getSearch(),
+          PageRequest.of(
+              params.getPage() - 1,
+              params.getSize(),
+              params.getSortType()));
+    }
+    return page.map(this::mapToQuizDto);
+  }
+
+  @Override
+  public Page<QuizDto> getAvailableQuizList(@Valid LibraryReqParam params) {
+
+    Page<Quiz> page = quizRepo.findByIsDraftIsFalseAndTitleContaining(
+        params.getSearch(),
+        PageRequest.of(
+            params.getPage() - 1,
+            params.getSize(),
+            params.getSortType()));
+    return page.map(this::mapToQuizDto);
+  }
+
+  private QuizDto mapToQuizDto(Quiz quiz) {
+    return QuizDto.builder()
+        .id(quiz.getId())
+        .title(quiz.getTitle())
+        .name(quiz.getTitle())
+        .description(quiz.getDescription())
+        .imageUrl(quiz.getImageUrl())
+        .isDraft(quiz.getIsDraft())
+        .itemNumber(quiz.getQuestions().size())
+        .timestamp(quiz.getCreatedAt())
+        .creatorName(quiz.getCreator().getFullName())
+        .build();
+  }
+
+  @Override
+  public HomeContent getHomeContent() {
+    List<QuizDto> highlightQuiz = quizRepo
+        .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAt()
+        .stream()
+        .map(this::mapToQuizDto)
+        .collect(Collectors.toList());
+
+    List<QuizDto> recentQuiz = quizRepo
+        .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAtDesc()
+        .stream()
+        .map(this::mapToQuizDto)
+        .collect(Collectors.toList());
+
+    List<QuizDto> popularQuiz = quizRepo
+        .findTop4ByIsEnableIsTrueAndIsDraftIsFalseOrderByCreatedAtDesc()
+        .stream()
+        .map(this::mapToQuizDto)
+        .collect(Collectors.toList());
+
+    return HomeContent.builder()
+        .highlight(highlightQuiz)
+        .recentQuiz(recentQuiz)
+        .popularQuiz(popularQuiz)
+        .build();
   }
 
 }

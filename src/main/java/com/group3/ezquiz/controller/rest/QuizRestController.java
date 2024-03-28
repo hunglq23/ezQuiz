@@ -1,6 +1,5 @@
 package com.group3.ezquiz.controller.rest;
 
-import com.group3.ezquiz.model.Quiz;
 import com.group3.ezquiz.payload.quiz.QuizDetail;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.IQuizService;

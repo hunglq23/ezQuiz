@@ -62,5 +62,8 @@ public class Classroom {
   private User creator;
 
   @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
+  private List<QuizAssigning> assignedQuizList;
+
+  @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
   private List<ClassJoining> classJoinings;
 }

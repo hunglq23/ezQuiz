@@ -1,8 +1,6 @@
 package com.group3.ezquiz.service;
 
 import com.group3.ezquiz.model.User;
-import com.group3.ezquiz.payload.LibraryReqParam;
-import com.group3.ezquiz.payload.LibraryResponse;
 import com.group3.ezquiz.payload.UserDto;
 import com.group3.ezquiz.payload.auth.RegisterRequest;
 
@@ -38,7 +36,7 @@ public interface IUserService {
 
   void updatePassword(String email, String pass);
 
-  LibraryResponse getQuizAndClassroomByTeacher(HttpServletRequest request, LibraryReqParam libraryDto);
+  Boolean isCreator(HttpServletRequest request, User user);
 
   void save(User user);
 }

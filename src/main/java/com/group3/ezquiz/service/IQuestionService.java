@@ -17,8 +17,14 @@ public interface IQuestionService {
 
   Question getByIdAndQuiz(Long questId, Quiz quiz);
 
-  ResponseEntity<?> checkQuestionAnswers(Attempt lastAttempt, Long id, Map<String, String> params, String questIndex);
+  ResponseEntity<?> checkQuestionAnswers(
+      Attempt attempt,
+      Long questionId,
+      Map<String, String> uncheckAnswers,
+      String questIndex);
 
   Question getQuestionOfAnswerId(Long answerId, UUID quizId);
+
+  void saveQuestion(Question question);
 
 }
