@@ -33,4 +33,6 @@ public interface IClassroomService {
     Page<ClassroomDto> getCreatedClassrooms(HttpServletRequest request, LibraryReqParam libraryDto);
 
     List<Classroom> findClassroomsByCreatorId(Long creatorId);
+
+    Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params);
 }

@@ -23,5 +23,7 @@ public interface ClassroomRepo extends JpaRepository<Classroom, Long> {
 
         Page<Classroom> findByCreatorAndNameContaining(User userRequest, String search, Pageable of);
 
+        Page<Classroom> findByClassJoinings_LearnerAndNameContaining(User learner, String search, Pageable of);
+
         List<Classroom> findByCreatorId(Long creatorId);
 }
