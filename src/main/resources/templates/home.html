@@ -6,33 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ezQuiz Home Page</title>
 
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="/images/favicon.ico"
-      th:href="@{images/favicon.ico}"
-    />
+    <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}" />
 
     <!-- Bootstrap 5 CSS -->
-    <link
-      href="../static/vendor/bootstrap/bootstrap.min.css"
-      th:href="@{vendor/bootstrap/bootstrap.min.css}"
-      rel="stylesheet"
-    />
+    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
 
     <!-- Customize CSS -->
-    <link
-      href="../static/css/main.css"
-      th:href="@{css/main.css}"
-      rel="stylesheet"
-    />
+    <link th:href="@{css/main.css}" rel="stylesheet" />
 
     <!-- Font Family Nunito Sans -->
-    <link
-      href="../static/css/font.css"
-      th:href="@{css/font.css}"
-      rel="stylesheet"
-    />
+    <link th:href="@{css/font.css}" rel="stylesheet" />
   </head>
 
   <body>
@@ -143,20 +126,43 @@
                 <a
                   class="btn dropdown-toggle btn-sm btn-purple mx-1 d-flex gap-1"
                   style="padding: 4px 23px"
-                  th:href="@{/classroom/joined-list}"
+                  th:href="@{/library/joined-classrooms}"
                   >My Classroom</a
                 >
               </li>
+
               <li
                 sec:authorize="hasRole('ROLE_LEARNER')"
                 class="nav-item dropdown no-arrow"
               >
                 <a
-                  class="btn dropdown-toggle btn-sm btn-purpleee mx-1 d-flex gap-1"
-                  style="padding: 4px 23px"
-                  th:href="@{/quiz/assigned-list}"
-                  >Assigned Quiz</a
+                  class="btn dropdown-toggle btn-sm btn-purpleee px-3"
+                  id="quizDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
                 >
+                  My Quizzes
+                </a>
+                <div
+                  class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                  aria-labelledby="quizDropdown"
+                  style="min-width: 0; width: 148px"
+                >
+                  <a
+                    class="dropdown-item btn btn-sm ps-3"
+                    th:href="@{/library/to-do-list}"
+                  >
+                    To-do List
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm ps-3"
+                    th:href="@{/library/taken-quiz}"
+                  >
+                    Taken Quiz
+                  </a>
+                </div>
               </li>
 
               <li class="nav-item dropdown no-arrow" th:fragment="barButton">
