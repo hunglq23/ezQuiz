@@ -42,6 +42,65 @@
 
     <!-- Include your main.js at the end -->
     <script th:src="@{/js/main.js}"></script>
+
+    <style>
+      .pagination {
+        display: flex;
+        justify-content: flex-end;
+        list-style: none;
+        padding: 0;
+      }
+
+      .pagination li {
+        display: inline-block;
+        margin-right: 1px; /* Khoảng cách giữa các thành phần */
+      }
+
+      .pagination li:last-child {
+        margin-right: 0; /* Không có khoảng cách với phần tử cuối cùng */
+      }
+
+      .pagination a {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+        /*border: 1px solid #ddd;*/
+        color: #333;
+      }
+
+      .pagination a:hover {
+        background-color: #f5f5f5;
+      }
+      .pagination li.disabled a {
+        pointer-events: none;
+        color: #6c757d; /* Màu chữ cho trạng thái disabled */
+        background-color: #f8f9fa; /* Màu nền cho trạng thái disabled */
+        border: 1px solid #dee2e6; /* Biên cho trạng thái disabled */
+      }
+      .pagination li.active {
+        background-color: #007bff; /* Màu nền cho trạng thái active */
+        color: #fff; /* Màu chữ cho trạng thái active */
+        border-color: #007bff; /* Biên cho trạng thái active */
+      }
+      .delete-icon {
+        color: #000; /* Màu mặc định của biểu tượng */
+        cursor: pointer;
+        transition: color 0.3s ease; /* Hiệu ứng chuyển đổi màu */
+      }
+
+      .delete-icon:hover {
+        color: #ff0000; /* Màu đỏ khi rê chuột vào */
+      }
+      .edit-icon {
+        color: #000; /* Màu mặc định của biểu tượng */
+        cursor: pointer;
+        transition: color 0.3s ease; /* Hiệu ứng chuyển đổi màu */
+      }
+
+      .edit-icon:hover {
+        color: #007bff; /* Màu xanh khi rê chuột vào */
+      }
+    </style>
   </head>
 
   <body>
@@ -91,7 +150,7 @@
                 <th scope="col">Email</th>
                 <th scope="col">Phone</th>
                 <th scope="col">Status</th>
-<!--                <th scope="col">Action</th>-->
+                <!--                <th scope="col">Action</th>-->
               </tr>
             </thead>
             <tbody>
@@ -109,23 +168,23 @@
                   ></button>
                 </td>
                 <td>
-<!--                  <a th:href="@{/admin/edit/{id}(id=${user.id})}" title="Edit">-->
-<!--                    <i class="fa fa-edit edit-icon" style="color: #f6bb42"></i>-->
-<!--                  </a>-->
+                  <!--                  <a th:href="@{/admin/edit/{id}(id=${user.id})}" title="Edit">-->
+                  <!--                    <i class="fa fa-edit edit-icon" style="color: #f6bb42"></i>-->
+                  <!--                  </a>-->
                   <!--                  <a th:href="@{/delete/{userId}(userId=${user.id})}" title="Delete">-->
                   <!--                    <i class="fa fa-trash delete-icon"></i>-->
                   <!--                  </a>-->
                   <!--/*@thymesVar id="id" type=""*/-->
-<!--                  <a-->
-<!--                    href="#"-->
-<!--                    th:onclick="'confirmDelete(' + ${user.id} + ')'"-->
-<!--                    title="Delete"-->
-<!--                  >-->
-<!--                    <i-->
-<!--                      class="fa fa-trash delete-icon"-->
-<!--                      style="color: #f6bb42"-->
-<!--                    ></i>-->
-<!--                  </a>-->
+                  <!--                  <a-->
+                  <!--                    href="#"-->
+                  <!--                    th:onclick="'confirmDelete(' + ${user.id} + ')'"-->
+                  <!--                    title="Delete"-->
+                  <!--                  >-->
+                  <!--                    <i-->
+                  <!--                      class="fa fa-trash delete-icon"-->
+                  <!--                      style="color: #f6bb42"-->
+                  <!--                    ></i>-->
+                  <!--                  </a>-->
                 </td>
               </tr>
             </tbody>
@@ -197,7 +256,9 @@
       }
 
       function confirmChangeStatus(id) {
-        var result = confirm("Are you sure you want to change status this user?");
+        var result = confirm(
+          "Are you sure you want to change status this user?"
+        );
         if (result) {
           window.location.href = "/admin/update-status/" + id;
         }

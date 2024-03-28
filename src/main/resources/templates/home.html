@@ -75,13 +75,13 @@
                 >
                   <a
                     class="dropdown-item btn btn-sm text-center"
-                    th:href="@{library/my-quiz}"
+                    th:href="@{/library/my-quiz}"
                   >
                     Quiz
                   </a>
                   <a
                     class="dropdown-item btn btn-sm text-center"
-                    th:href="@{library/my-classroom}"
+                    th:href="@{/library/my-classroom}"
                   >
                     Classroom
                   </a>
@@ -151,13 +151,13 @@
                   style="min-width: 0; width: 148px"
                 >
                   <a
-                    class="dropdown-item btn btn-sm ps-3"
+                    class="dropdown-item btn btn-sm text-center"
                     th:href="@{/library/to-do-quiz}"
                   >
                     To-do List
                   </a>
                   <a
-                    class="dropdown-item btn btn-sm ps-3"
+                    class="dropdown-item btn btn-sm text-center"
                     th:href="@{/library/taken-quiz}"
                   >
                     Taken Quiz
@@ -183,7 +183,11 @@
                   class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                   aria-labelledby="userDropdown"
                 >
-                  <a class="dropdown-item" th:href="@{/change-password}">
+                  <a class="dropdown-item" th:href="@{/profile}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    My Profile
+                  </a>
+                  <a class="dropdown-item" th:href="@{/profile?changePassword}">
                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                     Change Password
                   </a>
@@ -372,8 +376,8 @@
                 >
                   <a
                     href="#"
-                    class="btn btn-sm btn-secondary opa-25"
-                    style="border-bottom: solid 3px #000"
+                    class="btn btn-sm btn-outline-info"
+                    style="border: solid 1px"
                     >See more</a
                   >
                 </div>
@@ -428,123 +432,10 @@
             </div>
           </div>
         </div>
-        <div class="section">
-          <div class="h6 fs-3">
-            Recent<span class="marker marker-center"> quiz</span>
-          </div>
-          <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
-            <!-- Card 1 -->
-            <div class="col">
-              <div class="card">
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                    </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="col">
-              <div class="card">
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                    </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="col">
-              <div class="card">
-                <div class="d-xxl-none see-more">
-                  <a href="#" class="btn btn-sm btn-secondary">See more</a>
-                </div>
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                    </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="col d-none d-xxl-block">
-              <div class="card">
-                <div class="see-more">
-                  <a href="#" class="btn btn-sm btn-purple">See more</a>
-                </div>
-                <button class="btn w-100 p-0">
-                  <img
-                    src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                    class="card-img-top"
-                    alt="Quiz Image"
-                  />
-
-                  <div class="card-body p-1 px-2 mb-3">
-                    <div class="d-flex flex-row-reverse">
-                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                    </div>
-                    <h5 class="card-title p-0 d-flex">Card title</h5>
-                    <p class="card-text d-none d-md-flex">
-                      Some quick example text.
-                    </p>
-                  </div>
-                  <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                    99 questions
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
+      <footer>
+        <div class="text-center mt-5">©2024 ezQuiz - All Rights Reserved.</div>
+      </footer>
     </div>
 
     <script

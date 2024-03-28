@@ -29,4 +29,11 @@ public class UserController {
     return "home";
   }
 
+  @GetMapping("/profile")
+  public String getProfilePage(HttpServletRequest request, Model model) {
+    User userRequesting = userService.getUserRequesting(request);
+    model.addAttribute("user", userRequesting);
+    return "profile";
+  }
+
 }

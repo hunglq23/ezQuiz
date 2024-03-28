@@ -1,6 +1,9 @@
 package com.group3.ezquiz.model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +38,10 @@ public class QuizAssigning {
   @ManyToOne
   @JoinColumn(name = "classroom_id")
   private Classroom classroom;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @CreationTimestamp
+  private Timestamp createdAt;
 
   private String note;
 

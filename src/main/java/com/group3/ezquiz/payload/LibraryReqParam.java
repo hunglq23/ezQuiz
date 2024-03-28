@@ -42,6 +42,10 @@ public class LibraryReqParam {
   @Min(1)
   private Integer size = 3;
 
+  public void setSearch(String search) {
+    this.search = search.trim().replaceAll("\\s+", " ");
+  }
+
   public String getSearch() {
     return search == null ? "" : search;
   }

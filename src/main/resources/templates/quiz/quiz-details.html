@@ -16,11 +16,13 @@
       max-width: 999px;
       display: flex;
       justify-content: center;
+
       .quiz {
         width: 100%;
         max-width: 678px;
       }
     }
+
     .quiz .details {
       height: 188px;
       display: flex;
@@ -29,6 +31,7 @@
       border: solid 1px #ccc;
       border-radius: 5px;
     }
+
     .top {
       .img,
       .default-image {
@@ -42,27 +45,32 @@
       align-items: end;
       justify-content: space-between;
     }
+
     .options .btn {
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-radius: 5px;
       font-size: 1.11rem;
+
       span {
         font-size: 1.23rem;
       }
     }
+
     .questions {
       display: flex;
       flex-direction: column;
       gap: 0.36rem;
     }
+
     .questions .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0;
     }
+
     .suggestions {
       display: none;
       flex: 1;
@@ -74,26 +82,36 @@
     <div class="container py-3">
       <div class="quiz d-flex flex-column gap-1">
         <div class="details bg-white">
-          <div class="top flex-fill">
-            <img
-              th:if="${quiz.imageUrl}"
-              class="img bg-light"
-              th:src="@{/images/quiz-default.png}"
-              alt="Quiz Image"
-            />
-            <div
-              th:unless="${quiz.imageUrl}"
-              class="img default-image bg-light"
-              th:src="@{/images/quiz-default.png}"
-              alt="Quiz Image"
-            ></div>
+          <div class="top d-flex flex-fill gap-3">
+            <div>
+              <img
+                th:if="${quiz.imageUrl}"
+                class="img bg-light border border-1 rounded-1"
+                th:src="@{${quiz.imageUrl}}"
+                alt="Quiz Image"
+              />
+              <div
+                th:unless="${quiz.imageUrl}"
+                class="img default-image bg-light"
+                th:src="@{/images/quiz-default.png}"
+                alt="Quiz Image"
+              ></div>
+            </div>
+            <div class="flex-fill">
+              <h4 class="mb-1" th:text="${quiz.title}"></h4>
+              <p th:text="${quiz.description}"></p>
+            </div>
           </div>
           <div class="bottom">
             <div style="color: #999">
               <i class="fas fa-user" style="margin-right: 3px"></i>
               <span th:text="${quiz.creator.fullName}">Admin</span>
             </div>
-            <a href="" class="btn btn-sm bg-light">
+            <a
+              th:if="${canEdit}"
+              th:href="@{/quiz/{id}/edit(id=${quiz.id})}"
+              class="btn btn-sm bg-light"
+            >
               <i class="fas fa-pen-to-square me-1"></i>Edit</a
             >
           </div>
@@ -114,12 +132,13 @@
             <a
               class="w-50 btn btn-purple"
               style="border-bottom: solid 3px #8854c0"
-              ><div>
+            >
+              <div>
                 <i class="fas fa-users"></i>
                 <span class="ms-1">Preview</span>
               </div>
-              <i class="fas fa-caret-right"></i
-            ></a>
+              <i class="fas fa-caret-right"></i>
+            </a>
           </div>
           <div sec:authorize="hasRole('ROLE_LEARNER')" class="d-flex gap-1">
             <a
@@ -137,12 +156,13 @@
               th:href="@{/quiz/{id}/result(id=${quiz.id})}"
               class="w-50 btn btn-purple"
               style="border-bottom: solid 3px #8854c0"
-              ><div>
+            >
+              <div>
                 <i class="fas fa-users"></i>
                 <span class="ms-1">Last Result</span>
               </div>
-              <i class="fas fa-caret-right"></i
-            ></a>
+              <i class="fas fa-caret-right"></i>
+            </a>
           </div>
         </div>
         <div class="questions">
@@ -162,18 +182,6 @@
                 <i class="far fa-check-square mx-1"></i>
                 Question <span th:text="${iStat.index + 1}">1</span>
               </div>
-              <!-- edit, delete,... to the right -->
-              <div class="d-flex">
-                <a class="btn btn-sm bg p-1 px-2 qcard-tool border-0"
-                  ><i class="fas fa-edit mx-1"></i>
-                  Edit
-                  <span class="d-md-none d-lg-inline">this question</span>
-                </a>
-                <div style="border-left: 1px solid #e8e8e8"></div>
-                <a class="btn btn-sm p-1 px-2 qcard-tool bd-left border-0"
-                  ><i class="fas fa-trash mx-1"></i
-                ></a>
-              </div>
             </div>
             <div class="card-body px-3 pb-1 pt-2">
               <div style="min-height: 123px">
@@ -186,6 +194,7 @@
                     Single Choice
                   </span>
                   <span th:if="${question.type.equals('multiple-choice')}">
+                    Multiple Choice
                   </span>
                 </div>
               </div>
@@ -246,36 +255,6 @@
               th:object="${assignedQuizDto}"
               class="d-flex flex-column gap-2"
             >
-              <div>
-                <label for="homeworkTitle">Homework Title:</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="homeworkTitle"
-                  name="homeworkTitle"
-                  required
-                />
-              </div>
-              <div>
-                <label for="startDate">Start Date:</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="startDate"
-                  name="startDate"
-                  required
-                />
-              </div>
-              <div>
-                <label for="endDate">End Date:</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="endDate"
-                  name="endDate"
-                  required
-                />
-              </div>
               <div class="form-group">
                 <label>Select your Classroom:</label>
                 <select
@@ -285,11 +264,59 @@
                   required
                 >
                   <option
-                    th:each="classroom : ${classrooms}"
+                    th:each="classroom : ${quiz.creator.classrooms}"
                     th:value="${classroom.id}"
                     th:text="${classroom.name}"
                   ></option>
                 </select>
+              </div>
+              <div>
+                <label for="startDate">Start date:</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="startDate"
+                  name="startDate"
+                  required
+                />
+              </div>
+              <div>
+                <label for="dueDate" class="form-label m-0"> Due date:</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="dueDate"
+                  name="dueDate"
+                  required
+                />
+              </div>
+              <div>
+                <label for="maxAttempt" class="form-label m-0"
+                  >Max attempt number:</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="maxAttempt"
+                  name="maxAttempt"
+                  value="1"
+                  required
+                />
+              </div>
+              <div>
+                <label for="durationInMins" class="form-label m-0"
+                  >Duration (in minutes):</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="durationInMins"
+                  name="durationInMins"
+                />
+              </div>
+              <div>
+                <label for="note" class="form-label m-0 m-0">Note:</label>
+                <input type="text" class="form-control" id="note" name="note" />
               </div>
               <div class="d-flex gap-3 ms-3">
                 <div class="form-check form-switch">
@@ -301,6 +328,13 @@
                     type="checkbox"
                     id="shuffleQuestions"
                     name="shuffleQuestions"
+                    value="true"
+                  />
+                  <input
+                    class="form-check-input"
+                    type="hidden"
+                    name="_shuffleQuestions"
+                    value="false"
                   />
                 </div>
                 <div class="form-check form-switch">
@@ -309,6 +343,13 @@
                     type="checkbox"
                     id="shuffleAnswers"
                     name="shuffleAnswers"
+                    value="true"
+                  />
+                  <input
+                    class="form-check-input"
+                    type="hidden"
+                    name="_shuffleAnswers"
+                    value="false"
                   />
                   <label class="form-check-label" for="shuffleAnswers"
                     >Shuffle Answers</label
