@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,10 @@ import com.group3.ezquiz.exception.InvalidClassroomException;
 import com.group3.ezquiz.exception.ResourceNotFoundException;
 import com.group3.ezquiz.model.ClassJoining;
 import com.group3.ezquiz.model.Classroom;
+import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.model.QuizAssigning;
 import com.group3.ezquiz.model.User;
+import com.group3.ezquiz.payload.AssignedQuizDto;
 import com.group3.ezquiz.payload.LibraryReqParam;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
@@ -44,7 +48,8 @@ import lombok.RequiredArgsConstructor;
 public class ClassroomServiceImpl implements IClassroomService {
 
   private final static Logger log = LoggerFactory.getLogger(ClassroomServiceImpl.class);
-  private final Integer MAX_MEMBER_PER_CLASS = 30;
+  private final int MAX_MEMBER_PER_CLASS = 30;
+
   private final ClassroomRepo classroomRepo;
   private final IUserService userService;
 
@@ -61,6 +66,7 @@ public class ClassroomServiceImpl implements IClassroomService {
         .creator(userService.getUserRequesting(request))
         .isEnable(true)
         .build();
+    creator.getClassrooms().add(classroom);
     if (classroom != null) {
       classroomRepo.save(classroom);
       return new ResponseEntity<>(
@@ -289,6 +295,34 @@ public class ClassroomServiceImpl implements IClassroomService {
         .timestamp(classroom.getCreatedAt())
         .teacherName(classroom.getCreator().getFullName())
         .build();
+  }
+
+  @Override
+  public void addAssignQuiz(HttpServletRequest request, Quiz quiz, AssignedQuizDto assignedQuizDTO) {
+
+    Long classroomId = assignedQuizDTO.getSelectedClassroom();
+    Classroom selectedClassroom = getClassroomByRequestAndId(request, classroomId);
+
+    if (assignedQuizDTO.isShuffleQuestions()) {
+      Collections.shuffle(quiz.getQuestions());
+      if (assignedQuizDTO.isShuffleAnswers()) {
+        quiz.getQuestions().forEach(question -> Collections.shuffle(question.getAnswers()));
+      }
+    }
+
+    QuizAssigning quizAssigning = new QuizAssigning();
+    quizAssigning.setQuiz(quiz); // Set the Quiz
+    quizAssigning.setMaxAttempt(assignedQuizDTO.getMaxAttempt()); // Set max attempts
+    quizAssigning.setDurationInMins(assignedQuizDTO.getDurationInMins()); // Set duration
+    quizAssigning.setClassroom(selectedClassroom); // Set the Classroom
+    quizAssigning.setStartDate(assignedQuizDTO.getStartDate()); // Set start date
+    quizAssigning.setDueDate(assignedQuizDTO.getDueDate()); // Set due date
+    quizAssigning.setQuestionShuffled(assignedQuizDTO.isShuffleQuestions()); // Set shuffle questions
+    quizAssigning.setAnswerShuffled(assignedQuizDTO.isShuffleAnswers()); // Set shuffle answers
+    quizAssigning.setNote(assignedQuizDTO.getNote());
+
+    selectedClassroom.getAssignedQuizList().add(quizAssigning);
+    classroomRepo.save(selectedClassroom);
   }
 
 }
