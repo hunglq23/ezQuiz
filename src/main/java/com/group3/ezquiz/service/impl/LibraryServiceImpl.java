@@ -108,6 +108,8 @@ public class LibraryServiceImpl implements ILibraryService {
 
   private QuizAssignedDto mapToQuizAssignedDto(QuizAssigning quizAssigning) {
     return QuizAssignedDto.builder()
+        .type("quiz")
+        .id(quizAssigning.getQuiz().getId().toString())
         .startDate(quizAssigning.getStartDate())
         .dueDate(quizAssigning.getDueDate())
         .note(quizAssigning.getNote())
@@ -117,6 +119,7 @@ public class LibraryServiceImpl implements ILibraryService {
         .shuffleAnswers(quizAssigning.getAnswerShuffled())
         .selectedClassroom(quizAssigning.getClassroom().getId())
         .quiz(quizAssigning.getQuiz())
+        .teacherName(quizAssigning.getClassroom().getCreator().getFullName())
         .build();
   }
 

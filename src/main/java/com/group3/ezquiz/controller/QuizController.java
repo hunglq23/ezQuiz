@@ -307,13 +307,13 @@ public class QuizController {
       @ModelAttribute("assignedQuizDto") AssignedQuizDto assignedQuizDTO,
       RedirectAttributes redirectAttributes) {
 
-    try {
-      quizService.assignQuiz(request, quizId, assignedQuizDTO);
-      redirectAttributes.addFlashAttribute("successMessage", "Homework assigned successfully");
-    } catch (Exception e) {
-      String errorMessage = "Failed to assign homework: " + e.getMessage();
-      redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
-    }
+    // try {
+    quizService.assignQuiz(request, quizId, assignedQuizDTO);
+    redirectAttributes.addFlashAttribute("successMessage", "Homework assigned successfully");
+    // } catch (Exception e) {
+    // String errorMessage = "Failed to assign homework: " + e.getMessage();
+    // redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+    // }
 
     return "redirect:/quiz/" + quizId + "/edit";
   }

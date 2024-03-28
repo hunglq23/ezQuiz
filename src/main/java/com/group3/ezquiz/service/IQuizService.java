@@ -64,8 +64,7 @@ public interface IQuizService {
 
 	void deleteQuestionById(UUID id, Long questionId);
 
-	void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO)
-			throws Exception;
+	void assignQuiz(HttpServletRequest request, UUID quizId, AssignedQuizDto assignedQuizDTO);
 
 	ResponseEntity<?> handleAnswerSelected(HttpServletRequest request, UUID quizId, Long answerId, Long answerId2);
 

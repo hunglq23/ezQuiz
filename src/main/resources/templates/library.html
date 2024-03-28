@@ -153,7 +153,6 @@
     <div
       th:with="
         max = ${page.getTotalPages()},
-        content = ${page.getObjectDtoList()},
         totalResult = ${page.getTotalElements()}
       "
     >
@@ -193,9 +192,23 @@
                 </a>
               </li>
               <li
+                sec:authorize="hasRole('ROLE_TEACHER')"
                 class="nav-link w-100 p-0 rounded-1"
-                th:classappend="${path.equals('/library/my-classroom') ||
-                path.equals('/library/joined-classrooms') ? 'active' : ''}"
+                th:classappend="${path.equals('/library/my-classroom') ? 'active' : ''}"
+              >
+                <a class="btn btn-sm d-flex" th:href="@{/library/my-classroom}">
+                  <div class="square-33-center-item rotate-on-hover">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="d-flex align-items-center flex-1">
+                    <span>My Classroom</span>
+                  </div>
+                </a>
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-link w-100 p-0 rounded-1"
+                th:classappend="${path.equals('/library/joined-classrooms') ? 'active' : ''}"
               >
                 <a
                   class="btn btn-sm d-flex"
@@ -400,6 +413,7 @@
               </div>
             </div>
             <div th:fragment="showData(content)" id="data">
+              <div th:if="${content == null}">hi</div>
               <div class="d-flex flex-column gap-2">
                 <div
                   th:each="data : ${content}"
@@ -458,7 +472,7 @@
                     </div>
 
                     <div
-                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2"
+                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1"
                     >
                       <div class="d-flex" style="margin-top: 3px">
                         <div
@@ -548,6 +562,7 @@
                   </a>
                   <div
                     sec:authorize="hasRole('ROLE_LEARNER')"
+                    th:if="${data.type == 'classroom'}"
                     class="btn item p-1 d-flex gap-1 rounded-1 shadow-sm"
                     style="cursor: auto"
                   >
@@ -567,7 +582,7 @@
                     </div>
 
                     <div
-                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2"
+                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1"
                     >
                       <div class="d-flex" style="margin-top: 3px">
                         <div
@@ -612,7 +627,7 @@
                           "
                         >
                           <div
-                            th:if="${data.teacherName}"
+                            th:if="${teacherName}"
                             class="d-flex flex-row align-items-center"
                           >
                             <i
@@ -646,6 +661,101 @@
                               >99</span
                             >
                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    sec:authorize="hasRole('ROLE_LEARNER')"
+                    th:if="${data.type.equals('quiz')}"
+                    class="btn item p-1 d-flex gap-1 rounded-1 shadow-sm"
+                    style="cursor: auto"
+                    th:with="teacherName=${data.teacherName}, data=${data.quiz}"
+                  >
+                    <div style="width: 169px">
+                      <img
+                        th:if="${data.imageUrl}"
+                        class="h-100 rounded-1"
+                        style="border: #f4f5f6 solid 1px; max-width: 169px"
+                        th:src="${data.imageUrl}"
+                      />
+                      <div
+                        th:unless="${data.imageUrl}"
+                        class="h-100 rounded-1 default-image"
+                        th:style="'background-color: ' + ${params.randomBgColor()}"
+                      ></div>
+                    </div>
+
+                    <div
+                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1"
+                    >
+                      <div class="d-flex" style="margin-top: 3px">
+                        <div
+                          th:if="${data.isDraft}"
+                          class="rounded-2 item-tag px-1"
+                          style="color: rgb(247, 95, 95)"
+                        >
+                          draft
+                        </div>
+                      </div>
+
+                      <div class="my-0 h5" th:text="${data.title}"></div>
+
+                      <p
+                        class="text-small m-0 flex-fill fw-light"
+                        th:text="${data.description}"
+                      >
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      </p>
+
+                      <div
+                        class="d-flex justify-content-between align-items-center w-100"
+                      >
+                        <div
+                          class="d-flex flex-row align-items-center gap-2"
+                          style="
+                            font-size: 12px;
+                            opacity: 0.88;
+                            font-weight: 100;
+                          "
+                        >
+                          <div
+                            th:if="${teacherName}"
+                            class="d-flex flex-row align-items-center"
+                          >
+                            <i
+                              class="fas fa-user h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span th:text="${teacherName}">err</span>
+                          </div>
+                          <div class="d-flex flex-row align-items-center">
+                            <i
+                              class="fas fa-list h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span
+                              style="margin: 0 3px"
+                              th:text="${data.questions.size()}"
+                              >99</span
+                            ><span>question(s)</span>
+                          </div>
+                          <div class="d-flex flex-row align-items-center">
+                            <i
+                              class="fas fa-history h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span style="margin: 0 3px">99</span>
+                          </div>
+                        </div>
+                        <div>
+                          <a
+                            class="btn btn-sm btn-primary m-0 py-0 px-2"
+                            th:href="@{/quiz/{id}/play(id=${data.id})}"
+                          >
+                            Play
+                            <i class="fas fa-caret-right"></i>
+                          </a>
                         </div>
                       </div>
                     </div>

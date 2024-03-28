@@ -68,6 +68,7 @@ public class LibraryController {
     model.addAttribute("path", PATH);
     model.addAttribute("page", library);
     model.addAttribute("params", params);
+    model.addAttribute("content", objectDtoList);
     return "library";
   }
 
@@ -204,6 +205,7 @@ public class LibraryController {
     model.addAttribute("path", PATH);
     model.addAttribute("page", page);
     model.addAttribute("params", params);
+    model.addAttribute("content", quizList);
     return "library";
   }
 

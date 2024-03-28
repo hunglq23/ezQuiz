@@ -17,6 +17,7 @@ import lombok.Setter;
 @Builder
 public class QuizAssignedDto {
 
+  private String id;
   private Date startDate;
   private Date dueDate;
   private String note;
@@ -26,5 +27,7 @@ public class QuizAssignedDto {
   private boolean shuffleAnswers;
   private Long selectedClassroom;
   private Quiz quiz;
+  private String teacherName;
+  private String type;
 
 }
