@@ -81,6 +81,7 @@
               </button>
             </div>
           </form>
+          <a th:href="@{/admin/create}">Add new user</a>
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -88,8 +89,9 @@
                 <th scope="col">Role</th>
                 <th scope="col">Full Name</th>
                 <th scope="col">Email</th>
+                <th scope="col">Phone</th>
                 <th scope="col">Status</th>
-                <th scope="col">Action</th>
+<!--                <th scope="col">Action</th>-->
               </tr>
             </thead>
             <tbody>
@@ -98,30 +100,32 @@
                 <td th:text="${user.role}"></td>
                 <td th:text="${user.fullName}"></td>
                 <td th:text="${user.email}"></td>
+                <td th:text="${user.phone}"></td>
                 <td>
                   <button
                     th:text="${user.isEnable}? 'Active' : 'Inactive'"
                     th:class="${user.isEnable} ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'"
+                    th:onclick="'confirmChangeStatus(' + ${user.id} + ')'"
                   ></button>
                 </td>
                 <td>
-                  <a th:href="@{/admin/edit/{id}(id=${user.id})}" title="Edit">
-                    <i class="fa fa-edit edit-icon" style="color: #f6bb42"></i>
-                  </a>
+<!--                  <a th:href="@{/admin/edit/{id}(id=${user.id})}" title="Edit">-->
+<!--                    <i class="fa fa-edit edit-icon" style="color: #f6bb42"></i>-->
+<!--                  </a>-->
                   <!--                  <a th:href="@{/delete/{userId}(userId=${user.id})}" title="Delete">-->
                   <!--                    <i class="fa fa-trash delete-icon"></i>-->
                   <!--                  </a>-->
                   <!--/*@thymesVar id="id" type=""*/-->
-                  <a
-                    href="#"
-                    th:onclick="'confirmDelete(' + ${user.id} + ')'"
-                    title="Delete"
-                  >
-                    <i
-                      class="fa fa-trash delete-icon"
-                      style="color: #f6bb42"
-                    ></i>
-                  </a>
+<!--                  <a-->
+<!--                    href="#"-->
+<!--                    th:onclick="'confirmDelete(' + ${user.id} + ')'"-->
+<!--                    title="Delete"-->
+<!--                  >-->
+<!--                    <i-->
+<!--                      class="fa fa-trash delete-icon"-->
+<!--                      style="color: #f6bb42"-->
+<!--                    ></i>-->
+<!--                  </a>-->
                 </td>
               </tr>
             </tbody>
@@ -189,6 +193,13 @@
         var result = confirm("Are you sure you want to delete this user?");
         if (result) {
           window.location.href = "/admin/delete/" + id;
+        }
+      }
+
+      function confirmChangeStatus(id) {
+        var result = confirm("Are you sure you want to change status this user?");
+        if (result) {
+          window.location.href = "/admin/update-status/" + id;
         }
       }
     </script>

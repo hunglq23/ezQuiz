@@ -33,7 +33,7 @@ public class AdminController {
       @RequestParam(required = false, defaultValue = "", name = "email") String email,
       @RequestParam(required = false, defaultValue = "all", name = "status") String statusReq) {
     Boolean status = Objects.equals(statusReq, "all") ? null : Boolean.valueOf(statusReq);
-    Page<User> userList = userService.getListUser(http, email, status, PageRequest.of(page, 2));
+    Page<User> userList = userService.getListUser(http, email.trim(), status, PageRequest.of(page, 2));
     model.addAttribute("userList", userList);
     model.addAttribute("items", userList.getContent());
     model.addAttribute("currentPage", page);
@@ -69,6 +69,13 @@ public class AdminController {
   public String update(HttpServletRequest http, Model model,
       @PathVariable(name = "id") Long id, UserDto user) {
     userService.update(http, user, id);
+    return "redirect:/admin/list";
+  }
+
+  @GetMapping("/update-status/{id}")
+  public String updateStatus(HttpServletRequest http, Model model,
+                       @PathVariable(name = "id") Long id) {
+    userService.updateStatus(id);
     return "redirect:/admin/list";
   }
 

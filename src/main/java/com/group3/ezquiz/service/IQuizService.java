@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.group3.ezquiz.payload.quiz.QuizDetail;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,8 @@ public interface IQuizService {
 
 	Quiz getQuizByRequestAndID(HttpServletRequest request, UUID id);
 
+	QuizDetail getQuizWhenSearch(UUID id);
+
 	Quiz handleQuestionCreatingInQuiz(Quiz quiz, String type, String questionText, Map<String, String> params);
 
 	ResponseEntity<?> handleQuizUpdatingRequest(HttpServletRequest request, UUID id, @Valid QuizDetailsDto dto);
@@ -48,9 +51,9 @@ public interface IQuizService {
 
 	ByteArrayInputStream getDataDownloaded(Quiz quiz) throws IOException;
 
-	List<Quiz> searchQuizUUID(HttpServletRequest request, String search);
-
 	Page<QuizDto> getQuizInLibrary(HttpServletRequest http, String sortOrder, Boolean isDraft, Pageable pageable);
+
+	List<QuizDto> searchQuizUUID(HttpServletRequest request, String search);
 
 	void deleteQuiz(UUID id);
 
