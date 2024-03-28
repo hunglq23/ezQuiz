@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
@@ -74,7 +76,11 @@ public class PasswordController {
       @RequestParam("token") String token,
       @ModelAttribute("password") String password,
       @ModelAttribute("re_password") String rePassword) {
-    if (!password.equals(rePassword)) {
+    String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,16}$";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(password);
+    boolean bindingResult = matcher.matches();
+    if ( !bindingResult || !password.equals(rePassword)) {
       return "redirect:/forgot-password?fail";
     }
     String emailForgot = jwtService.getEmailFromToken(token);
@@ -125,7 +131,7 @@ public class PasswordController {
 
     boolean isPasswordCorrect = passwordEncoder.matches(oldPass, userRequesting.getPassword());
     model.addAttribute("user", userRequesting);
-    String successMessage = "Updated password wrong!";
+    String successMessage = "Updated password failed!";
     if (isPasswordCorrect && newPass.equals(reNewPass)) {
       userService.updatePassword(userRequesting.getEmail(), newPass);
       model.addAttribute("message", "success");

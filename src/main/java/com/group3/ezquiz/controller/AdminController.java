@@ -2,16 +2,15 @@ package com.group3.ezquiz.controller;
 
 import java.util.Objects;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import com.group3.ezquiz.model.User;
 import com.group3.ezquiz.payload.UserDto;
@@ -50,12 +49,37 @@ public class AdminController {
   }
 
   @PostMapping("/create")
-  public String createUser(HttpServletRequest http, UserDto userDto) {
+  public String createUser(HttpServletRequest http, Model model,
+                           @Valid @ModelAttribute("user") UserDto userDto,
+                           BindingResult bindingResult) {
     // process the form data
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("user", userDto);
+      return "/admin/user-create-form";
+    }
+
+    Boolean checkUser = userService.checkEmailExist(userDto.getEmail());
+    if(checkUser) {
+      model.addAttribute("user", userDto);
+      FieldError error = new FieldError("user", "email",
+              "Email duplicate.");
+      bindingResult.addError(error);
+      return "/admin/user-create-form";
+    }
     userService.createUser(http, userDto);
     // redirect to the user list page after creating a new user
     return "redirect:/admin/list";
   }
+//  public String createUser(HttpServletRequest http,@Valid UserDto userDto, BindingResult result) {
+//    // process the form data
+//    FieldError emailError = validateEmail(regUser.getEmail());
+//    if (emailError != null && result.getFieldError("email") == null) {
+//      result.addError(emailError);
+//    }
+//    userService.createUser(http, userDto);
+//    // redirect to the user list page after creating a new user
+//    return "redirect:/admin/list";
+//  }
 
   @GetMapping("/edit/{id}")
   public String getUserUpdate(Model model,

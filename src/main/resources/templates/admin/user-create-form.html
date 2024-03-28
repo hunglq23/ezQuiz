@@ -69,6 +69,7 @@
             style="align-content: center; width: 450px"
           />
         </div>
+        <span th:if="${#fields.hasErrors('fullName')}" style="color: red" th:errors="*{fullName}"></span ><br/>
         <div class="form-group">
           <label for="email">Email</label>
           <input
@@ -80,6 +81,7 @@
             style="align-content: center; width: 450px"
           />
         </div>
+        <span th:if="${#fields.hasErrors('email')}" style="color: red" th:errors="*{email}"></span ><br/>
         <div class="form-group">
           <label for="password">Password</label>
           <input
@@ -87,10 +89,11 @@
             type="password"
             class="form-control"
             id="password"
-            placeholder="Enter Email"
+            placeholder="Enter Password"
             style="align-content: center; width: 450px"
           />
         </div>
+        <span th:if="${#fields.hasErrors('password')}" style="color: red" th:errors="*{password}"></span ><br/>
         <div class="form-group">
           <label for="phone">Phone Number</label>
           <input
@@ -102,6 +105,7 @@
             style="align-content: center; width: 450px"
           />
         </div>
+        <span th:if="${#fields.hasErrors('phone')}" style="color: red" th:errors="*{phone}"></span ><br/>
         <div class="form-group">
           <label for="note">Note</label>
           <input
@@ -113,6 +117,7 @@
             style="align-content: center; width: 450px"
           />
         </div>
+        <span th:if="${#fields.hasErrors('note')}" style="color: red" th:errors="*{note}"></span ><br/>
         <div class="form-group">
           <label for="isEnable">Is Enable:</label>
           <input
