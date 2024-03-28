@@ -67,6 +67,12 @@ public class LibraryServiceImpl implements ILibraryService {
     return classroomService.getCreatedClassrooms(request, params);
   }
 
+  @Override
+  public Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params) {
+
+    return classroomService.getJoinedClassrooms(request, params);
+  }
+
   private List<ObjectDto> findContent(
       Page<QuizDto> quizPage,
       Page<ClassroomDto> classroomPage,

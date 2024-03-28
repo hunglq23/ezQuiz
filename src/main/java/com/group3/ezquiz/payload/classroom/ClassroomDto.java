@@ -20,6 +20,7 @@ public class ClassroomDto {
   private String imageUrl;
   private Integer itemNumber;
   private Timestamp timestamp;
+  private String teacherName;
 
   public String getTimeString() {
     return MyUtils.calculateTimeElapsed(timestamp);

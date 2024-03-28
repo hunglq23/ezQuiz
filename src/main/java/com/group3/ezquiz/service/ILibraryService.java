@@ -19,4 +19,6 @@ public interface ILibraryService {
 
   Page<ClassroomDto> getMyClassroomInLibrary(HttpServletRequest request, @Valid LibraryReqParam params);
 
+  Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params);
+
 }
