@@ -1,6 +1,8 @@
 package com.group3.ezquiz.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,7 +88,11 @@ public class LibraryServiceImpl implements ILibraryService {
     List<Classroom> classrooms = classJoinings.stream().map(ClassJoining::getClassroom).collect(Collectors.toList());
     List<QuizAssigning> quizAssignings = new ArrayList<>();
     for (Classroom classroom : classrooms) {
-      quizAssignings.addAll(classroom.getAssignedQuizList());
+      for (QuizAssigning quizAssigning : classroom.getAssignedQuizList()) {
+        if (quizAssigning.getQuiz().getTitle().toLowerCase().contains(params.getSearch().toLowerCase())) {
+          quizAssignings.add(quizAssigning);
+        }
+      }
     }
 
     double totalEleNumber = quizAssignings.size();
@@ -99,9 +105,28 @@ public class LibraryServiceImpl implements ILibraryService {
     if (params.getPage() > maxPage) {
       response.setExceedMaxPage(true);
     } else {
-      response.setContent(quizAssignings.stream()
+
+      List<QuizAssignedDto> collect = quizAssignings.stream()
           .map(this::mapToQuizAssignedDto)
-          .collect(Collectors.toList()));
+          .collect(Collectors.toList());
+      Collections.sort(collect, new Comparator<QuizAssignedDto>() {
+        @Override
+        public int compare(QuizAssignedDto o1, QuizAssignedDto o2) {
+          switch (params.getSort()) {
+            case "AtoZ":
+              return o1.getQuiz().getTitle().compareToIgnoreCase(o2.getQuiz().getTitle());
+            case "ZtoA":
+              return o2.getQuiz().getTitle().compareToIgnoreCase(o1.getQuiz().getTitle());
+            case "oldest":
+              return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+            default:
+            case "latest":
+              return o2.getCreatedAt().compareTo(o1.getCreatedAt());
+          }
+        }
+      });
+      response.setContent(collect.subList(params.getStartIndex(),
+          Math.min(quizAssignings.size(), params.getEndIndex())));
     }
     return response;
   }
@@ -110,6 +135,7 @@ public class LibraryServiceImpl implements ILibraryService {
     return QuizAssignedDto.builder()
         .type("quiz")
         .id(quizAssigning.getQuiz().getId().toString())
+        .createdAt(quizAssigning.getCreatedAt())
         .startDate(quizAssigning.getStartDate())
         .dueDate(quizAssigning.getDueDate())
         .note(quizAssigning.getNote())

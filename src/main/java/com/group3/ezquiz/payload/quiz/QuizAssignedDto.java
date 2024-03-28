@@ -1,8 +1,10 @@
 package com.group3.ezquiz.payload.quiz;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import com.group3.ezquiz.model.Quiz;
+import com.group3.ezquiz.utils.MyUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +31,10 @@ public class QuizAssignedDto {
   private Quiz quiz;
   private String teacherName;
   private String type;
+  private Timestamp createdAt;
+
+  public String getTimeString() {
+    return MyUtils.calculateTimeElapsed(createdAt);
+  }
 
 }

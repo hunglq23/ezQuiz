@@ -646,3 +646,17 @@ input[type="password"]::-webkit-autocomplete {
   background-repeat: no-repeat;
   height: 159px;
 }
+
+.answer-divider {
+  flex-direction: row-reverse;
+}
+
+.answer-divider::before {
+  flex: none;
+  width: 69px;
+  margin-left: 10px;
+}
+
+.answer-divider::after {
+  margin-right: 10px;
+}

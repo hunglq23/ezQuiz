@@ -1,187 +1,50 @@
 <!DOCTYPE html>
 <html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ezQuiz Home Page</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ezQuiz Home Page</title>
+    <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}" />
 
-  <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}" />
+    <!-- Bootstrap 5 CSS -->
+    <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
 
-  <!-- Bootstrap 5 CSS -->
-  <link th:href="@{vendor/bootstrap/bootstrap.min.css}" rel="stylesheet" />
+    <!-- Customize CSS -->
+    <link th:href="@{css/main.css}" rel="stylesheet" />
 
-  <!-- Customize CSS -->
-  <link th:href="@{css/main.css}" rel="stylesheet" />
+    <!-- Font Family Nunito Sans -->
+    <link th:href="@{css/font.css}" rel="stylesheet" />
+  </head>
 
-  <!-- Font Family Nunito Sans -->
-  <link th:href="@{css/font.css}" rel="stylesheet" />
-</head>
-
-<body>
-  <header th:fragment="topNav">
-    <nav class="navbar navbar-expand-sm p-0 navbar-light bg-white" id="header-nav" role="navigation">
-      <div class="container-fluid mx-2">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}">ezQuiz</a>
-          <div id="navSearch" class="position-relative mx-2 suggest-search">
-            <input type="search" id="navSearchInput" class="form-control" placeholder="Search in Library" />
-            <button id="navSearchButton" type="button" class="btn p-0 h-100 border-0 rounded-2">
-              <i class="fas fa-search"></i>
-            </button>
-            <div class="suggestions-list">
-              <ul>
-                <li>Gợi ý 1</li>
-                <li>Gợi ý 2</li>
-                <li>Gợi ý 3</li>
-              </ul>
-            </div>
-          </div>
-          <ul class="navbar-nav align-items-center ms-auto">
-            <li sec:authorize="hasRole('ROLE_TEACHER')" class="nav-item dropdown no-arrow">
-              <a id="libraryDropdown" class="btn dropdown-toggle btn-sm btn-purple mx-1 d-flex gap-1"
-                style="padding: 4px 23px" role="button" th:href="@{/library/my-library}" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">My Library</a>
-              <div class="dropdown-menu bg-white shadow p-0" aria-labelledby="libraryDropdown"
-                style="min-width: 0; width: 123px; right: 9px">
-                <a class="dropdown-item btn btn-sm text-center" th:href="@{/library/my-quiz}">
-                  Quiz
-                </a>
-                <a class="dropdown-item btn btn-sm text-center" th:href="@{/library/my-classroom}">
-                  Classroom
-                </a>
-              </div>
-            </li>
-            <li sec:authorize="hasRole('ROLE_TEACHER')" th:fragment="createButton" class="nav-item dropdown no-arrow">
-              <a class="btn dropdown-toggle btn-sm btn-purpleee" id="toCreateDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                style="padding-left: 27px; padding-right: 27px">
-                Create<i class="fas fa-plus" style="margin-left: 5px"></i></a>
-              <div class="dropdown-menu bg-white shadow animated--grow-in p-0" aria-labelledby="toCreateDropdown"
-                style="min-width: 0; width: 123px">
-                <a class="dropdown-item btn btn-sm" th:href="@{/quiz/new}">
-                  New Quiz
-                </a>
-                <a class="dropdown-item btn btn-sm" th:href="@{/library/my-classroom/new}">
-                  New Class
-                </a>
-              </div>
-            </li>
-            <li sec:authorize="hasRole('ROLE_LEARNER')" class="nav-item dropdown no-arrow">
-              <a class="btn dropdown-toggle btn-sm btn-purple mx-1 d-flex gap-1" style="padding: 4px 23px"
-                th:href="@{/library/joined-classrooms}">My Classroom</a>
-            </li>
-
-            <li sec:authorize="hasRole('ROLE_LEARNER')" class="nav-item dropdown no-arrow">
-              <a class="btn dropdown-toggle btn-sm btn-purpleee px-3" id="quizDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                My Quizzes
-              </a>
-              <div class="dropdown-menu bg-white shadow animated--grow-in p-0" aria-labelledby="quizDropdown"
-                style="min-width: 0; width: 148px">
-                <a class="dropdown-item btn btn-sm ps-3" th:href="@{/library/to-do-quiz}">
-                  To-do List
-                </a>
-                <a class="dropdown-item btn btn-sm ps-3" th:href="@{/library/taken-quiz}">
-                  Taken Quiz
-                </a>
-              </div>
-            </li>
-
-            <li class="nav-item dropdown no-arrow" th:fragment="barButton">
-              <a class="nav-link dropdown-toggle bg-light rounded-full rounded-circle" id="userDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                style="padding: 6px 12px; margin-left: 25px">
-                <i class="fas fa-bars"></i>
-              </a>
-
-              <!-- Dropdown - User Information -->
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" th:href="@{/change-password}">
-                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Change Password
-                </a>
-                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/list}">
-                  <i class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"></i>
-                  User Management
-                </a>
-                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Activity Log
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" th:href="@{/logout}">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
-                </a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-
-  <div class="page-content bg-light py-3 pt-1">
-    <div id="top-content" class="d-flex flex-column justify-content-center my-3"
-      style="max-width: 1234px; margin: 0 auto">
-      <!-- Learner -->
-      <div sec:authorize="hasRole('ROLE_LEARNER')" class="d-flex position-relative justify-content-center mb-1">
-        <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
-          <div class="d-flex position-relative bg-light left-center p-2">
-            <form action="" class="p-0">
-              <input id="joinCode" type="text" class="col-8 form-control border-0 rounded-3 custom-box-shadow"
-                style="font-weight: bolder" placeholder="Enter code" />
-            </form>
-            <div class="p-0">
-              <a class="btn btn-sm btn-primary border-0 rounded-3 custom-box-shadow" role="button"
-                style="padding: 7px 16px; margin-left: 10px">
-                Join
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div id="top-right" class="col-3" style="min-width: 299px">
-          <div class="border-1 rounded-2 custom-box-shadow position-relative" style="
-                margin-left: 16px;
-                display: grid;
-                grid-template-columns: 1fr 2fr;
-              ">
-            <div class="portada">
-              <!-- Your content for the 'portada' div -->
-            </div>
-            <div class="p-3 rounded-2">
-              <h6 class="m-0" style="min-width: 180px" th:text="${user.fullName}">
-                Nguyen Minh Thanh
-              </h6>
-              <div>Welcome Learner!</div>
-              <div class="actions">
-                <button><i class="far fa-heart"></i></button>
-                <button><i class="far fa-envelope"></i></button>
-                <button><i class="fas fa-user-friends"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Teacher -->
-      <div sec:authorize="hasRole('ROLE_TEACHER')" class="d-flex position-relative justify-content-center mb-1"
-        style="max-width: 1234px">
-        <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
-          <div class="border-0 left-center p-2">
-            <h5 style="font-weight: 900">
-              What are you expecting to teach today?
-            </h5>
-            <div class="position-relative w-100 suggest-search">
-              <input type="search" id="topSearch" class="form-control border-0 custom-box-shadow"
-                style="font-size: 18px; padding-right: 33px" placeholder="Looking for many other quizzes..." />
-              <button type="button" class="btn p-0 h-100 border-0 rounded-2">
-                <i class="fas fa-arrow-right"></i>
+  <body>
+    <header th:fragment="topNav">
+      <nav
+        class="navbar navbar-expand-sm p-0 navbar-light bg-white"
+        id="header-nav"
+        role="navigation"
+      >
+        <div class="container-fluid mx-2">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="link-dark navbar-brand site-title mb-0" th:href="@{/home}"
+              >ezQuiz</a
+            >
+            <div id="navSearch" class="position-relative mx-2 suggest-search">
+              <input
+                type="search"
+                id="navSearchInput"
+                class="form-control"
+                placeholder="Search in Library"
+              />
+              <button
+                id="navSearchButton"
+                type="button"
+                class="btn p-0 h-100 border-0 rounded-2"
+              >
+                <i class="fas fa-search"></i>
               </button>
-              <div id="topSuggestions" class="suggestions-list">
+              <div class="suggestions-list">
                 <ul>
                   <li>Gợi ý 1</li>
                   <li>Gợi ý 2</li>
@@ -189,195 +52,405 @@
                 </ul>
               </div>
             </div>
+            <ul class="navbar-nav align-items-center ms-auto">
+              <li
+                sec:authorize="hasRole('ROLE_TEACHER')"
+                class="nav-item dropdown no-arrow"
+              >
+                <a
+                  id="libraryDropdown"
+                  class="btn dropdown-toggle btn-sm btn-purple mx-1 d-flex gap-1"
+                  style="padding: 4px 23px"
+                  role="button"
+                  th:href="@{/library/my-library}"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  >My Library</a
+                >
+                <div
+                  class="dropdown-menu bg-white shadow p-0"
+                  aria-labelledby="libraryDropdown"
+                  style="min-width: 0; width: 123px; right: 9px"
+                >
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/library/my-quiz}"
+                  >
+                    Quiz
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/library/my-classroom}"
+                  >
+                    Classroom
+                  </a>
+                </div>
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_TEACHER')"
+                th:fragment="createButton"
+                class="nav-item dropdown no-arrow"
+              >
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purpleee"
+                  id="toCreateDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="padding-left: 27px; padding-right: 27px"
+                >
+                  Create<i class="fas fa-plus" style="margin-left: 5px"></i
+                ></a>
+                <div
+                  class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                  aria-labelledby="toCreateDropdown"
+                  style="min-width: 0; width: 123px"
+                >
+                  <a class="dropdown-item btn btn-sm" th:href="@{/quiz/new}">
+                    New Quiz
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm"
+                    th:href="@{/library/my-classroom/new}"
+                  >
+                    New Class
+                  </a>
+                </div>
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-item dropdown no-arrow"
+              >
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purple mx-1 d-flex gap-1"
+                  style="padding: 4px 23px"
+                  th:href="@{/library/joined-classrooms}"
+                  >My Classroom</a
+                >
+              </li>
+
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-item dropdown no-arrow"
+              >
+                <a
+                  class="btn dropdown-toggle btn-sm btn-purpleee px-3"
+                  id="quizDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  My Quizzes
+                </a>
+                <div
+                  class="dropdown-menu bg-white shadow animated--grow-in p-0"
+                  aria-labelledby="quizDropdown"
+                  style="min-width: 0; width: 148px"
+                >
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/library/to-do-quiz}"
+                  >
+                    To-do List
+                  </a>
+                  <a
+                    class="dropdown-item btn btn-sm text-center"
+                    th:href="@{/library/taken-quiz}"
+                  >
+                    Taken Quiz
+                  </a>
+                </div>
+              </li>
+
+              <li class="nav-item dropdown no-arrow" th:fragment="barButton">
+                <a
+                  class="nav-link dropdown-toggle bg-light rounded-full rounded-circle"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="padding: 6px 12px; margin-left: 25px"
+                >
+                  <i class="fas fa-bars"></i>
+                </a>
+
+                <!-- Dropdown - User Information -->
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="userDropdown"
+                >
+                  <a class="dropdown-item" th:href="@{/profile}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    My Profile
+                  </a>
+                  <a class="dropdown-item" th:href="@{/profile?changePassword}">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Change Password
+                  </a>
+                  <a
+                    sec:authorize="hasRole('ROLE_ADMIN')"
+                    class="dropdown-item"
+                    th:href="@{/admin/list}"
+                  >
+                    <i
+                      class="fas fa-solid fa-sm fa-fw mr-2 fa-users text-gray-400"
+                    ></i>
+                    User Management
+                  </a>
+                  <a
+                    sec:authorize="hasRole('ROLE_ADMIN')"
+                    class="dropdown-item"
+                    href="#"
+                  >
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" th:href="@{/logout}">
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
+      </nav>
+    </header>
 
-        <div id="top-right" class="col-3" style="min-width: 299px">
-          <div class="border-1 rounded-2 custom-box-shadow position-relative" style="
+    <div class="page-content bg-light py-3 pt-1">
+      <div
+        id="top-content"
+        class="d-flex flex-column justify-content-center my-3"
+        style="max-width: 1234px; margin: 0 auto"
+      >
+        <!-- Learner -->
+        <div
+          sec:authorize="hasRole('ROLE_LEARNER')"
+          class="d-flex position-relative justify-content-center mb-1"
+        >
+          <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
+            <div class="d-flex position-relative bg-light left-center p-2">
+              <form action="" class="p-0">
+                <input
+                  id="joinCode"
+                  type="text"
+                  class="col-8 form-control border-0 rounded-3 custom-box-shadow"
+                  style="font-weight: bolder"
+                  placeholder="Enter code"
+                />
+              </form>
+              <div class="p-0">
+                <a
+                  class="btn btn-sm btn-primary border-0 rounded-3 custom-box-shadow"
+                  role="button"
+                  style="padding: 7px 16px; margin-left: 10px"
+                >
+                  Join
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div id="top-right" class="col-3" style="min-width: 299px">
+            <div
+              class="border-1 rounded-2 custom-box-shadow position-relative"
+              style="
                 margin-left: 16px;
                 display: grid;
                 grid-template-columns: 1fr 2fr;
-              ">
-            <div class="portada"></div>
+              "
+            >
+              <div class="portada">
+                <!-- Your content for the 'portada' div -->
+              </div>
+              <div class="p-3 rounded-2">
+                <h6
+                  class="m-0"
+                  style="min-width: 180px"
+                  th:text="${user.fullName}"
+                >
+                  Nguyen Minh Thanh
+                </h6>
+                <div>Welcome Learner!</div>
+                <div class="actions">
+                  <button><i class="far fa-heart"></i></button>
+                  <button><i class="far fa-envelope"></i></button>
+                  <button><i class="fas fa-user-friends"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div class="p-3 rounded-2">
-              <h6 class="m-0" style="min-width: 180px" th:text="${user.fullName}">
-                Nguyen Minh Thanh
-              </h6>
-              <div>Welcome Teacher!</div>
-              <div class="actions">
-                <button><i class="far fa-heart"></i></button>
-                <button><i class="far fa-envelope"></i></button>
-                <button><i class="fas fa-user-friends"></i></button>
+        <!-- Teacher -->
+        <div
+          sec:authorize="hasRole('ROLE_TEACHER')"
+          class="d-flex position-relative justify-content-center mb-1"
+          style="max-width: 1234px"
+        >
+          <div id="top-left" class="col-6 border-1 rounded-2 custom-box-shadow">
+            <div class="border-0 left-center p-2">
+              <h5 style="font-weight: 900">
+                What are you expecting to teach today?
+              </h5>
+              <div class="position-relative w-100 suggest-search">
+                <input
+                  type="search"
+                  id="topSearch"
+                  class="form-control border-0 custom-box-shadow"
+                  style="font-size: 18px; padding-right: 33px"
+                  placeholder="Looking for many other quizzes..."
+                />
+                <button type="button" class="btn p-0 h-100 border-0 rounded-2">
+                  <i class="fas fa-arrow-right"></i>
+                </button>
+                <div id="topSuggestions" class="suggestions-list">
+                  <ul>
+                    <li>Gợi ý 1</li>
+                    <li>Gợi ý 2</li>
+                    <li>Gợi ý 3</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="top-right" class="col-3" style="min-width: 299px">
+            <div
+              class="border-1 rounded-2 custom-box-shadow position-relative"
+              style="
+                margin-left: 16px;
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+              "
+            >
+              <div class="portada"></div>
+
+              <div class="p-3 rounded-2">
+                <h6
+                  class="m-0"
+                  style="min-width: 180px"
+                  th:text="${user.fullName}"
+                >
+                  Nguyen Minh Thanh
+                </h6>
+                <div>Welcome Teacher!</div>
+                <div class="actions">
+                  <button><i class="far fa-heart"></i></button>
+                  <button><i class="far fa-envelope"></i></button>
+                  <button><i class="fas fa-user-friends"></i></button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <div
+        id="bottom-content"
+        class="container-fluid d-flex flex-column px-3 px-lg-5 gap-5"
+      >
+        <div class="section" th:each="category, cStat: ${content.categories()}">
+          <div class="h6 fs-3 m-0">
+            <i class="fas fa-star me-1 text-primary"></i>
+            <span th:text="${content.getTitle(cStat.index)}">err</span>
+          </div>
+          <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
+            <div
+              th:each="quiz, qStat: ${category}"
+              class="col"
+              th:classappend="${qStat.index == 3 ? 'd-none d-xxl-block' : ''}"
+            >
+              <div class="card shadow-sm">
+                <div
+                  th:if="${qStat.index > 1}"
+                  class="see-more"
+                  th:classappend="${qStat.index == 2 ? 'd-xxl-none' : ''}"
+                >
+                  <a
+                    href="#"
+                    class="btn btn-sm btn-outline-info"
+                    style="border: solid 1px"
+                    >See more</a
+                  >
+                </div>
+                <a class="btn w-100 p-0" th:href="@{/quiz/{id}(id=${quiz.id})}">
+                  <img
+                    th:if="${quiz.imageUrl}"
+                    th:src="${quiz.imageUrl}"
+                    class="card-img-top"
+                    style="border-bottom: solid #eee 1px"
+                    alt="Quiz Image"
+                  />
+                  <div
+                    th:unless="${quiz.imageUrl}"
+                    class="card-img-top default-image"
+                    th:style="'background-color: ' + ${content.randomBgColor()}"
+                  ></div>
+
+                  <div class="card-body p-1 px-2 mb-3">
+                    <div class="d-flex flex-row-reverse">
+                      <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
+                    </div>
+                    <h5
+                      class="card-title p-0 text-start"
+                      th:text="${quiz.title}"
+                    >
+                      Card title
+                    </h5>
+
+                    <p
+                      class="card-text d-none d-md-flex text-start"
+                      th:text="${quiz.description} ? ${quiz.description} : 'Lorem ipsum dolor sit amet consectetur adipisicing
+                      elit.'"
+                      style="height: 36px"
+                    >
+                      Some quick example text.
+                    </p>
+                  </div>
+                  <div class="card-footer bg-white w-100 p-0 px-3">
+                    <div>
+                      <i class="fas fa-user"></i>
+                      <span th:text="${quiz.creatorName}">error</span>
+                    </div>
+                    <div>
+                      <span th:text="${quiz.itemNumber}">-1</span> question<span
+                        th:if="${quiz.itemNumber > 1}"
+                        >s</span
+                      >
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <div class="text-center mt-5">©2024 ezQuiz - All Rights Reserved.</div>
+      </footer>
     </div>
 
-    <div id="bottom-content" class="container-fluid d-flex flex-column px-3 px-lg-5 gap-5">
-      <div class="section" th:each="category, cStat: ${content.categories()}">
-        <div class="h6 fs-3 m-0">
-          <i class="fas fa-star me-1 text-primary"></i>
-          <span th:text="${content.getTitle(cStat.index)}">err</span>
-        </div>
-        <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
-          <div th:each="quiz, qStat: ${category}" class="col"
-            th:classappend="${qStat.index == 3 ? 'd-none d-xxl-block' : ''}">
-            <div class="card shadow-sm">
-              <div th:if="${qStat.index > 1}" class="see-more" th:classappend="${qStat.index == 2 ? 'd-xxl-none' : ''}">
-                <a href="#" class="btn btn-sm btn-purple" style="border-bottom: solid 3px #8854c0">See more</a>
-              </div>
-              <a class="btn w-100 p-0" th:href="@{/quiz/{id}(id=${quiz.id})}">
-                <img th:if="${quiz.imageUrl}" th:src="${quiz.imageUrl}" class="card-img-top"
-                  style="border-bottom: solid #eee 1px" alt="Quiz Image" />
-                <div th:unless="${quiz.imageUrl}" class="card-img-top default-image"
-                  th:style="'background-color: ' + ${content.randomBgColor()}"></div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                  </div>
-                  <h5 class="card-title p-0 text-start" th:text="${quiz.title}">
-                    Card title
-                  </h5>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-                  <p class="card-text d-none d-md-flex text-start" th:text="${quiz.description} ? ${quiz.description} : 'Lorem ipsum dolor sit amet consectetur adipisicing
-                      elit.'" style="height: 36px">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer bg-white w-100 p-0 px-3">
-                  <div>
-                    <i class="fas fa-user"></i>
-                    <span th:text="${quiz.creatorName}">error</span>
-                  </div>
-                  <div>
-                    <span th:text="${quiz.itemNumber}">-1</span> question<span th:if="${quiz.itemNumber > 1}">s</span>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="section">
-        <div class="h6 fs-3">
-          Recent<span class="marker marker-center"> quiz</span>
-        </div>
-        <div class="row row-cols-3 row-cols-xxl-4 g-1 g-md-2 g-lg-4">
-          <!-- Card 1 -->
-          <div class="col">
-            <div class="card">
-              <button class="btn w-100 p-0">
-                <img src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top" alt="Quiz Image" />
+    <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
 
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                  </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="col">
-            <div class="card">
-              <button class="btn w-100 p-0">
-                <img src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top" alt="Quiz Image" />
-
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                  </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="col">
-            <div class="card">
-              <div class="d-xxl-none see-more">
-                <a href="#" class="btn btn-sm btn-secondary">See more</a>
-              </div>
-              <button class="btn w-100 p-0">
-                <img src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top" alt="Quiz Image" />
-
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                  </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 4 -->
-          <div class="col d-none d-xxl-block">
-            <div class="card">
-              <div class="see-more">
-                <a href="#" class="btn btn-sm btn-purple">See more</a>
-              </div>
-              <button class="btn w-100 p-0">
-                <img src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-                  class="card-img-top" alt="Quiz Image" />
-
-                <div class="card-body p-1 px-2 mb-3">
-                  <div class="d-flex flex-row-reverse">
-                    <div class="bg-light px-1 rounded-2 item-tag">quiz</div>
-                  </div>
-                  <h5 class="card-title p-0 d-flex">Card title</h5>
-                  <p class="card-text d-none d-md-flex">
-                    Some quick example text.
-                  </p>
-                </div>
-                <div class="card-footer d-flex bg-white w-100 p-0 px-3">
-                  99 questions
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <script src="../static/js/main.js" th:src="@{js/main.js}"></script>
-
-  <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
-</body>
-
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>

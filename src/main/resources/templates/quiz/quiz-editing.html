@@ -141,7 +141,6 @@
                     <i class="fas fa-file-excel me-1"></i> Excel file
                   </button>
                 </div>
-
               </div>
             </div>
           </div>
@@ -544,67 +543,6 @@
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="assignQuizModal" tabindex="-1" aria-labelledby="assignQuizModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="assignQuizModalLabel">
-            Assign Homework
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="assignHomeworkForm" method="post" th:action="@{/quiz/{id}/assign(id=${quiz.id})}"
-            th:object="${assignedQuizDto}">
-            <div class="mb-3">
-              <label for="note" class="form-label">note:</label>
-              <input type="text" class="form-control" id="note" name="note" required />
-            </div>
-
-            <div class="mb-3">
-              <label for="maxAttempt" class="form-label">Max Attempts:</label>
-              <input type="number" class="form-control" id="maxAttempt" name="maxAttempt" required />
-            </div>
-
-            <div class="mb-3">
-              <label for="durationInMins" class="form-label">Duration (in minutes):</label>
-              <input type="number" class="form-control" id="durationInMins" name="durationInMins" required />
-            </div>
-            <div class="mb-3">
-              <label for="startDate" class="form-label">Start Date:</label>
-              <input type="date" class="form-control" id="startDate" name="startDate" required />
-            </div>
-            <div class="mb-3">
-              <label for="dueDate" class="form-label"> DueDate:</label>
-              <input type="date" class="form-control" id="dueDate" name="dueDate" required />
-            </div>
-
-            <div class="form-check form-switch mb-3">
-              <label class="form-check-label" for="shuffleQuestions">Shuffle Questions</label>
-              <input class="form-check-input" type="checkbox" id="shuffleQuestions" name="shuffleQuestions" />
-            </div>
-            <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" id="shuffleAnswers" name="shuffleAnswers" default />
-              <label class="form-check-label" for="shuffleAnswers">Shuffle Answers</label>
-            </div>
-            <div class="form-group mb-3">
-              <label>Select Classroom</label>
-              <!-- Sử dụng select dropdown để chọn một lớp học duy nhất -->
-              <select class="form-select" id="classroomSelect" name="selectedClassroom" required>
-                <!-- Thêm các option từ biến thymeleaf classrooms -->
-                <option th:each="classroom : ${classrooms}" th:value="${classroom.id}" th:text="${classroom.name}">
-                </option>
-              </select>
-            </div>
-            <input type="hidden" name="quizId" th:value="${quiz.id}" />
-            <button type="submit" class="btn btn-primary">Assign quiz</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Excel input modal -->
   <div class="modal fade" id="excelImport" tabindex="-1" aria-labelledby="excelImportLabel" aria-hidden="true">
     <div class="modal-dialog mt-5">
@@ -795,7 +733,7 @@
             const bgValue = `url(${fieldValue})`;
             const quizImage = document.getElementById("quizImage");
             quizImage.style.backgroundImage = bgValue;
-            quizImage.querySelector("div").classList.add("d-none");
+            // quizImage.querySelector("div").classList.add("d-none");
           } else {
             document.getElementById(id + "Input1").value = fieldValue;
             if (id === "title") {
@@ -816,6 +754,7 @@
         } else {
           value = input.value;
         }
+        console.log("value: ", value);
         localStorage.setItem(quizId + id, value);
       }
     }
@@ -843,35 +782,12 @@
             for (let id of inputIDs) {
               localStorage.removeItem(quizId + id);
             }
-            window.location.href = `/quiz/${quizId}/edit`;
+            location.href = `/quiz/${quizId}`;
           },
           "put"
         );
       }
     }
-    /*]]>*/
-
-    $(document).ready(function () {
-      $("#assignHomeworkBtn").click(function () {
-        $("#assignQuizModal").modal("show");
-      });
-
-      // Xử lý khi submit form gán bài tập từ modal
-      $("#assignHomeworkForm").submit(function (e) {
-        e.preventDefault();
-        var form = $(this);
-
-        $.ajax({
-          type: "POST",
-          url: form.attr("action"),
-          data: form.serialize(),
-          success: function () {
-            $("#assignQuizModal").modal("hide");
-            location.reload(); // Reload trang khi hoàn thành
-          },
-        });
-      });
-    });
     /*]]>*/
   </script>
 
