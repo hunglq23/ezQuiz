@@ -116,18 +116,15 @@ public class ClassroomServiceImpl implements IClassroomService {
   public boolean joinClassroom(HttpServletRequest request, String code) {
     User learner = userService.getUserRequesting(request);
     Classroom classroom = classroomRepo.findByCode(code);
-    if (classroom != null && learner != null) {
 
+    if (classroom != null && learner != null) {
       ClassJoining classJoining = ClassJoining.builder()
           .learner(learner)
           .classroom(classroom)
           .learnerDisplayedName(learner.getFullName())
           .learnerDisplayedPhone(learner.getPhone())
           .build();
-
       learner.getClassJoinings().add(classJoining);
-      classJoining.setLearnerDisplayedName(learner.getFullName());
-      classJoining.setLearnerDisplayedPhone(learner.getPhone());
       classroom.getClassJoinings().add(classJoining);
       classroomRepo.save(classroom);
       return true;
@@ -192,18 +189,6 @@ public class ClassroomServiceImpl implements IClassroomService {
   @Override
   public List<Classroom> findClassroomsByCreatorId(Long creatorId) {
     return classroomRepo.findByCreatorId(creatorId);
-  }
-
-  @Override
-  public Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params) {
-
-    return classroomRepo.findByClassJoinings_LearnerAndNameContaining(
-        userService.getUserRequesting(request),
-        params.getSearch(),
-        PageRequest.of(params.getPage() - 1,
-            params.getSize(),
-            params.getSortType()))
-        .map(this::mapToClassroomDto);
   }
 
   private Classroom processSheet(Sheet sheet, Classroom classroom) {
@@ -289,7 +274,6 @@ public class ClassroomServiceImpl implements IClassroomService {
         .imageUrl(classroom.getImageURL())
         .itemNumber(classroom.getClassJoinings().size())
         .timestamp(classroom.getCreatedAt())
-        .teacherName(classroom.getCreator().getFullName())
         .build();
   }
 
@@ -297,12 +281,19 @@ public class ClassroomServiceImpl implements IClassroomService {
   public Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params) {
 
     return classroomRepo.findByClassJoinings_LearnerAndNameContaining(
-      userService.getUserRequesting(request), 
-      params.getSearch(), 
-      PageRequest.of(params.getPage() - 1,
-                params.getSize(),
-                params.getSortType())
-    ).map(this::mapToClassroomDto);
+        userService.getUserRequesting(request),
+        params.getSearch(),
+        PageRequest.of(params.getPage() - 1,
+            params.getSize(),
+            params.getSortType()))
+        .map(this::mapToClassroomDto);
+  }
+
+  @Override
+  public void removeLearnerFromClassroomByClassJoiningId(Classroom classroom, Long classJoiningId) {
+
+    classroom.getClassJoinings().removeIf(classJoining -> classJoining.getId() == classJoiningId);
+    classroomRepo.save(classroom);
   }
 
 }
