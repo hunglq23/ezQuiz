@@ -16,6 +16,7 @@ import com.group3.ezquiz.payload.LibraryResponse;
 import com.group3.ezquiz.payload.ObjectDto;
 import com.group3.ezquiz.payload.QuizReqParam;
 import com.group3.ezquiz.payload.classroom.ClassroomDto;
+import com.group3.ezquiz.payload.quiz.QuizAssignedDto;
 import com.group3.ezquiz.payload.quiz.QuizDto;
 import com.group3.ezquiz.service.ILibraryService;
 
@@ -65,7 +66,7 @@ public class LibraryController {
       }
     }
     model.addAttribute("path", PATH);
-    model.addAttribute("library", library);
+    model.addAttribute("page", library);
     model.addAttribute("params", params);
     return "library";
   }
@@ -169,6 +170,41 @@ public class LibraryController {
     model.addAttribute("params", params);
     model.addAttribute("classroom", new CodeFormDto());
     return "classroom/classroom-list";
+  }
+
+  @PreAuthorize(LEARNER_AUTHORITY)
+  @GetMapping("/to-do-quiz")
+  public String todoQuiz(
+      HttpServletRequest request,
+      @Valid @ModelAttribute LibraryReqParam params,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes,
+      Model model) {
+    final String PATH = "/library/to-do-quiz";
+    final String DO_REDIRECT = "redirect:" + PATH;
+
+    if (bindingResult.hasErrors()) {
+      // if any invalid request params, set that param to default value
+      params.handleWhenError(bindingResult);
+      redirectAttributes.addAllAttributes(params.getAttrMap());
+      return DO_REDIRECT;
+    }
+
+    LibraryResponse page = libraryService.getQuizAssigned(request, params);
+    List<QuizAssignedDto> quizList = page.getContent();
+
+    if (quizList == null && page.getExceedMaxPage() == true) {
+      // case when the current page exceed the max page number
+      if (page.getTotalPages() > 0) {
+        params.setPage(page.getTotalPages());
+        redirectAttributes.addAllAttributes(params.getAttrMap());
+        return DO_REDIRECT;
+      }
+    }
+    model.addAttribute("path", PATH);
+    model.addAttribute("page", page);
+    model.addAttribute("params", params);
+    return "library";
   }
 
 }

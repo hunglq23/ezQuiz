@@ -21,4 +21,6 @@ public interface ILibraryService {
 
   Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params);
 
+  LibraryResponse getQuizAssigned(HttpServletRequest request, @Valid LibraryReqParam params);
+
 }
