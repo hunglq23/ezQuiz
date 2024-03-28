@@ -87,6 +87,62 @@
                 </a>
               </li>
               <li th:replace="~{home :: createButton}"></li>
+              <li sec:authorize="hasRole('ROLE_LEARNER')" class="nav-item">
+                <button
+                  class="btn btn-sm btn-purpleee px-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#joinClass"
+                >
+                  Join a Class
+                </button>
+                <div
+                  sec:authorize="hasRole('ROLE_LEARNER')"
+                  class="modal fade"
+                  id="joinClass"
+                  tabindex="-1"
+                  aria-labelledby="joinClass"
+                  aria-hidden="true"
+                >
+                  <form th:action="@{/classroom/join}" method="POST">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <div class="modal-title h5">Join a Class</div>
+                          <div style="color: #888">
+                            Enter a code that teacher shared with you
+                          </div>
+                          <div class="my-2 mb-3">
+                            <input
+                              type="text"
+                              class="form-control py-1"
+                              id="recipient-name"
+                              name="code"
+                              placeholder="ABCD1234"
+                              required
+                            />
+                          </div>
+                          <div class="text-end">
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-purple px-2"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-purpleee"
+                            >
+                              Continue
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </li>
               <li th:replace="~{home :: barButton}"></li>
             </ul>
           </div>
@@ -113,6 +169,7 @@
             </header>
             <ul class="nav d-flex flex-column align-items-center mb-3">
               <li
+                sec:authorize="hasRole('ROLE_TEACHER')"
                 class="nav-link w-100 p-0 rounded-1"
                 th:classappend="${path.equals('/library/my-library') ? 'active' : ''}"
               >
@@ -124,6 +181,7 @@
                 </a>
               </li>
               <li
+                sec:authorize="hasRole('ROLE_TEACHER')"
                 class="nav-link w-100 p-0 rounded-1"
                 th:classappend="${path.equals('/library/my-quiz') ? 'active' : ''}"
               >
@@ -136,14 +194,43 @@
               </li>
               <li
                 class="nav-link w-100 p-0 rounded-1"
-                th:classappend="${path.equals('/library/my-classroom') ? 'active' : ''}"
+                th:classappend="${path.equals('/library/my-classroom') ||
+                path.equals('/library/joined-classrooms') ? 'active' : ''}"
               >
                 <a class="btn btn-sm d-flex" th:href="@{/library/my-classroom}">
                   <div class="square-33-center-item rotate-on-hover">
                     <i class="fas fa-book"></i>
                   </div>
                   <div class="d-flex align-items-center flex-1">
-                    <span>Classroom</span>
+                    <span>My Classroom</span>
+                  </div>
+                </a>
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-link w-100 p-0 rounded-1"
+                th:classappend="${path.equals('/library/assigned-quizzes') ? 'active' : ''}"
+              >
+                <a class="btn btn-sm d-flex" th:href="@{/library/my-quiz}">
+                  <div class="square-33-center-item rotate-on-hover">
+                    <i class="fas fa-bullseye"></i>
+                  </div>
+                  <div class="d-flex align-items-center flex-1">
+                    To-do Quizzes
+                  </div>
+                </a>
+              </li>
+              <li
+                sec:authorize="hasRole('ROLE_LEARNER')"
+                class="nav-link w-100 p-0 rounded-1"
+                th:classappend="${path.equals('/library/taken-quizzes') ? 'active' : ''}"
+              >
+                <a class="btn btn-sm d-flex" th:href="@{/library/my-quiz}">
+                  <div class="square-33-center-item rotate-on-hover">
+                    <i class="fas fa-history"></i>
+                  </div>
+                  <div class="d-flex align-items-center flex-1">
+                    Taken Quizzes
                   </div>
                 </a>
               </li>
@@ -361,7 +448,7 @@
                         th:unless="${data.imageUrl}"
                         class="h-100 rounded-1"
                         th:style="'background-color: ' + ${params.randomBgColor()}"
-                        th:classappend="${data.type == 'Classroom' ? 'classroom-default' : 'default-image'}"
+                        th:classappend="${data.type == 'classroom' ? 'classroom-default' : 'default-image'}"
                       ></div>
                     </div>
 
@@ -425,10 +512,10 @@
                               style="margin: 0 3px"
                               th:text="${data.itemNumber}"
                               >99</span
-                            ><span th:if="${data.type=='Quiz'}"
+                            ><span th:if="${data.type=='quiz'}"
                               >question(s)</span
                             >
-                            <span th:if="${data.type=='Classroom'}"
+                            <span th:if="${data.type=='classroom'}"
                               >student(s)</span
                             >
                           </div>
@@ -454,6 +541,110 @@
                       </div>
                     </div>
                   </a>
+                  <div
+                    sec:authorize="hasRole('ROLE_LEARNER')"
+                    class="btn item p-1 d-flex gap-1 rounded-1 shadow-sm"
+                    style="cursor: auto"
+                  >
+                    <div style="width: 169px">
+                      <img
+                        th:if="${data.imageUrl}"
+                        class="h-100 rounded-1"
+                        style="border: #f4f5f6 solid 1px; max-width: 169px"
+                        th:src="${data.imageUrl}"
+                      />
+                      <div
+                        th:unless="${data.imageUrl}"
+                        class="h-100 rounded-1"
+                        th:style="'background-color: ' + ${params.randomBgColor()}"
+                        th:classappend="${data.type == 'classroom' ? 'classroom-default' : 'default-image'}"
+                      ></div>
+                    </div>
+
+                    <div
+                      class="d-flex flex-column align-items-start flex-fill gap-1 p-1 px-2"
+                    >
+                      <div class="d-flex" style="margin-top: 3px">
+                        <div
+                          th:if="${data.isDraft}"
+                          class="rounded-2 item-tag px-1"
+                          style="color: rgb(247, 95, 95)"
+                        >
+                          draft
+                        </div>
+                      </div>
+
+                      <div
+                        th:if="${data.name == null || data.name.isEmpty()}"
+                        class="my-0 h5 opa-25"
+                      >
+                        Untitled Quiz
+                      </div>
+                      <div
+                        th:unless="${data.name == null || data.name.isEmpty()}"
+                        class="my-0 h5"
+                        th:text="${data.name}"
+                      >
+                        Quiz Name
+                      </div>
+
+                      <p
+                        class="text-small m-0 flex-fill fw-light"
+                        th:text="${data.description}"
+                      >
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      </p>
+
+                      <div
+                        class="d-flex justify-content-between align-items-center w-100"
+                      >
+                        <div
+                          class="d-flex flex-row align-items-center"
+                          style="
+                            font-size: 12px;
+                            opacity: 0.88;
+                            font-weight: 100;
+                          "
+                        >
+                          <div
+                            th:if="${data.teacherName}"
+                            class="d-flex flex-row align-items-center"
+                          >
+                            <i
+                              class="fas fa-user h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span th:text="${data.teacherName}">err</span>
+                          </div>
+                          <div
+                            class="d-flex flex-row align-items-center"
+                            th:if="${data.type=='quiz'}"
+                          >
+                            <i
+                              class="fas fa-list h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span
+                              style="margin: 0 3px"
+                              th:text="${data.itemNumber}"
+                              >99</span
+                            ><span>question(s)</span>
+                          </div>
+                          <div class="d-flex flex-row align-items-center mx-2">
+                            <i
+                              class="fas fa-history h-100"
+                              style="opacity: 0.55; margin-right: 3px"
+                            ></i>
+                            <span
+                              style="margin: 0 3px"
+                              th:text="${data.getTimeString()}"
+                              >99</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
