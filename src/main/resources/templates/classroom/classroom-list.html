@@ -188,56 +188,6 @@
       </div>
     </div>
 
-    <!-- Modal joinclass -->
-    <div
-      sec:authorize="hasRole('ROLE_LEARNER')"
-      class="modal fade"
-      id="joinClass"
-      tabindex="-1"
-      aria-labelledby="joinClass"
-      aria-hidden="true"
-    >
-      <form th:action="@{/classroom/join}" method="POST">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-body">
-              <div class="modal-title h5">Join a Class</div>
-              <div style="color: #888">
-                Enter a code that teacher shared with you
-              </div>
-              <div class="my-2 mb-3">
-                <input
-                  type="text"
-                  class="form-control py-1"
-                  id="recipient-name"
-                  name="code"
-                  placeholder="ABCD1234"
-                  required
-                />
-              </div>
-              <div class="text-end">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-purple px-2"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-sm btn-purpleee"
-                  name="join"
-                >
-                  Continue
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check-circle-fill" viewBox="0 0 16 16">
         <path

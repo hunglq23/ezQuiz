@@ -19,7 +19,6 @@ import com.group3.ezquiz.model.Classroom;
 import com.group3.ezquiz.payload.ExcelFileDto;
 import com.group3.ezquiz.payload.MessageResponse;
 import com.group3.ezquiz.payload.classroom.ClassroomDetailDto;
-import com.group3.ezquiz.payload.CodeFormDto;
 import com.group3.ezquiz.service.IClassroomService;
 import com.group3.ezquiz.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -158,16 +157,6 @@ public class ClassroomController {
     }
 
     @PreAuthorize(LEARNER_AUTHORITY)
-    @GetMapping("/joined-list")
-    public String JoinClassroomForm(
-            HttpServletRequest request,
-            Model model) {
-        model.addAttribute("classroom", new CodeFormDto());
-        model.addAttribute("classrooms", userService.getUserRequesting(request).getClassJoinings());
-        return "classroom/classroom-list";
-    }
-
-    @PreAuthorize(LEARNER_AUTHORITY)
     @PostMapping("/join")
     public String JoinedClassroom(
             HttpServletRequest request,
@@ -175,9 +164,9 @@ public class ClassroomController {
         boolean success = classroomService.joinClassroom(request, code);
         if (success) {
             model.addAttribute("classjoin", userService.getUserRequesting(request).getClassJoinings());
-            return "redirect:/classroom/joined-list?joined";
+            return "redirect:/library/joined-classrooms?joined";
         }
-        return "redirect:error";
+        return "redirect:/error";
     }
 
 }

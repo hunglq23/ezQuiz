@@ -37,4 +37,6 @@ public interface IClassroomService {
     List<Classroom> findClassroomsByCreatorId(Long creatorId);
 
     void addAssignQuiz(HttpServletRequest request, Quiz quiz, AssignedQuizDto assignedQuizDTO);
+
+    Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params);
 }
