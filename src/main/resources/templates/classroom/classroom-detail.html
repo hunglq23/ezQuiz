@@ -1,298 +1,443 @@
 <!DOCTYPE html>
 <html lang="en-US" xmlns:th="www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Classroom Details</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../static/images/favicon.ico"
+      th:href="@{/images/favicon.ico}"
+    />
+    <link
+      href="../../static/vendor/bootstrap/bootstrap.min.css"
+      th:href="@{/vendor/bootstrap/bootstrap.min.css}"
+      rel="stylesheet"
+    />
+    <link
+      href="../../static/css/main.css"
+      th:href="@{/css/main.css}"
+      rel="stylesheet"
+    />
+    <!-- Font Family Nunito Sans -->
+    <link
+      href="../../static/css/font.css"
+      th:href="@{/css/font.css}"
+      rel="stylesheet"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Classroom Details</title>
-  <link rel="icon" type="image/x-icon" href="../../static/images/favicon.ico" th:href="@{/images/favicon.ico}" />
-  <link href="../../static/vendor/bootstrap/bootstrap.min.css" th:href="@{/vendor/bootstrap/bootstrap.min.css}"
-    rel="stylesheet" />
-  <link href="../../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet" />
-  <!-- Font Family Nunito Sans -->
-  <link href="../../static/css/font.css" th:href="@{/css/font.css}" rel="stylesheet" />
+    <style>
+      body {
+        background-color: #f1eeee;
+      }
 
-  <style>
-    body {
-      background-color: #f1eeee;
-    }
+      .card {
+        box-shadow: 2px 2px 1px #c4c4c4;
+      }
 
-    .card {
-      box-shadow: 2px 2px 1px #c4c4c4;
-    }
+      .action {
+        margin-right: 20px;
+      }
 
-    .action {
-      margin-right: 20px;
-    }
+      .table-light {
+        margin: 30px;
+      }
 
-    .table-light {
-      margin: 30px;
-    }
+      button#excelImport {
+        display: inline-block;
+        /* Hiển thị inline-block để nút nằm trên cùng một dòng với div */
+        vertical-align: middle;
+        /* Canh chỉnh theo chiều dọc với div */
+      }
 
-    button#excelImport {
-      display: inline-block;
-      /* Hiển thị inline-block để nút nằm trên cùng một dòng với div */
-      vertical-align: middle;
-      /* Canh chỉnh theo chiều dọc với div */
-    }
+      .card-body {
+        position: relative;
+      }
 
-    .card-body {
-      position: relative;
-    }
+      .edit-class {
+        position: absolute;
+        top: 3px;
+        right: 10px;
+        bottom: 10px;
+      }
 
-    .edit-class {
-      position: absolute;
-      top: 3px;
-      right: 10px;
-      bottom: 10px;
-    }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </style>
+  </head>
 
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-  </style>
-</head>
+  <body>
+    <div th:replace="~{home :: topNav}"></div>
 
-<body>
-  <div th:replace="~{home :: topNav}"></div>
-
-  <div class="container">
-    <div class="fs-6 mt-3 d-flex justify-content-between">
-      <a th:href="@{/library/my-classroom?page=1&sort=latest&size=3}"><i class="fa-solid fa-arrow-left">
-        </i> Back to all classes
-      </a>
-      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addStudent">
-        <i class="fa-solid fa-user-plus"> </i> Add Student
-      </button>
-    </div>
-    <div class="row g-4">
-      <div class="col-4">
-        <div class="card" th:each="classroom: ${classroom}" th:id="${classroom.id}">
-          <div class="card-header">
-            <img src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
-              class="card-img-top" height="234" alt="..." />
-          </div>
-          <div class="p-2">
-            <div class="card-body p-0">
-              <h5 class="card-title" th:text="${classroom.name}">
-                Classroom Name
-              </h5>
-              <p class="card-text" th:text="${classroom.description}">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </p>
-
-              <div class="edit-class">
-                <button class="btn btn-sm btn-purple" data-bs-toggle="modal" data-bs-target="#editClassModal">
-                  <i class="fa-regular fa-pen-to-square"></i>
-                </button>
-              </div>
-            </div>
-            <div class="mt-2">
-              <div class="w-100">
-                <strong>Import from:</strong>
-              </div>
-
-              <!-- Excel input trigger button -->
-              <button type="button" class="btn btn-sm btn-outline-secondary border border-1 mb-2 mt-1 px-3"
-                data-bs-toggle="modal" data-bs-target="#excelImport">
-                <i class="fas fa-file-excel me-1"></i> Excel file
-              </button>
-            </div>
-          </div>
-        </div>
+    <div class="container">
+      <div class="fs-6 mt-3 d-flex justify-content-between">
+        <a th:href="@{/library/my-classroom?page=1&sort=latest&size=3}"
+          ><i class="fa-solid fa-arrow-left"> </i> Back to all classes
+        </a>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addStudent"
+        >
+          <i class="fa-solid fa-user-plus"> </i> Add Student
+        </button>
       </div>
-      <!-- Table Student in Class -->
-      <div class="col-8">
-        <div class="card">
-          <table class="table-light align-middle">
-            <thead>
-              <tr>
-                <th scope="col">No</th>
-                <th scope="col">Student Name</th>
-                <th scope="col">Student Email</th>
-                <th scope="col">Phone</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <div th:if="${classroom.classJoinings.size() == 0}">
-              Hi No Student
+      <div class="row g-4">
+        <div class="col-4">
+          <div
+            class="card"
+            th:each="classroom: ${classroom}"
+            th:id="${classroom.id}"
+          >
+            <div class="card-header">
+              <img
+                src="https://i.etsystatic.com/24456611/r/il/e806dd/3118599492/il_600x600.3118599492_k3mm.jpg"
+                class="card-img-top"
+                height="234"
+                alt="..."
+              />
             </div>
-            <tbody th:unless="${classroom.classJoinings.size() == 0}"
-              th:each="classJoining, iStat: ${classroom.classJoinings}">
-              <tr>
-                <!-- <div class="d-none" th:text="${classJoining.id}"></div> -->
-                <th scope="row" th:text="${iStat.index + 1}">1</th>
-                <td th:text="${classJoining.getLearner().fullName}">Mark</td>
-                <td th:text="${classJoining.getLearner().email}">Otto</td>
-                <td th:text="${classJoining.learnerDisplayedPhone}">
-                  123456799
-                </td>
-                <td class="action">
-                  <form th:action="@{./{id}/remove-member(id=${classroom.id})}" method="post">
-                    <button class="btn btn-sm bg-light" onclick="removeMember()" type="submit">
-                      <span class="fa-solid fa-trash"> </span>
-                    </button>
-                    <input type="hidden" name="classJoiningId" th:value="${classJoining.id}" />
-                  </form>
+            <div class="p-2">
+              <div class="card-body p-0">
+                <h5 class="card-title" th:text="${classroom.name}">
+                  Classroom Name
+                </h5>
+                <p class="card-text" th:text="${classroom.description}">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                </p>
 
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Student -->
-
-  <div class="modal fade" id="addStudent" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-    th:each="classroom: ${classroom}">
-    <form action="#">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">
-              Share this Class code with your students
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <input type="text" class="form-control" id="recipient-name" th:field="*{classroom.code}" readonly
-                style="background-color: rgb(245, 217, 221)" />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" name="close" data-bs-dismiss="modal">
-              Close
-            </button>
-            <!-- Chỉnh sửa -->
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <!-- Update Modal classroom -->
-  <div class="modal fade" id="editClassModal" tabindex="-1" aria-labelledby="editClassModal" aria-hidden="true">
-    <form th:action="@{/classroom/{id}/update(id=${classroom.id})}" th:object="${classroom}" method="POST">
-      <input type="hidden" th:field="*{id}" />
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header p-2">
-            <h5 class="modal-title" id="exampleModalLabel">Edit classroom</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="createClassroomForm" class="d-flex flex-column gap-1"
-              th:action="@{/classroom/{id}/update(id = ${classroom.id})}" method="POST" role="form" autocomplete="off">
-              <input autocomplete="false" name="hidden" type="text" style="display: none" />
-              <div class="form-group">
-                <label for="name" class="col-form-label">Class Name:</label>
-                <input class="form-control nameInput" type="text" id="name" name="name" maxlength="64"
-                  th:value="${classroom.name}" />
-                <div class="error-area text-danger px-1">
-                  <span id="nameError" class="d-none nameError">
-                    Name existed!
-                  </span>
+                <div class="edit-class">
+                  <button
+                    class="btn btn-sm btn-purple"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editClassModal"
+                  >
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
                 </div>
               </div>
+              <div class="mt-2">
+                <div class="w-100">
+                  <strong>Import from:</strong>
+                </div>
 
-              <div class="mb-3">
-                <label for="description" class="col-form-label">Description:</label>
-                <textarea class="form-control" id="description" name="description" rows="3" maxlength="128"
-                  th:text="${classroom.description}"></textarea>
-              </div>
-
-              <div class="text-center">
-                <button type="submit" class="btn btn-sm btn-primary rounded-2 px-5">
-                  Save
+                <!-- Excel input trigger button -->
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary border border-1 mb-2 mt-1 px-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#excelImport"
+                >
+                  <i class="fas fa-file-excel me-1"></i> Excel file
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+        <!-- Table Student in Class -->
+        <div class="col-8">
+          <div class="card">
+            <table class="table-light align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Student Name</th>
+                  <th scope="col">Student Email</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <div th:if="${classroom.classJoinings.size() == 0}">
+                No Student
+              </div>
+              <tbody
+                th:unless="${classroom.classJoinings.size() == 0}"
+                th:each="classJoining, iStat: ${classroom.classJoinings}"
+              >
+                <tr>
+                  <!-- <div class="d-none" th:text="${classJoining.id}"></div> -->
+                  <th scope="row" th:text="${iStat.index + 1}">1</th>
+                  <td th:text="${classJoining.getLearner().fullName}">Mark</td>
+                  <td th:text="${classJoining.getLearner().email}">Otto</td>
+                  <td th:text="${classJoining.learnerDisplayedPhone}">
+                    123456799
+                  </td>
+                  <td class="action">
+                    <form
+                      th:action="@{./{id}/remove-member(id=${classroom.id})}"
+                      method="post"
+                    >
+                      <button
+                        class="btn btn-sm bg-light"
+                        onclick="removeMember()"
+                        type="submit"
+                      >
+                        <span class="fa-solid fa-trash"> </span>
+                      </button>
+                      <input
+                        type="hidden"
+                        name="classJoiningId"
+                        th:value="${classJoining.id}"
+                      />
+                    </form>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Student -->
+
+    <div
+      class="modal fade"
+      id="addStudent"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+      th:each="classroom: ${classroom}"
+    >
+      <form action="#">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Share this Class code with your students
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipient-name"
+                  th:field="*{classroom.code}"
+                  readonly
+                  style="background-color: rgb(245, 217, 221)"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                name="close"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- Chỉnh sửa -->
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Update Modal classroom -->
+    <div
+      class="modal fade"
+      id="editClassModal"
+      tabindex="-1"
+      aria-labelledby="editClassModal"
+      aria-hidden="true"
+    >
+      <form
+        th:action="@{/classroom/{id}/update(id=${classroom.id})}"
+        th:object="${classroom}"
+        method="POST"
+      >
+        <input type="hidden" th:field="*{id}" />
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header p-2">
+              <h5 class="modal-title" id="exampleModalLabel">Edit classroom</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form
+                id="createClassroomForm"
+                class="d-flex flex-column gap-1"
+                th:action="@{/classroom/{id}/update(id = ${classroom.id})}"
+                method="POST"
+                role="form"
+                autocomplete="off"
+              >
+                <input
+                  autocomplete="false"
+                  name="hidden"
+                  type="text"
+                  style="display: none"
+                />
+                <div class="form-group">
+                  <label for="name" class="col-form-label">Class Name:</label>
+                  <input
+                    class="form-control nameInput"
+                    type="text"
+                    id="name"
+                    name="name"
+                    maxlength="64"
+                    th:value="${classroom.name}"
+                  />
+                  <div class="error-area text-danger px-1">
+                    <span id="nameError" class="d-none nameError">
+                      Name existed!
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="description" class="col-form-label"
+                    >Description:</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    name="description"
+                    rows="3"
+                    maxlength="128"
+                    th:text="${classroom.description}"
+                  ></textarea>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-primary rounded-2 px-5"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+      <symbol id="check-circle-fill" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+        />
+      </symbol>
+      <symbol id="info-fill" viewBox="0 0 16 16">
+        <path
+          d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+        />
+      </symbol>
+      <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+        <path
+          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+        />
+      </symbol>
+    </svg>
+    <div id="alert" class="alert alert-success d-none" role="alert">
+      <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>
+        <span id="alertMsg">Your account was created successfully!</span>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/b16b259998.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
+
+    <!-- Add student in excel file -->
+    <div
+      class="modal fade"
+      id="excelImport"
+      tabindex="-1"
+      aria-labelledby="excelImportLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog mt-5">
+        <div class="modal-content border-0">
+          <div class="modal-header p-2 align-items-start">
+            <div>
+              <h5 class="modal-title" id="excelImportLabel">
+                Import classrooms and students
+              </h5>
+              <p class="fw-lighter fst-italic m-0" style="font-size: small">
+                Please upload the excel file according to the template below
+              </p>
+            </div>
+            <button
+              type="button"
+              class="btn-sm btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form
+              id="excelImportForm"
+              th:action="@{/classroom/{id}/import(id=${classroom.id})}"
+              enctype="multipart/form-data"
+              class="input-group mb-3"
+            >
+              <input
+                type="file"
+                class="form-control"
+                name="excelFile"
+                id="inputExcelFile"
+              />
             </form>
           </div>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-    <symbol id="check-circle-fill" viewBox="0 0 16 16">
-      <path
-        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-    </symbol>
-    <symbol id="info-fill" viewBox="0 0 16 16">
-      <path
-        d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-    </symbol>
-    <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
-      <path
-        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-    </symbol>
-  </svg>
-  <div id="alert" class="alert alert-success d-none" role="alert">
-    <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
-      <use xlink:href="#check-circle-fill" />
-    </svg>
-    <div>
-      <span id="alertMsg">Your account was created successfully!</span>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <script src="https://kit.fontawesome.com/b16b259998.js" crossorigin="anonymous"></script>
-
-  <script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>
-
-  <!-- Add student in excel file -->
-  <div class="modal fade" id="excelImport" tabindex="-1" aria-labelledby="excelImportLabel" aria-hidden="true">
-    <div class="modal-dialog mt-5">
-      <div class="modal-content border-0">
-        <div class="modal-header p-2 align-items-start">
-          <div>
-            <h5 class="modal-title" id="excelImportLabel">
-              Import classrooms and students
-            </h5>
-            <p class="fw-lighter fst-italic m-0" style="font-size: small">
-              Please upload the excel file according to the template below
-            </p>
+          <div class="modal-footer p-1 d-flex justify-content-between">
+            <a
+              th:href="@{/classroom/{id}/download(id=${classroom.id})}"
+              class="btn btn-sm bg-light px-2 glitter-button"
+            >
+              <i class="fas fa-download me-1"></i>Download template
+            </a>
+            <button
+              class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
+              onclick="handleFormSubmitByIdAndMethod('excelImportForm')"
+            >
+              Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
+            </button>
           </div>
-          <button type="button" class="btn-sm btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="excelImportForm" th:action="@{/classroom/{id}/import(id=${classroom.id})}"
-            enctype="multipart/form-data" class="input-group mb-3">
-            <input type="file" class="form-control" name="excelFile" id="inputExcelFile" />
-          </form>
-        </div>
-        <div class="modal-footer p-1 d-flex justify-content-between">
-          <a th:href="@{/classroom/{id}/download(id=${classroom.id})}" class="btn btn-sm bg-light px-2 glitter-button">
-            <i class="fas fa-download me-1"></i>Download template
-          </a>
-          <button class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
-            onclick="handleFormSubmitByIdAndMethod('excelImportForm')">
-            Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
-          </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    function clickSaveAndContinue() {
-      handleFormSubmitByIdAndMethod("excelImportForm", function () {
-        window.location.href = "/classroom/{id}?imported";
-      });
-    }
-  </script>
-</body>
-
+    <script>
+      function clickSaveAndContinue() {
+        handleFormSubmitByIdAndMethod("excelImportForm", function () {
+          window.location.href = "/classroom/{id}?imported";
+        });
+      }
+    </script>
+  </body>
 </html>

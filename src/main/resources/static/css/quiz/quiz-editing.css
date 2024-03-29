@@ -309,7 +309,9 @@
   align-items: center;
   padding: 0;
 }
-
+.qcard-tool {
+  box-shadow: none !important;
+}
 .qcard-tool:hover {
   background-color: buttonface;
   border: none;

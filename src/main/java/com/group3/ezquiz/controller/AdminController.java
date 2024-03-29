@@ -40,6 +40,7 @@ public class AdminController {
     model.addAttribute("totalPages", userList.getTotalPages());
     model.addAttribute("search", email);
     model.addAttribute("status", statusReq);
+    model.addAttribute("user", userService.getUserRequesting(http));
     return "admin/user-list";
   }
 
@@ -74,7 +75,7 @@ public class AdminController {
 
   @GetMapping("/update-status/{id}")
   public String updateStatus(HttpServletRequest http, Model model,
-                       @PathVariable(name = "id") Long id) {
+      @PathVariable(name = "id") Long id) {
     userService.updateStatus(id);
     return "redirect:/admin/list";
   }

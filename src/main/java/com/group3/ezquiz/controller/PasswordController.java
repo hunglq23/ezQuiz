@@ -82,33 +82,6 @@ public class PasswordController {
     return "redirect:/login?passwordChanged";
   }
 
-  @PostMapping("/update-profile")
-  public String updateProfile(HttpServletRequest http, Model model,
-      @Valid @ModelAttribute("fullName") String fullName,
-      @Valid @ModelAttribute("note") String note,
-      @Valid @ModelAttribute("phone") String phone,
-      // @Valid @ModelAttribute("oldPass") String oldPass,
-      // @Valid @ModelAttribute("newPass") String newPass,
-      // @Valid @ModelAttribute("reNewPass") String reNewPass,
-      RedirectAttributes redirectAttributes, BindingResult result) {
-    User userRequesting = userService.getUserRequesting(http);
-    userRequesting.setFullName(fullName);
-    userRequesting.setNote(note);
-    userRequesting.setPhone(phone);
-    userService.save(userRequesting);
-    // boolean isPasswordCorrect = passwordEncoder.matches(oldPass,
-    // userRequesting.getPassword());
-    model.addAttribute("user", userRequesting);
-    String successMessage = "Updated information successfully!";
-    // if (isPasswordCorrect && newPass.equals(reNewPass)) {
-    // userService.updatePassword(userRequesting.getEmail(), newPass);
-    // model.addAttribute("message", "success");
-    // successMessage = "Updated successfully!";
-    // }
-    redirectAttributes.addFlashAttribute("successMessage", successMessage);
-    return "redirect:/profile";
-  }
-
   @PostMapping("/update-password")
   public String updatePass(HttpServletRequest http, Model model,
       @Valid @ModelAttribute("oldPassModal") String oldPass,

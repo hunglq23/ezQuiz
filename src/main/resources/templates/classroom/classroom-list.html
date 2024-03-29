@@ -100,7 +100,7 @@
             <button
               role="button"
               class="btn btn-sm btn-secondary my-0 px-2 glitter-button"
-              onclick="clickSaveAndContinue()"
+              onclick="clickSaveAndContinue(this)"
             >
               Save & Continue&nbsp;&nbsp;<i class="fas fa-arrow-right"></i>
             </button>
@@ -279,7 +279,8 @@
         }, 3000);
       });
 
-      function clickSaveAndContinue() {
+      function clickSaveAndContinue(button) {
+        $(button).prop("disabled", true);
         handleFormSubmitByIdAndMethod("excelImportForm", function () {
           location.href = "/library/my-classroom?imported";
         });
