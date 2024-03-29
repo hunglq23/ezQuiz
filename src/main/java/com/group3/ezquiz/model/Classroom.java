@@ -64,6 +64,6 @@ public class Classroom {
   @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
   private List<QuizAssigning> assignedQuizList;
 
-  @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClassJoining> classJoinings;
 }

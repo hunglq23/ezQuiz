@@ -39,4 +39,6 @@ public interface IClassroomService {
     void addAssignQuiz(HttpServletRequest request, Quiz quiz, AssignedQuizDto assignedQuizDTO);
 
     Page<ClassroomDto> getJoinedClassrooms(HttpServletRequest request, @Valid LibraryReqParam params);
+
+    void removeLearnerFromClassroomByClassJoiningId(Classroom classroom, Long classJoiningId);
 }
