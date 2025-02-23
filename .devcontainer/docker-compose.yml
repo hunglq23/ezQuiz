@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    container_name: java_dev
+    volumes:
+      - ..:/workspace
+    networks:
+      - dev_network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devdb
+      MYSQL_USER: admin1
+      MYSQL_PASSWORD: 123
+    ports:
+      - "3306:3306"
+    networks:
+      - dev_network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+networks:
+  dev_network:
+
+volumes:
+  mysql_data:

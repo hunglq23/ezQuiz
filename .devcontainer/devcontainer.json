@@ -1,0 +1,8 @@
+{
+  "name": "Java Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [3306],
+  "postCreateCommand": "mvn clean install"
+}
